@@ -1,0 +1,28 @@
+.my-modal {
+    height: 100vh;
+    border-radius: 0 !important;
+    overflow-y: auto;
+    background: rgb(241, 241, 241);
+    .cart-item {
+      grid-template-columns: 70px auto !important;
+      align-items: center;
+    }
+    .body,
+    .hr {
+      border-bottom: 1px solid #e0e0e0;
+    }
+  }
+  
+  label {
+    font-size: .8rem;
+    color: #999999;
+  }
+  .pl-3 {
+    padding-left: 24px !important;
+  }
+  .form-control,.form-select{
+    margin-bottom: 16px !important;
+    &::placeholder{
+        color: #dddddd;
+    }
+  }

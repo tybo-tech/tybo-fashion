@@ -1,0 +1,13 @@
+<div class="toggle-group">
+    <ng-container *ngFor="let option of options">
+      <div 
+        class="toggle-item" 
+        [ngClass]="{ 'selected': selectedKey === option.Key }"
+        (click)="onSelect(option)">
+        
+        <i class="bi" [ngClass]="selectedKey === option.Key ? 'bi-check-circle-fill' : 'bi-circle'"></i>
+        <span>{{ option.Value }}</span>
+      </div>
+    </ng-container>
+  </div>
+  

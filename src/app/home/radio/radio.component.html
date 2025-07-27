@@ -1,0 +1,10 @@
+<div class="options d-flex gap-2">
+  <div
+    class="option"
+    *ngFor="let option of options"
+    [ngClass]="{ active: option.Key === selectedOption }"
+    (click)="selectOption(option)"
+  >
+    {{ option.Value }}
+  </div>
+</div>

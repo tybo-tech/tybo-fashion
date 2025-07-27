@@ -1,0 +1,20 @@
+<section class="featured-products-section" *ngIf="products.length">
+  <div class="box">
+    <div class="header-row">
+      <h6>{{ heading }}</h6>
+      <a *ngIf="link" class="btn btn-dark btn-sm w-fit" [routerLink]="link">
+        See More <i class="bi bi-arrow-up-right-circle-fill"></i>
+      </a>
+    </div>
+
+    <div class="grid-4">
+      <app-product-card
+        class="w-100 d-block"
+        *ngFor="let product of products"
+        [companySlug]="product.CompanyId"
+        [product]="product"
+        [isAdminUser]="false"
+      />
+    </div>
+  </div>
+</section>

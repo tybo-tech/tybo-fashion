@@ -1,0 +1,60 @@
+<div class="app-overlay" *ngIf="user">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="Deliver to..."
+      (onClose)="uxService.show_modal(UX_MODALS.profile)"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <form>
+        <div class="row">
+          <div class="col-12">
+            <app-input
+              label="Address Line 1"
+              [value]="user.AddressLineHome"
+              type="text"
+              placeholder="e.g. 1234 Main St"
+              (inputChanged)="user.AddressLineHome = $event"
+            />
+          </div>
+          <div class="col-12">
+            <app-input
+              label="Address Line 2"
+                [value]="user.AddressLine2"
+              type="text"
+              placeholder="e.g. Apt 123"
+              (inputChanged)="user.AddressLine2 = $event"
+            />
+          </div>
+
+          <div class="col-6">
+            <app-input
+              label="City"
+                [value]="user.City"
+              type="text"
+              placeholder=""
+              (inputChanged)="user.City = $event"
+            />
+          </div>
+          <div class="col-6">
+            <app-input
+              label="Postal Code"
+              type="text"
+              [value]="user.PostalCode"
+              placeholder="e.g. 2108"
+              (inputChanged)="user.PostalCode = $event"
+            />
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="save(UX_MODALS.profile)"
+        >
+          Update Address
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

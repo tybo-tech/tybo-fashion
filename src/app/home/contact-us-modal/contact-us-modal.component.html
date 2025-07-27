@@ -1,0 +1,46 @@
+<div class="app-overlay">
+  <div class="contact-modal">
+    <div class="modal-header d-flex justify-content-between align-items-center">
+      <h5>Contact us</h5>
+      <button (click)="closeModal.emit()" class="btn-close"></button>
+    </div>
+    <div class="modal-body">
+      <div class="grid-1">
+        <app-input
+          [value]="subject"
+          (inputChanged)="subject = $event"
+          label="Subject"
+          placeholder="Subject"
+        />
+
+        <app-input
+          [value]="body"
+          (inputChanged)="body = $event"
+          label="Message"
+          type="textarea"
+          placeholder="Message"
+        />
+      </div>
+      <div class="grid-2">
+        <app-input
+          [value]="senderName"
+          (inputChanged)="senderName = $event"
+          label="Your name"
+          placeholder="Your name"
+        />
+
+        <app-input
+          [value]="senderEmail"
+          (inputChanged)="senderEmail = $event"
+          label="Your email"
+          placeholder="Your email"
+        />
+      </div>
+      <div class="actions d-flex justify-content-end">
+        <button (click)="sendEmail()" class="btn btn-primary">
+          Submit enquiry
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

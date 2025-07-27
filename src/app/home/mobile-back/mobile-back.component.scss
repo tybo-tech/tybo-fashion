@@ -1,0 +1,29 @@
+:host {
+  .back {
+    background: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    // z-index: 100000000;
+    z-index: 500;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    p {
+      font-size: 0.75rem;
+      margin: 0;
+      font-weight: 600;
+    }
+    @media screen and (max-width: 600px) {
+      display: flex;
+    }
+  }
+
+  .share {
+    font-size: 1.2rem;
+    margin-left: 2rem;
+  }
+}

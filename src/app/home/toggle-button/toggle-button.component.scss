@@ -1,0 +1,38 @@
+:host {
+  .toggle-group {
+    display: flex;
+    gap: 10px;
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #555;
+
+    &:hover {
+      background-color: #f3f3f3;
+    }
+
+    i {
+      font-size: 18px;
+      color: #999;
+      transition: color 0.2s ease;
+    }
+
+    &.selected {
+      background-color: #212121;
+      color: white;
+
+      i {
+        color: white;
+      }
+    }
+  }
+}

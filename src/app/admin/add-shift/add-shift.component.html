@@ -1,0 +1,84 @@
+<div class="app-overlay" *ngIf="user && shift">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      (onClose)="onClose.emit()"
+      title="Capture a shift"
+    />
+    <div class="actions">
+      <form class="row p-2">
+        <div class="col-6">
+          <app-admin-input
+            label="Type"
+            type="select"
+            [options]="shiftTypes"
+            [value]="shift.Type"
+            placeholder="Select shift type"
+            (inputChanged)="shift.Type = $event; dateChanged()"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Shift Date"
+            type="date"
+            [value]="shift.ShiftDate"
+            placeholder="Date"
+            (inputChanged)="shift.ShiftDate = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Time In"
+            type="time"
+            [value]="shift.StartTime"
+            placeholder="Start Time"
+            (inputChanged)="shift.StartTime = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Time Out"
+            type="time"
+            [value]="shift.EndTime"
+            placeholder="End Time"
+            (inputChanged)="shift.EndTime = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Earnings"
+            type="number"
+            [value]="shift.Price"
+            placeholder="Price"
+            (inputChanged)="shift.Price = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Total Earnings"
+            type="number"
+            [value]="shift.TotalPrice"
+            placeholder="Total Price"
+            (inputChanged)="shift.TotalPrice = $event"
+          />
+        </div>
+        <div class="col-12">
+            <app-admin-input
+              label="Notes"
+              type="textarea"
+              [value]="user.Metadata.RatePerDay"
+              placeholder="Enter notes here"
+              (inputChanged)="shift.Notes = $event"
+            />
+          </div>
+
+          <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2 mt-2"
+          (click)="save()"
+        >
+          Update
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

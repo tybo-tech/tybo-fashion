@@ -1,0 +1,68 @@
+<router-outlet></router-outlet>
+<!-- <app-cart *ngIf="ux?.Modal === UX_MODALS.cart" />
+<app-delivery-method *ngIf="ux?.Modal === UX_MODALS.delivery_method" />
+<app-checkout-customer *ngIf="ux?.Modal === UX_MODALS.customer_contact" />
+<app-shipping-info *ngIf="ux?.Modal === UX_MODALS.shipping_info" />
+<app-login-modal *ngIf="ux?.Modal === UX_MODALS.login" />
+<app-verify-email *ngIf="ux?.Modal === UX_MODALS.verify" />
+<app-sign-up-modal *ngIf="ux?.Modal === UX_MODALS.register" />
+<app-forgot-password-modal *ngIf="ux?.Modal === UX_MODALS.forgot" />
+<app-payments *ngIf="ux?.Modal === UX_MODALS.payments" />
+<app-show-banking-details *ngIf="ux?.Modal === UX_MODALS.banking_details"/> -->
+
+<!--PROFILE -->
+<!-- <app-my-profile *ngIf="ux?.Modal === UX_MODALS.profile"/>
+<app-profile-contact *ngIf="ux?.Modal === UX_MODALS.profile_contact"/>
+<app-profile-password *ngIf="ux?.Modal === UX_MODALS.profile_password"/>
+<app-profile-address *ngIf="ux?.Modal === UX_MODALS.profile_address"/>
+<app-profile-orders *ngIf="ux?.Modal === UX_MODALS.profile_orders"/>
+<app-profile-order *ngIf="ux?.Modal === UX_MODALS.profile_order"/>
+<app-profile-measurements *ngIf="ux?.Modal === UX_MODALS.profile_measurements"/>
+<app-favourite *ngIf="ux?.Modal === UX_MODALS.favorites"/> -->
+
+<div
+  class="toast slide-from-top"
+  *ngIf="ux && ux.Toast && ux.Toast.Message"
+  role="alert"
+  [ngClass]="ux.Toast.Classes"
+  aria-live="assertive"
+  aria-atomic="true"
+>
+  <div class="toast-header">
+    <strong class="me-auto">
+      <i class="bi bi-info-fill"></i> {{ ux.Toast.Title }}
+    </strong>
+    <button
+      (click)="clearToast()"
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">
+    {{ ux.Toast.Message }}
+
+    <a
+      [href]="ux.Toast.Link"
+      class="btn btn-dark w-fit btn-sm mt-2 d-block mb-2"
+      *ngIf="ux.Toast.Link"
+    >
+      {{ ux.Toast.LinkText }}
+    </a>
+  </div>
+</div>
+
+<app-cart *ngIf="cartOpen" />
+<app-favourite *ngIf="ux?.Modal === UX_MODALS.favorites" />
+
+<app-my-profile *ngIf="ux?.Modal === UX_MODALS.profile" />
+<app-profile-contact *ngIf="ux?.Modal === UX_MODALS.profile_contact" />
+<app-profile-password *ngIf="ux?.Modal === UX_MODALS.profile_password" />
+<app-profile-address *ngIf="ux?.Modal === UX_MODALS.profile_address" />
+<app-profile-orders *ngIf="ux?.Modal === UX_MODALS.profile_orders" />
+<app-profile-order *ngIf="ux?.Modal === UX_MODALS.profile_order" />
+<app-profile-measurements
+  *ngIf="ux?.Modal === UX_MODALS.profile_measurements"
+/>
+

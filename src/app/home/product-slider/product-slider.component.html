@@ -1,0 +1,41 @@
+<div
+  id="tyboSlider"
+  *ngIf="images.length"
+  class="carousel slide"
+  data-bs-ride="carousel"
+  data-bs-interval="4000"
+>
+  <div class="carousel-inner">
+    <div
+      *ngFor="let item of images; let i = index"
+      class="carousel-item"
+      [ngClass]="{ active: i === 0 }"
+    >
+      <img [src]="item" class="d-block w-100" alt="Slide image" />
+    </div>
+  </div>
+  <button
+    *ngIf="images.length > 1"
+    class="carousel-control-prev"
+    type="button"
+    data-bs-target="#tyboSlider"
+    data-bs-slide="prev"
+  >
+    <span class="carousel-control-prev-icon" aria-hidden="true">
+      <i class="bi bi-chevron-left"></i>
+    </span>
+    <span class="visually-hidden">Previous</span>
+  </button>
+  <button
+    *ngIf="images.length > 1"
+    class="carousel-control-next"
+    type="button"
+    data-bs-target="#tyboSlider"
+    data-bs-slide="next"
+  >
+    <span class="carousel-control-next-icon" aria-hidden="true">
+      <i class="bi bi-chevron-right"></i>
+    </span>
+    <span class="visually-hidden">Next</span>
+  </button>
+</div>

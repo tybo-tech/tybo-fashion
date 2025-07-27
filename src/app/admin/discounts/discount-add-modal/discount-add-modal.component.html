@@ -1,0 +1,34 @@
+<div class="app-overlay" *ngIf="discount">
+  <div class="my-modal cloud full-height">
+    <div class="my-modal cloud full-height">
+      <app-admin-modal-header (onClose)="onClose.emit()" title="Select Discount Type" />
+      <div class="actions">
+      
+        <div class="list-group">
+          <a
+            class="list-group-item list-group-item-action"
+            [ngClass]="item.className"
+            (click)="selectDiscountType(item)"
+            *ngFor="let item of discountTypesOptions"
+          >
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1">{{ item.label }}</h5>
+            </div>
+            <small>{{ item.type }}</small>
+          </a>
+        </div>
+    
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="next()"
+          *ngIf="discount.DiscountType"
+          style="margin-top: 10px"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+    
+  </div>
+</div>

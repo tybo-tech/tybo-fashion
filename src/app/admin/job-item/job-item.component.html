@@ -1,0 +1,94 @@
+<div class="cart-item" *ngIf="jobItem && job">
+  <img
+    (click)="editMode = true"
+    [src]="jobItem.FeaturedImageUrl"
+    *ngIf="jobItem.FeaturedImageUrl"
+    alt=""
+  />
+  <div
+    (click)="editMode = true"
+    class="image-place-holder"
+    *ngIf="!jobItem.FeaturedImageUrl"
+  ></div>
+  <div class="details p-0">
+    <a (click)="editMode = true" class="link-info mb-1 small">{{
+      jobItem.ItemName
+    }}</a>
+    <small class="d-block" *ngIf="jobItem.Metadata && jobItem.Metadata.AssignedTo">
+      <i class="bi bi-person-square"></i> {{ jobItem.Metadata.AssignedTo | userPipe }}
+    </small>
+    <div class="m-0 d-flex mb-2 mt-2 align-items-center gap-2 text-muted">
+      <span class="small">Size: {{ jobItem.Size }}</span>
+    </div>
+    <div class="price d-flex gap-3">
+      <span>{{ jobItem.UnitPrice * jobItem.Quantity | currency : "R" }}</span>
+      <app-admin-qty
+        [qty]="jobItem.Quantity"
+        (qtyChange)="update_qty($event, jobItem)"
+      />
+      <span (click)="delete_from_cart(jobItem)" class="small delete link-danger">
+        <i class="bi bi-trash"></i>
+      </span>
+    </div>
+  </div>
+</div>
+
+<app-job-item-form
+  *ngIf="editMode && jobItem"
+  [jobItem]="jobItem"
+  [user]="user"
+  (onClose)="editMode = !editMode"
+  (jobItemUpdated)="onJobItemUpdated($event)"
+/>
+
+<!-- <div class="row= border-bottom mb-4" *ngIf="jobItem">
+  <div class="col-md-8 mb-4 mb-md-0">
+    <div class="d-flex">
+      <div class="details">
+        <p class="fw-bold">{{ jobItem.ItemName }}</p>
+        <p class="mb-1">
+          <span class="text-muted me-2">Size:</span
+          ><span>{{ jobItem.Size }}</span>
+        </p>
+        <p>
+          <span class="text-muted me-2">Color:</span
+          ><span>{{ jobItem.Colour }}</span>
+        </p>
+        <p>
+          <span class="text-muted me-2">Quantity:</span
+          ><span>{{ jobItem.Quantity }}</span>
+        </p>
+      </div>
+      <img
+        [src]="jobItem.FeaturedImageUrl"
+        *ngIf="jobItem.FeaturedImageUrl"
+        style="width: 100px; height: 100px; object-fit: cover; border: 1px solid lightgray; border-radius: 5px; margin-top: 24px;"
+        alt=""
+      />
+    </div>
+    <p>
+      <span class="text-muted me-2">Price:</span
+      ><span>R {{ jobItem.UnitPrice }}</span>
+    </p>
+    <p>
+      <span class="text-muted me-2">Sub Total:</span
+      ><span>R {{ jobItem.UnitPrice * jobItem.Quantity }}</span>
+    </p>
+
+    <p class="mb-4">
+      <a class="text-muted pe-3 border-end" (click)="editMode = !editMode"
+        ><small><i class="bi bi-pen me-2"></i>Edit</small></a
+      >
+      <a class="text-muted pe-3"
+        ><small><i class="bi bi-trash me-2"></i>Remove</small></a
+      >
+    </p>
+  </div>
+
+  <app-job-item-form
+    *ngIf="editMode"
+    [jobItem]="jobItem"
+    (onClose)="editMode = !editMode"
+    (jobItemUpdated)="onJobItemUpdated($event)"
+  />
+</div> -->

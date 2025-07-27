@@ -1,0 +1,47 @@
+<ng-container *ngIf="job">
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <h5 class="m-0 h6">Sub Total:</h5>
+    <h5 class="m-0 h6">
+      {{ job.TotalCost - job.ShippingPrice | currency : "R" }}
+    </h5>
+  </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <h5 class="m-0 h6" *ngIf="!job.Shipping">Shipping:</h5>
+    <h5 class="m-0 h6 text-capitalize" *ngIf="job.Shipping">
+      {{ job.Shipping }}:
+    </h5>
+    <h5 class="m-0 link-info h6" (click)="showShipping.emit()">
+      <span *ngIf="job.Shipping">
+        {{ job.ShippingPrice | currency : "R" }}
+      </span>
+      <a class="link-info" *ngIf="!job.Shipping"> Set shipping </a>
+    </h5>
+  </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between" (click)="showPayments.emit()">
+    <h5 class="m-0 h5 font-weight-bold">Amount Paid:</h5>
+    <h5 class="m-0 h5 font-weight-bold link-info">
+      {{ job.Metadata.paidAmount || 0 | currency : "R" }}
+    </h5>
+  </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between" (click)="showPayments.emit()">
+    <h5 class="m-0 h5 font-weight-bold">Amount due:</h5>
+    <h5 class="m-0 h5 font-weight-bold link-info">
+      {{ job.Metadata.dueAmount || 0 | currency : "R" }}
+    </h5>
+  </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <h5 class="m-0 h5 font-weight-bold">Total:</h5>
+    <h5 class="m-0 h5 font-weight-bold">
+      {{ job.TotalCost | currency : "R" }}
+    </h5>
+  </div>
+  <div
+    class="d-flex flex-wrap w-100 justify-content-between"
+    *ngIf="job.PaymentAmount === 'deposit'"
+  >
+    <h5 class="m-0 h5 font-weight-bold">Due today (50% deposit):</h5>
+    <h5 class="m-0 h5 font-weight-bold">
+      {{ job.TotalCost / 2 | currency : "R" }}
+    </h5>
+  </div>
+</ng-container>

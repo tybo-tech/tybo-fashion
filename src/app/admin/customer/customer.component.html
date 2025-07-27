@@ -1,0 +1,8 @@
+<div *ngIf="customer" class="max-600">
+  <app-list-bread
+    [currentPage]="customer.Name"
+    prevPage="Customers"
+    [prevLink]="'/store/admin/customers'"
+  />
+  <app-customer-form [customer]="customer" />
+</div>

@@ -1,0 +1,43 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="About us" (onClose)="closed.emit()" />
+
+    <div class="actions">
+      <div>
+        <div class="form-group">
+          <label for="about">About</label>
+          <textarea
+            [(ngModel)]="company.Metadata.About"
+            class="form-control"
+            id="about"
+          ></textarea>
+        </div>
+        <div class="form-group">
+          <label for="about">About heading</label>
+          <input
+            [(ngModel)]="company.Metadata.AboutTitle"
+            class="form-control"
+            id="about"
+          />
+        </div>
+        <div class="form-group">
+          <label for="aboutImage">About Image</label>
+          <!-- <app-upload-input [parentItem]="company.Metadata" imageKey="AboutImage" /> -->
+          <app-image-widget
+            [image]="getImage(company.Metadata.AboutImage)"
+            (imageChangedEvent)="company.Metadata.AboutImage = $event"
+          />
+        </div>
+        <br />
+        <br />
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+<div class="app-overlay" *ngIf="job">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header (onClose)="onClose.emit()" title="Add job" />
+    <div class="actions">
+      <h3>Select or add a customer</h3>
+      <app-customer-list-view
+        (onSelect)="selected($event)"
+        (onAdd)="selected($event)"
+      />
+    </div>
+  </div>
+</div>

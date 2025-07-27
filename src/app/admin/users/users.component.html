@@ -1,0 +1,48 @@
+<div class="max-600">
+  <app-list-bread currentPage="Users" />
+  <div class="d-flex justify-content-between gap-3 mb-4">
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search by name"
+      [(ngModel)]="quary"
+    />
+    <button
+      class="btn btn-primary w-200px"
+      (click)="initUser(); show_add = true"
+    >
+      <i class="bi bi-plus"></i> User
+    </button>
+  </div>
+  <div class="list-group w-auto" *ngIf="users">
+    <a
+      *ngFor="let userItem of users"
+      [routerLink]="['/store/admin/user', userItem.UserId]"
+      class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3"
+      aria-current="true"
+    >
+      <i class="bi bi-breafcase"></i>
+      <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
+        <div>
+          <h6 class="mb-0">{{ userItem?.Name }}</h6>
+          <p class="text-muted mb-0">
+            <small>{{ userItem.Email }}</small>
+          </p>
+
+          <span class="badge text-bg-primary">{{ userItem.UserType }}</span>
+        </div>
+        <small class="opacity-80 text-nowrap">
+          <b>
+            <span class="text-success">{{ userItem.PhoneNumber }}</span>
+          </b>
+        </small>
+      </div>
+    </a>
+  </div>
+  <app-add-user
+    (closed)="show_add = false; new_user = undefined"
+    (done)="show_add = false; getUsers()"
+    *ngIf="show_add && new_user"
+    [user]="new_user"
+  ></app-add-user>
+</div>

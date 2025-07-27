@@ -1,0 +1,85 @@
+<div class="sizes" *ngIf="sizes.length">
+  <div class="d-flex justify-content-between align-items-center">
+    <label class="text-left w-fit m-0"> Select Size: </label>
+    <!-- <app-radio (onSelect)="selectSizeType($event)" /> -->
+  </div>
+
+  <!-- List of standard sizes -->
+  <div class="d-flex gap-2 flex-wrap fade-in" *ngIf="sizeType === 'standard'">
+    <a
+      class="btn btn-outline w-fit btn-sm"
+      *ngFor="let size of sizes"
+      [ngClass]="{ 'btn-dark': size === selectedSize }"
+      (click)="selectSize(size)"
+    >
+      {{ size }}
+    </a>
+  </div>
+
+  <!-- Measurements -->
+
+  <div
+    role="alert"
+    *ngIf="selectedSize === measurementKey && hasMeasurements"
+    class="alert alert-success mt-4 d-flex align-items-center"
+  >
+    <i class="bi bi-check-circle-fill pe-2"></i>
+    <div>
+      <h6>Measurements Captured!</h6>
+      <small>
+        View or edit your measurements by clicking
+        <a class="link-info" (click)="showMeasurements = true"><b>here</b></a>.
+      </small>
+    </div>
+  </div>
+
+  <div
+    role="alert"
+    *ngIf="selectedSize === measurementKey && !hasMeasurements"
+    class="alert alert-warning mt-4 d-flex align-items-center"
+  >
+    <i class="bi bi-exclamation-triangle-fill pe-2"></i>
+    <div>
+      <h6>Measurements Required</h6>
+      <small>
+        You have not captured your measurements. Please
+        <a  class="link-info" (click)="showMeasurements = true"><b>capture your measurements</b></a>
+        to proceed with this order.
+      </small>
+    </div>
+  </div>
+
+</div>
+
+<!-- <div class="col-md-4 col-6 mb-3 mt-1" *ngIf="!isCustom">
+  <label class="mb-2 d-block">Quantity</label>
+  <app-main-qty
+    [qty]="quantity"
+    (qtyChange)="quantity = $event; quantityChanged.emit($event)"
+  />
+</div> -->
+
+<div class="app-overlay" *ngIf="showMeasurements">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="My Measurements"
+      (onClose)="showMeasurements = false"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <app-home-measurements
+        [can_edit]="false"
+        [can_add]="false"
+        [can_delete]="false"
+        [measurements]="mappedMeasurements"
+        (onCaptured)="
+          onMeasurementsCaptured.emit($event);
+          showMeasurements = false;
+          mappedMeasurements = $event
+        "
+      />
+    </div>
+  </div>
+</div>
+
+<!-- <div class="size-overlay"></div> -->

@@ -1,0 +1,16 @@
+<!-- <div class="shop-layout" *ngIf="company">
+  <div class="shop-nav">
+    <app-shop-nav [company]="company" />
+  </div>
+
+  <div class="shop-content">
+    <router-outlet></router-outlet>
+  </div>
+</div> -->
+<ng-container *ngIf="company">
+  <app-nav
+    [logo_url_to]="company.Slug || company.CompanyId || '/'"
+    [logo_url]="company.Dp"
+  />
+  <router-outlet></router-outlet>
+</ng-container>

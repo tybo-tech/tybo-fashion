@@ -1,0 +1,8 @@
+<div
+  *ngIf="name && color"
+  class="list-icon"
+  [style.background-color]="color"
+  (click)="iconClick.emit()"
+>
+  {{ name.substring(0, 1).toUpperCase() }}
+</div>

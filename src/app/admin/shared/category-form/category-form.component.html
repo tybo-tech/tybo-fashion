@@ -1,0 +1,146 @@
+<!-- Category Form Modal -->
+<div
+  *ngIf="category"
+  class="modal fade"
+  [class.show]="showModal"
+  [style.display]="showModal ? 'block' : 'none'"
+  tabindex="-1"
+>
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ isEditMode ? "Edit Category" : "Add New Category" }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          (click)="onClose()"
+          [disabled]="isSubmitting"
+        ></button>
+      </div>
+
+      <form (ngSubmit)="onSubmit()" #categoryForm="ngForm">
+        <div class="modal-body">
+          <!-- Category Name -->
+          <div class="mb-3">
+            <label for="categoryName" class="form-label">Category Name *</label>
+            <input
+              type="text"
+              class="form-control"
+              id="categoryName"
+              name="categoryName"
+              [(ngModel)]="category.Name"
+              required
+              maxlength="100"
+              [disabled]="isSubmitting"
+              placeholder="Enter category name"
+            />
+            <div class="form-text">
+              {{ category.Name.length }}/100 characters
+            </div>
+          </div>
+
+          <!-- Category Description -->
+          <div class="mb-3">
+            <label for="categoryDescription" class="form-label"
+              >Description</label
+            >
+            <textarea
+              class="form-control"
+              id="categoryDescription"
+              name="categoryDescription"
+              [(ngModel)]="category.Description"
+              rows="3"
+              maxlength="500"
+              [disabled]="isSubmitting"
+              placeholder="Enter category description (optional)"
+            ></textarea>
+            <div class="form-text">
+              {{ category.Description.length }}/500 characters
+            </div>
+          </div>
+
+          <!-- Category Image -->
+          <div class="mb-3">
+            <label class="form-label">Category Image</label>
+
+            <!-- Image Preview -->
+            <div class="image-preview-container" *ngIf="imagePreview">
+              <img
+                [src]="imagePreview"
+                alt="Category image preview"
+                class="img-preview"
+              />
+              <button
+                type="button"
+                class="btn btn-sm btn-danger remove-image-btn"
+                (click)="removeImage()"
+                [disabled]="isSubmitting"
+              >
+                <i class="bi bi-x"></i>
+              </button>
+            </div>
+
+            <!-- Upload Button -->
+            <div class="upload-section">
+              <button
+                type="button"
+                class="btn btn-outline-primary"
+                (click)="showUpload = true"
+                [disabled]="isSubmitting"
+              >
+                <i class="bi bi-cloud-upload"></i>
+                {{ imagePreview ? "Change Image" : "Upload Image" }}
+              </button>
+              <div class="form-text">
+                Upload an image for the category. Supported formats: JPG, PNG,
+                GIF (Max 2MB, will be auto-resized)
+              </div>
+            </div>
+          </div>
+
+          <!-- Parent Category Info (for display only) -->
+          <div class="mb-3" *ngIf="parentId">
+            <label class="form-label">Parent Category</label>
+            <div class="form-control-plaintext">
+              This will be created as a subcategory
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="onClose()"
+            [disabled]="isSubmitting"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="isSubmitting || !categoryForm.form.valid"
+          >
+            <span
+              *ngIf="isSubmitting"
+              class="spinner-border spinner-border-sm me-2"
+            ></span>
+            {{ isSubmitting ? "Saving..." : submitButtonText }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Backdrop -->
+<div class="modal-backdrop fade show" *ngIf="showModal"></div>
+
+<!-- Upload Component -->
+<app-upload
+  *ngIf="showUpload"
+  (closed)="onUploadClosed()"
+  (files)="onUploadComplete($event)"
+/>

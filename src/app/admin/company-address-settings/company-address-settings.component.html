@@ -1,0 +1,64 @@
+<div class="app-overlay" *ngIf="company">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="Company address" (onClose)="closed.emit()" />
+
+    <div class="actions">
+      <form>
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">Address Line 1</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="email"
+            class="form-control mb-3"
+            id="email"
+            [(ngModel)]="company.AddressLine"
+            required
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for="email" class="form-label">Address Line 2</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="email"
+            class="form-control mb-3"
+            id="email"
+            [(ngModel)]="company.AddressLine2"
+            required
+          />
+        </div>
+        <div class="row">
+          <div class="form-group mb-3 col-6">
+            <label for="email" class="form-label">City</label>
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              type="email"
+              class="form-control mb-3"
+              id="email"
+              [(ngModel)]="company.City"
+              required
+            />
+          </div>
+          <div class="form-group mb-3 col-6">
+            <label for="email" class="form-label">Postal Code</label>
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              type="email"
+              class="form-control mb-3"
+              id="email"
+              [(ngModel)]="company.PostalCode"
+              required
+            />
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+          Update
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,83 @@
+<main class="main p-0" *ngIf="galleryItem && !loading">
+  <section class="nav-section">
+    <div class="box">
+      <app-tui-nav />
+    </div>
+  </section>
+
+  <app-mobile-back [text]="galleryItem.Name" />
+
+  <section *ngIf="galleryItem" class="product-section">
+    <div class="box">
+      <!-- <app-bread [links]="links" [currentPage]="product.Name" /> -->
+      <div class="spaced">
+        <div class="image-section fade-in">
+          <div class="product-images">
+            <i class="like share bi bi-share text-dark" (click)="onShare()"></i>
+            <ng-container
+              *ngFor="let item of galleryItem.ItemValue.Images; let i = index"
+            >
+              <img
+                [src]="item"
+                [alt]="galleryItem.Name + ' image ' + (i + 1)"
+                [ngClass]="imageClass"
+                *ngIf="index === i"
+              />
+            </ng-container>
+            <div class="navigator">
+              <i
+                (click)="prevImage()"
+                title="Previous Image"
+                class="bi bi-chevron-left"
+              ></i>
+              <i
+                (click)="nextImage()"
+                title="Next Image"
+                class="bi bi-chevron-right"
+              ></i>
+            </div>
+          </div>
+          <div class="tiles">
+            <ng-container>
+              <img
+                [src]="item"
+                [alt]="galleryItem.Name + ' image ' + (i + 1)"
+                [ngClass]="{ 'active-tile': index === i }"
+                *ngFor="let item of galleryItem.ItemValue.Images; let i = index"
+                (click)="index = i"
+              />
+            </ng-container>
+          </div>
+        </div>
+        <div class="hero-text">
+          <div>
+            <h1 class="mb-1" [innerHTML]="galleryItem.Name"></h1>
+          </div>
+          <hr style="margin: 0" />
+
+          <div class="d-flex gap-3 flex-wrap">
+            <div class="alert alert-warning p-4" role="alert">
+              <p class="mb-2">
+                We would love wo help you with you next outfit. Book a design
+                consultation with us today.
+              </p>
+              <a
+                class="btn btn-primary slide-from-left delay-0-3"
+                (click)="showBookConsultation = true"
+                >Chat with the fashion designer <i class="bi bi-whatsapp"></i
+              ></a>
+            </div>
+          </div>
+          <div class="mb-4"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<app-loading *ngIf="loading"></app-loading>
+<app-book-consultation
+  [company]="company"
+  *ngIf="showBookConsultation && company"
+  (onClose)="showBookConsultation = false"
+/>

@@ -1,0 +1,25 @@
+<div class="d-flex align-items-center justify-content-between  w-100">
+  <h6 class="mb-3">Images</h6>
+</div>
+<div class="image-grid">
+  <div *ngFor="let image of images; let i = index" class="image-container">
+    <div class="image">
+      <img
+        [src]="image"
+        [ngClass]="{ selected: selected === image }"
+        alt="Image {{ i + 1 }}"
+        (click)="toggleOptionsMenu(i)"
+        class="image-raised"
+      />
+      <div
+        *ngIf="showOptionsMenu && selectedImageIndex === i"
+        class="options-menu"
+      >
+        <ul>
+          <li (click)="setAsMainImage(image)">Set as Main Image</li>
+          <li (click)="removeImage(i)">Remove Image</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

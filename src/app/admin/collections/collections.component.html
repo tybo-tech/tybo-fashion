@@ -1,0 +1,24 @@
+<app-list-bread currentPage="Collections" />
+
+<div class="categories mt-3" *ngIf="categories">
+  <a
+    [routerLink]="['/store/admin/collection', category.Id]"
+    class="category"
+    *ngFor="let category of categories"
+  >
+    <img [src]="category.ImageUrl" *ngIf="category.ImageUrl" alt="" />
+    <div *ngIf="!category.ImageUrl" class="placeholder-image"></div>
+    <div class="details">
+      <p class="text-muted h6">
+        {{ category.Name }}
+      </p>
+      <p class="text-muted">
+        <b> {{ category.CountProducts }} items</b>
+      </p>
+    </div>
+  </a>
+</div>
+<app-add-widget 
+title="Add Collection"
+(add)="add($event)"
+/>

@@ -1,0 +1,45 @@
+$breakpoint: 1000px;
+.phone-nav {
+  background: white;
+  padding: 12px 0 !important;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 100000;
+  position: relative;
+  display: none;
+  @media only screen and (max-width: $breakpoint) {
+    display: block;
+  }
+  
+
+  $cart-icon-size: 20px;
+  .relative {
+    position: relative;
+    padding-right: 24px;
+    z-index: 100;
+    .cart-icon {
+      position: absolute;
+      top: -10px;
+      right: 10px;
+      background: var(--primary);
+      color: var(--white);
+      border-radius: $cart-icon-size !important;
+      font-size: 10px;
+      width: $cart-icon-size;
+      height: $cart-icon-size;
+      padding: 3px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      box-shadow: 2px 2px 20px rgba(219, 146, 12, 0.226);
+    }
+  }
+}
+
+img {
+  width: auto !important;
+  max-width: 140px !important;
+  max-height: 44px !important;
+}

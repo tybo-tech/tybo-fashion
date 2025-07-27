@@ -1,0 +1,139 @@
+<app-list-bread currentPage="Products" />
+<app-filter-panel
+  addText="Product"
+  (onAdd)="show_add = true"
+  (onSearch)="query = $event; filter()"
+  (onApply)="applyFilters($event)"
+/>
+<div class="list-group w-auto max-600">
+  <div class="line-row" *ngFor="let product of products">
+    <i
+      (click)="onCheck(product)"
+      class="bi bi-square"
+      *ngIf="!product.Checked"
+    ></i>
+    <i
+      (click)="onCheck(product)"
+      class="bi bi-check-square-fill"
+      *ngIf="product.Checked"
+    ></i>
+    <a
+      [routerLink]="['/store/admin/product', product.ProductId]"
+      class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3"
+      aria-current="true"
+    >
+      <img
+        [alt]="product.Name"
+        [src]="product.FeaturedImageUrl"
+        width="32"
+        height="32"
+        loading="lazy"
+        class="rounded-2 flex-shrink-0"
+      />
+      <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
+        <div>
+          <h6 class="mb-0">{{ product.Name }}</h6>
+          <app-tags [product]="product" />
+        </div>
+        <small class="opacity-80 text-nowrap">
+          <b>
+            <span class="text-success">{{
+              product.RegularPrice | currency : "R"
+            }}</span>
+          </b>
+        </small>
+      </div>
+    </a>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="show_add">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header (onClose)="show_add = false" title="Add product" />
+    <div class="actions">
+      <!-- Name && Submit -->
+      <div class="p-1">
+        <label for="">Product name</label>
+        <input
+          type="text"
+          class="form-control mb-4"
+          [(ngModel)]="new_name"
+          placeholder="Product name"
+        />
+        <button class="btn btn-primary w-100" (click)="add()">Next</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="checked.length > 1" class="selected-items">
+  <div
+    class="d-flex justify-content-between align-items-center p-3 border-bottom"
+  >
+    <b>{{ checked.length }} products selected</b>
+    <i (click)="toggleChecked(false)" class="bi bi-x-circle"></i>
+  </div>
+
+  <div class="p-3">
+    <div class="row">
+      <div class="col-6">
+        <app-admin-input
+          label="Show Online"
+          type="select"
+          [options_objects]="Constants.OnlineShopVisibility"
+          [value]="showOnline"
+          placeholder="Select..."
+          (optionsObjectChanged)="showOnline = $event"
+        />
+      </div>
+
+      <div class="col-6">
+        <app-admin-input
+          label="Stock Type"
+          type="select"
+          [options]="Constants.StockTypesValueLabel"
+          [value]="stockType"
+          placeholder="Select..."
+          (inputChanged)="stockType = $event"
+        />
+      </div>
+
+      <div class="col-6">
+        <app-admin-input
+          label="Is Featured?"
+          type="select"
+          [options]="Constants.YesNoValueLabel"
+          [value]="isFeatured"
+          placeholder="Select..."
+          (inputChanged)="isFeatured = $event"
+        />
+      </div>
+
+      <div class="col-6">
+        <div class="mb-3">
+          <label for="TotalStock" class="form-label"> Order Limit </label>
+          <input
+            type="number"
+            id="TotalStock"
+            [(ngModel)]="totalStock"
+            class="form-control"
+          />
+        </div>
+      </div>
+
+      <div class="col-12">
+        <button
+          class="btn btn-primary w-100"
+          [disabled]="
+            !showOnline && !stockType && !isFeatured && totalStock === ''
+          "
+          (click)="updateSelection()"
+        >
+          Update selected
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="loading" *ngIf="loading"></div>

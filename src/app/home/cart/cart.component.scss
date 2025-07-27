@@ -1,0 +1,7 @@
+:host {
+  position: relative;
+  z-index: 1000000;
+  .app-overlay {
+    z-index: 1000000001;
+  }
+}

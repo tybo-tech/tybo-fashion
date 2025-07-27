@@ -1,0 +1,113 @@
+<div *ngIf="user" class="max-600">
+  <app-list-bread
+    [currentPage]="user.Name"
+    prevPage="Users"
+    [prevLink]="prevPage"
+  />
+  <app-add-shift
+    *ngIf="showAddShift"
+    (onClose)="showAddShift = false"
+    [user]="user"
+    (shiftAdded)="shiftAdded($event)"
+  />
+
+  <div class="card" *ngIf="!showUser">
+    <div class="card-body">
+      <p class="m-0">
+        <strong>{{ user.Name }}</strong> <br />
+        <span class="text-muted" *ngIf="user.Email"
+          >{{ user.Email }}<br
+        /></span>
+        <span class="text-muted" *ngIf="user.PhoneNumber">{{
+          user.PhoneNumber
+        }}</span>
+      </p>
+    </div>
+    <div class="card-footer">
+      <div class="d-flex gap-1">
+        <button class="btn btn-light" (click)="showUser = !showUser">
+          Edit user
+        </button>
+        <button class="btn btn-dark" (click)="showAddShift = !showAddShift">
+          Add shift
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="card" *ngIf="showUser">
+    <div class="card-header">
+      <h5 class="card-title m-0">Edit user</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div class="col-6">
+          <app-admin-input
+            label="Name"
+            type="text"
+            [value]="user.Name"
+            placeholder="Full name"
+            (inputChanged)="user.Name = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Phone"
+            type="text"
+            [value]="user.PhoneNumber"
+            placeholder="Phone number"
+            (inputChanged)="user.PhoneNumber = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Role"
+            type="select"
+            [options]="roles"
+            [value]="user.UserType"
+            placeholder="Select role"
+            (inputChanged)="user.UserType = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Password"
+            type="password"
+            [value]="user.Password"
+            placeholder="**** **** ****"
+            (inputChanged)="user.Password = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Day Rate"
+            type="number"
+            [value]="user.Metadata.RatePerDay"
+            placeholder="Enter rate per day"
+            (inputChanged)="user.Metadata.RatePerDay = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="Night Rate"
+            type="number"
+            [value]="user.Metadata.RatePerNight"
+            placeholder="Enter rate per day"
+            (inputChanged)="user.Metadata.RatePerNight = $event"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="card-footer">
+      <button
+        type="submit"
+        class="w-100 btn btn-dark mb-2 mt-2"
+        (click)="save()"
+      >
+        Update
+      </button>
+      <button class="btn btn-light w-100" (click)="showUser = !showUser">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>

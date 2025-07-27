@@ -1,0 +1,48 @@
+<ng-container *ngIf="product">
+  <a [href]="url" class="product-card link-dark">
+    <!-- We only show the heart icon if the user is not an admin -->
+    <i
+      *ngIf="!isAdminUser"
+      [ngClass]="
+        liked
+          ? 'bi bi-heart-fill like text-danger selected'
+          : 'bi bi-heart like text-dark'
+      "
+      (click)="onLike($event)"
+    ></i>
+
+    <!-- We show the PIN icon if the user is an admin -->
+    <i
+      *ngIf="isAdminUser"
+      [ngClass]="
+        product.IsFeatured === 'Yes'
+          ? 'bi bi-pin-angle-fill like text-danger selected'
+          : 'bi bi-pin-angle like text-dark'
+      "
+      (click)="onPin($event)"
+    ></i>
+    <img
+      [src]="product.FeaturedImageUrl"
+      class=""
+      [alt]="product.Name"
+      loading="lazy"
+      (error)="onImageError($event)"
+    />
+    <h6 [innerHTML]="product.Name"></h6>
+    <h5>
+      <small [ngClass]="product.OldPrice ? 'text-danger' : 'text-muted'">
+        {{ product.RegularPrice | currency : "R" }}
+        <small *ngIf="product.RegularPrice && !isAdminUser" class="text-muted d-block deposit-amount">
+          Deposit: {{ product.RegularPrice * 0.5 | currency : "R" }}
+        </small>
+      </small>
+      <small *ngIf="product.OldPrice" class="text-muted">
+        <del>{{ product.OldPrice | currency : "R" }}</del>
+      </small>
+    </h5>
+    <div *ngIf="product.IsJustInTime" class="type-stock">
+      <!-- {{ product.IsJustInTime }} -->
+        Made to Order
+    </div>
+  </a>
+</ng-container>

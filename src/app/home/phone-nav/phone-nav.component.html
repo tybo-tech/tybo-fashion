@@ -1,0 +1,82 @@
+<div class="nav-wrapper" id="nav-wrapper" (click)="on_overlay($event)">
+  <div class="nav-items slide-from-left">
+    <div class="d-flex align-items-center w-100 p-1">
+      <i
+        class="bi bi-x"
+        (click)="nav_closed.emit()"
+        style="font-size: 34px"
+      ></i>
+    </div>
+
+    <div class="items p-2">
+      <ng-container *ngFor="let item of navItems">
+        <a
+          class="d-flex gap-3 mb-3 text-black"
+          [routerLink]="item.link"
+          [routerLinkActive]="'active'"
+          [routerLinkActiveOptions]="{ exact: true }"
+          *ngIf="!item.id"
+        >
+          <i [ngClass]="item.icon"></i> {{ item.name }}
+        </a>
+        <a
+          (click)="open(item.id)"
+          class="d-flex gap-3 mb-3 text-black"
+          *ngIf="item.id"
+        >
+          <i [ngClass]="item.icon"></i> {{ item.name }}
+        </a>
+      </ng-container>
+    </div>
+
+    <div class="account" *ngIf="!user">
+      <a
+        (click)="open(UX_MODALS.login)"
+        class="btn btn-primary text-left d-flex gap-3 w-100 mb-3"
+      >
+        <i class="bi bi-person"></i> Login
+      </a>
+      <a
+        (click)="open(UX_MODALS.login)"
+        class="btn btn-dark text-left d-flex gap-3 w-100 mb-3"
+      >
+        <i class="bi bi-person-plus"></i> Register
+      </a>
+    </div>
+    <div class="account" *ngIf="user">
+      <a
+        (click)="open(UX_MODALS.profile)"
+        class="btn btn-primary text-left d-flex gap-3 w-100 mb-3"
+      >
+        <i class="bi bi-person"></i> My profile
+      </a>
+      <a
+        routerLink="/store/admin"
+        class="btn text-left d-flex gap-3 btn-primary w-100 mb-3"
+      >
+        <i class="bi bi-grid"></i> My dashboard
+      </a>
+      <a
+        (click)="logout()"
+        class="btn btn-primary w-100 text-left d-flex gap-3 mb-3"
+      >
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="nav-items d-flex gap-2 slide=from-top" *ngIf="nav_open">
+      <div class="d-flex align-items-center justify-content-end w-100 p-4">
+        <i (click)="nav_open = !nav_open" class="bi bi-x"></i>
+      </div>
+
+      <a
+        (click)="nav_open = false"
+        [routerLink]="item.url"
+        [routerLinkActive]="'active'"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngFor="let item of navItems"
+        >{{ item.name }}</a
+      >
+    </div> -->

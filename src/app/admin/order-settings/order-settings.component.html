@@ -1,0 +1,71 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="Order settings" [show_x]="false" (onClose)="closed.emit()" />
+    <div class="actions">
+      <form (ngSubmit)="updated.emit(company)">
+        <div class="alert alert-light" role="alert">
+          <app-admin-input
+            label="Number of proccessing days"
+            type="number"
+            [value]="company.Metadata.ProccessingDays"
+            placeholder="Enter a number of days..."
+            (inputChanged)="company.Metadata.ProccessingDays = $event"
+          />
+          <small class="text-info d-block">
+            The number of days it takes to process an order from the time it is
+            placed. This will also be used to calculate the estimated delivery &
+            due date.
+          </small>
+        </div>
+
+        <div class="alert alert-light" role="alert">
+          <app-admin-input
+            label="Invoice announcement"
+            type="textarea"
+            [value]="company.Metadata.InvoiceAnnouncement"
+            placeholder="e.g. Thank you for shopping with us!"
+            (inputChanged)="company.Metadata.InvoiceAnnouncement = $event"
+          />
+          <small class="text-info d-block">
+            This will be displayed on the invoice FOOTER as an announcement.
+          </small>
+        </div>
+
+        <div
+          class="alert alert-light"
+          role="alert"
+        >
+          <label for="">Invoice Notes</label>
+          <app-admin-input
+            *ngFor="let item of company.Metadata.InvoiceNotes; let i = index"
+            type="textarea"
+            [value]="item"
+            [show_delete] = "true"
+            (delete)="company.Metadata.InvoiceNotes?.splice(i, 1)"
+            placeholder="e.g. Please note that all sales are final."
+            (inputChanged)="setInvoiceNotes($event, i)"
+          />
+
+            <button
+                type="button"
+                class="btn btn-link mt-2 mb-2"
+                (click)="company.Metadata.InvoiceNotes?.push('')"
+            >
+                Add note
+            </button>
+          <small class="text-info d-block">
+            These notes will be displayed on the invoice as a list.
+          </small>
+        </div>
+
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+            Save
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="Company contact info" (onClose)="closed.emit()" />
+
+    <div class="actions">
+      <div>
+        <div class="form-group">
+          <label for="facebook">Facebook</label>
+          <input
+            [(ngModel)]="company.Metadata.Facebook"
+            type="text"
+            class="form-control"
+            id="facebook"
+          />
+        </div>
+        <div class="form-group">
+          <label for="twitter">TikTok</label>
+          <input
+            [(ngModel)]="company.Metadata.Twitter"
+            type="text"
+            class="form-control"
+            id="twitter"
+          />
+        </div>
+        <div class="form-group">
+          <label for="instagram">Instagram</label>
+          <input
+            [(ngModel)]="company.Metadata.Instagram"
+            type="text"
+            class="form-control"
+            id="instagram"
+          />
+        </div>
+        <br />
+        <br />
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

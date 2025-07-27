@@ -1,0 +1,36 @@
+<!-- Chips Container -->
+<div class="chip-wrapper">
+  <ng-container *ngFor="let id of selectedCategoryIds">
+    <span class="chip">
+      {{ getCategoryName(id) }}
+      <button (click)="removeCategory(id)">×</button>
+    </span>
+  </ng-container>
+
+  <!-- Open panel button -->
+  <button class="open-panel-btn" (click)="openCategoryPanel()">
+    📂
+  </button>
+</div>
+
+<!-- Side Panel -->
+<div *ngIf="panelOpen" class="side-panel">
+  <div class="panel-header">
+    <h6>Select Categories</h6>
+    <button (click)="closeCategoryPanel()">×</button>
+  </div>
+
+  <div class="panel-content">
+    <div *ngFor="let parent of allCategories">
+      <h4>{{ parent.Name }}</h4>
+      <div *ngFor="let child of parent.Children" class="category-option">
+        <input
+          type="checkbox"
+          [checked]="isChecked(child.CategoryId)"
+          (change)="toggleCategory(child.CategoryId)"
+        />
+        {{ child.Name }}
+      </div>
+    </div>
+  </div>
+</div>

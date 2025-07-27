@@ -1,0 +1,53 @@
+.grid-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.grid-4 {
+  grid-template-columns: repeat(4, 1fr);
+}
+.grid-3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.grid-2,
+.grid-3,
+.grid-4 {
+  gap: 24px;
+  display: grid;
+  align-items: start;
+
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
+  }
+}
+.spaced {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+
+  // All direct children
+  > * {
+    flex: 1;
+  }
+
+  @media only screen and (max-width: 600px) {
+    flex-direction: column;
+  }
+}
+
+
+.box {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.max-400 {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.max-500 {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.max-600 {
+  max-width: 600px;
+  // margin: 0 auto;
+}

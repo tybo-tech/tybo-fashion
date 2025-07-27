@@ -1,0 +1,8 @@
+<div class="stats" *ngIf="company && company.Metadata && company.Metadata.Stat">
+    <div class="stat" *ngFor="let item of  company.Metadata.Stat">
+        {{item.Name}}
+        <span>
+            {{item.Count}} {{item.Units}}
+        </span>
+    </div>
+</div>

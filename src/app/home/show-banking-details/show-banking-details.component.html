@@ -1,0 +1,28 @@
+<div
+  class="item mt-4 fade-in"
+  *ngIf="job && company && user && user.Metadata.DraftOrder && is_bank"
+>
+  <div class="list-group" *ngIf="bakingDetails.length">
+    <div class="list-group-item p-3">
+      <p class="mb-3">
+        Please make a a payment of
+        <b>{{ job.Metadata.dueToday| currency : "R" }}</b
+        >, and upload your proof of payment.
+      </p>
+      <div class="bank-item" *ngFor="let item of bakingDetails">
+        <h6 class="m-0">
+          {{ item.Key }}
+        </h6>
+        <p>
+          {{ item.Value }}
+        </p>
+      </div>
+      <app-upload-input
+        imageKey="paymentProof"
+        label="Upload proof of payment"
+        [parentItem]="job.Metadata"
+        (onFileChanged)="onFileChanged($event)"
+      />
+    </div>
+  </div>
+</div>

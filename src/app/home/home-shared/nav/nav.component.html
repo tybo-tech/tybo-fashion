@@ -1,0 +1,29 @@
+<div class="main-nav">
+  <div
+    class="container w-100 d-flex align-items-center justify-content-between"
+  >
+    <app-logo />
+    <div class="nav-items d-flex gap-2">
+      <div class="d-flex align-items-center justify-end"></div>
+
+      <a
+        [routerLink]="item.link"
+        [routerLinkActive]="'active'"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngFor="let item of navItems"
+        >{{ item.name }}</a
+      >
+    </div>
+  </div>
+</div>
+
+<app-phone-top-bar
+  [logo_url_to]="logo_url_to"
+  [logo_url]="logo_url"
+  (toggleNav)="nav_open = !nav_open"
+/>
+<app-phone-nav
+  [navItems]="navItems"
+  *ngIf="nav_open"
+  (nav_closed)="nav_open = false"
+/>

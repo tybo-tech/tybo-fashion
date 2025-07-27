@@ -1,0 +1,157 @@
+<div *ngIf="product" class="max-600">
+  <app-list-bread
+    [currentPage]="product.Name.substring(0, 18) + '...'"
+    prevPage="Products"
+    [prevLink]="prevLink"
+    [showDelete]="true"
+    (onDelete)="onDelete()"
+  />
+  <div class="from-group">
+    <div class="mb-3">
+      <label for="Name" class="form-label">Product Name</label>
+      <input
+        type="text"
+        id="Name"
+        [(ngModel)]="product.Name"
+        class="form-control"
+      />
+    </div>
+
+    <div class="row">
+      <div class="col-6">
+        <div class="mb-3">
+          <label for="RegularPrice" class="form-label">Regular Price</label>
+          <input
+            type="text"
+            id="RegularPrice"
+            [(ngModel)]="product.RegularPrice"
+            class="form-control"
+          />
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="mb-3">
+          <label for="TotalStock" class="form-label"> Order Limit </label>
+          <input
+            type="text"
+            id="TotalStock"
+            [(ngModel)]="product.TotalStock"
+            class="form-control"
+          />
+        </div>
+      </div>
+      <div class="col-6">
+        <app-admin-input
+          label="Show Online"
+          type="select"
+          [options_objects]="Constants.OnlineShopVisibility"
+          [value]="product.ShowOnline"
+          placeholder="Select..."
+          (optionsObjectChanged)="product.ShowOnline = $event"
+        />
+      </div>
+      <div class="col-6">
+        <app-admin-input
+          label="Product Type"
+          type="select"
+          [options]="Constants.ProductTypesValueLabel"
+          [value]="product.IsJustInTime"
+          placeholder="Select..."
+          (inputChanged)="product.IsJustInTime = $event"
+        />
+      </div>
+      <div class="col-6">
+        <app-admin-input
+          label="Stock Type"
+          type="select"
+          [options]="Constants.StockTypesValueLabel"
+          [value]="product.StockType"
+          placeholder="Select..."
+          (inputChanged)="product.StockType = $event"
+        />
+      </div>
+      <div class="col-6">
+        <app-admin-input
+          label="Is Pinned? 📌"
+          type="select"
+          [options]="Constants.YesNoValueLabel"
+          [value]="product.IsFeatured"
+          placeholder="Select..."
+          (inputChanged)="product.IsFeatured = $event"
+        />
+      </div>
+    </div>
+
+    <div class="mb-3">
+      <label for="Description" class="form-label">Description</label>
+      <textarea
+        id="Description"
+        [(ngModel)]="product.Description"
+        class="form-control"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <div *ngIf="categories && categories.length">
+        <app-chip-picker
+          *ngFor="let parentCategory of categories; trackBy: trackByCategory"
+          [label]="parentCategory.Name"
+          (selectionChange)="onCategorySelectionChange($event, parentCategory)"
+          (newItemAdded)="onNewSubCategoryAdded($event, parentCategory)"
+          [options]="
+            chipService.categoryChildrenToChipOptions(
+              parentCategory.Children || []
+            )
+          "
+          [selectedIds]="
+            chipService.selectedCategoryIds(parentCategory.CategoryId, product)
+          "
+        />
+      </div>
+
+      <div *ngIf="variations && variations.length">
+        <app-chip-picker
+          *ngFor="let variation of variations; trackBy: trackByVariation"
+          [label]="variation.Name"
+          (newItemAdded)="onNewVariationAdded($event, variation)"
+          (selectionChange)="onVariationSelectionChange($event, variation)"
+          [options]="
+            chipService.variationOptionsToChipOption(variation.Options || [])
+          "
+          [selectedIds]="
+            chipService.selectedVariationIds(variation.VariationId, product)
+          "
+        />
+      </div>
+    </div>
+
+    <div class="from-group">
+      <app-image-grid
+        [images]="product.Images || []"
+        [selected]="product.FeaturedImageUrl"
+        (imageRemoved)="onImageRemoved($event)"
+        (imageSetAsMain)="onImageSetAsMain($event)"
+      ></app-image-grid>
+      <button
+        class="btn btn-light border border-dark mt-3"
+        (click)="show_upload = true"
+        type="button"
+      >
+        Upload Images
+      </button>
+    </div>
+    <button
+      type="submit"
+      (click)="onSubmit()"
+      class="btn btn-primary w-100 p-3 mb-4 mt-2"
+    >
+      Update Product
+    </button>
+  </div>
+
+  <app-upload
+    *ngIf="show_upload"
+    (closed)="show_upload = false"
+    (files)="fileUploaded($event)"
+  />
+</div>

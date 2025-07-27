@@ -1,0 +1,40 @@
+:host {
+  // tui-nav.component.scss
+  .logo {
+    width: auto;
+    height: 30px;
+    margin: 0;
+  }
+  .cursor-pointer {
+    cursor: pointer;
+  }
+
+  .offcanvas {
+    transition: transform 0.3s ease-in-out;
+  }
+
+  // Custom styles for the profile dropdown
+  .profile-dropdown {
+    right: 0;
+    min-width: 200px;
+    z-index: 1000;
+  }
+
+  // Ensure the backdrop covers the entire screen
+  .offcanvas-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1040;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+
+  // Mobile specific styles
+  @media (max-width: 767.98px) {
+    .company-logo {
+      max-height: 40px;
+    }
+  }
+}

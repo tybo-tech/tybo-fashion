@@ -1,0 +1,33 @@
+<div class="spaced gap-5" *ngIf="type === 'Desinger'">
+  <div class="image-section">
+    <img [src]="desinger" alt="" />
+  </div>
+  <div class="text-section">
+    <h2>Join Our Community of Designers</h2>
+    <p>
+      Are you a talented fashion designer looking for a platform to showcase
+      your unique creations? Join Tybo Fashion and become part of a community
+      dedicated to quality and creativity. Gain exposure to a wider audience,
+      collaborate with like-minded creatives, and take your brand to the next
+      level.
+    </p>
+    <a class="btn btn-primary" [routerLink]="'//home/sign-in'">Join Now</a>
+  </div>
+</div>
+
+<div class="spaced gap-5" *ngIf="type === 'Customer'">
+  <div class="text-section">
+    <h2>Stay Updated with the Latest Trends</h2>
+    <p>
+      Don’t miss out on new arrivals, special offers, and exclusive content.
+      Sign up for our newsletter to get early access to new collections,
+      personalized recommendations, and insider fashion tips. Stay ahead of the
+      trends with Tybo Fashion.
+    </p>
+    <a class="btn btn-primary" [routerLink]="'/home/sign-up'">Sign Up Now</a>
+  </div>
+
+  <div class="image-section">
+    <img [src]="mock2" alt="" />
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div class="menu">
+  <h6 lass="mb-4">Hello, {{ user.Name }}</h6>
+  <hr />
+  <div class="items">
+    <!-- Admin -->
+    <a *ngIf="isAdmin" href="/store/admin"
+      ><i class="bi bi-grid-1x2"></i> Dashboard</a
+    >
+
+    <a *ngIf="shopUrl && isAdmin" [href]="'/' + shopUrl"
+      ><i class="bi bi-shop"></i> My Shop</a
+    >
+
+    <!-- Customer -->
+
+    <a *ngIf="isCustomer" (click)="showProfile()"
+      ><i class="bi bi-grid-1x2"></i> My profile</a
+    >
+
+    <!-- Common -->
+
+    <a (click)="signOut.emit()"
+      ><i class="bi bi-box-arrow-in-right"></i> Logout</a
+    >
+  </div>
+</div>
+

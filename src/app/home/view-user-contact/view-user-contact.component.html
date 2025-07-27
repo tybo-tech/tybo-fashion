@@ -1,0 +1,26 @@
+<div class="user" *ngIf="user">
+  <h6 class="text-bold d-flex align-items-center justify-content-between">
+    <div class="d-flex gap-2">
+      <i class="bi bi-telephone-fill"></i>
+      Contact info
+    </div>
+   <button class="btn btn-light p-1"><i class="bi bi-chevron-right"></i></button>
+  </h6>
+  <p>{{ user.Name }}</p>
+  <p>{{ user.Email }}</p>
+  <p>{{ user.PhoneNumber }}</p>
+
+  <div class="mt-3 mb-2" *ngIf="show_shipping">
+    <h6 class="text-bold d-flex align-items-center justify-content-between">
+      <div class="d-flex gap-2">
+        <i class="bi bi-geo-alt-fill"></i>
+        Shipping info
+      </div>
+     <button class="btn btn-light p-1"><i class="bi bi-chevron-right"></i></button>
+    </h6>
+    <p>{{ user.AddressLineHome }}</p>
+    <p>{{ user.AddressLine2 }}</p>
+    <p>{{ user.City }}</p>
+    <p>{{ user.PostalCode }}</p>
+  </div>
+</div>

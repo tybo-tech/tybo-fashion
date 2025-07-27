@@ -1,0 +1,29 @@
+<ng-container *ngIf="job">
+  <label class="mb-2">Pay full amount or 50% deposit?</label>
+  <ul class="list-group">
+    <label
+      [for]="option.value"
+      class="list-group-item d-flex justify-content-between align-items-center pointer"
+      *ngFor="let option of items"
+    >
+      <div class="d-flex gap-2 align-items-center">
+        <input
+          class="form-check-input m-0"
+          
+          type="radio"
+          name="PaymentAmount"
+          [id]="option.value"
+          (change)="update_delivery()"
+          [value]="option.value"
+          [(ngModel)]="job.PaymentAmount"
+        />
+        <span class="form-check-label">
+          {{ option.name }}
+        </span>
+      </div>
+      <span *ngIf="option.price" class="form-check-label">
+        R{{ option.price }}
+      </span>
+    </label>
+  </ul>
+</ng-container>

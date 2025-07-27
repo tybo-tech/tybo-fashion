@@ -1,0 +1,23 @@
+<div class="summary p-4 bg-white">
+  <div class="promo-code mb-4" *ngIf="showDiscountCode">
+    <input
+      type="text"
+      [(ngModel)]="discountCode"
+      class="form-control"
+      placeholder="Promo code"
+    />
+    <button
+      [disabled]="!discountCode || discountCode.length < 3"
+      (click)="onDiscountCodeChange()"
+      class="btn btn-light"
+    >
+      Apply
+    </button>
+  </div>
+  <p *ngIf="codeError" class="text-danger">
+    <small>
+      {{ codeError }}
+    </small>
+  </p>
+  <app-order-total [job]="job" />
+</div>

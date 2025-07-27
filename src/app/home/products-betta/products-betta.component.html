@@ -1,0 +1,26 @@
+<section class="nav-section">
+  <div class="box">
+    <app-tui-nav [company]="company" />
+    <app-mobile-back
+      [text]="'Latest Products'"
+      [customLink]="'/' + (company?.Slug || 'zalou')"
+    />
+  </div>
+</section>
+<app-hero-header
+  *ngIf="heroHeaderData && heroHeaderData.image"
+  [data]="heroHeaderData"
+></app-hero-header>
+<section>
+  <div class="box mt-5 p-3">
+    <div class="grid-4 p-2" *ngIf="products && products.length">
+      <app-product-card
+        class="w-100 d-block"
+        *ngFor="let product of products"
+        [companySlug]="product.CompanyId"
+        [product]="product"
+      />
+    </div>
+  </div>
+</section>
+<app-store-footer *ngIf="company" [company]="company"/>

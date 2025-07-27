@@ -1,0 +1,88 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="Landing page banners" (onClose)="closed.emit()" />
+
+    <div class="actions">
+      <div>
+        <div class="mb-4">
+          <div
+            *ngFor="let slide of company.Metadata.Slides; let i = index"
+            class="mb-5 slide"
+          >
+            <div class="form-group">
+            <div class="d-flex align-items-center justify-content-between  w-100">
+              <label for="slideImage{{ i }}">Slide {{i+1}}</label>
+              <i class="bi bi-trash text-danger"  (click)="removeSlide(i)"></i>
+            </div>
+              <!-- <app-upload-input [parentItem]="slide" imageKey="Image" /> -->
+              <app-image-widget
+                [image]="getImage(slide.Image)"
+                (imageChangedEvent)="slide.Image = $event"
+              />
+            </div>
+            <div class="form-group mb-2">
+              <label for="slideType{{ i }}">Slide Type</label>
+              <select
+                [(ngModel)]="slide.Type"
+                class="form-select"
+                id="slideType{{ i }}"
+              >
+                <option value="Product">Product</option>
+                <option value="Category">Category</option>
+              </select>
+            </div>
+            <div class="form-group mb-2" *ngIf="slide.Type === 'Product'">
+              <label for="slideLink{{ i }}">Product Link</label>
+              <select
+                [(ngModel)]="slide.Link"
+                class="form-control"
+                id="slideLink{{ i }}"
+              >
+                <option *ngFor="let product of products" [value]="product.id">
+                  {{ product.name }}
+                </option>
+              </select>
+            </div>
+            <div class="form-group mb-2" *ngIf="slide.Type === 'Category'">
+              <label for="slideLink{{ i }}">Category Link</label>
+              <select
+                [(ngModel)]="slide.Link"
+                class="form-control"
+                id="slideLink{{ i }}"
+              >
+                <option
+                  *ngFor="let category of categories"
+                  [value]="category.id"
+                >
+                  {{ category.name }}
+                </option>
+              </select>
+            </div>
+          
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn btn-primary w-100 col-6"
+              (click)="addSlide()"
+            >
+              Add Slide
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              type="submit"
+              class="w-100 btn btn-dark mb-2"
+              (click)="updated.emit(company)"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,24 @@
+.invoice-no {
+  padding: 6px 8px !important;
+  font-weight: 600;
+}
+
+// Render customer Form Modal
+.my-modal {
+  height: 100vh;
+  border-radius: 0 !important;
+  background: rgb(243, 243, 243);
+  overflow-y: auto;
+
+  .body {
+    overflow-y: auto;
+    height: fit-content !important;
+    max-height: none !important;
+    border-bottom: 1px solid #e0e0e0;
+  }
+}
+
+.actions {
+  margin: 0 12px !important;
+  border-bottom: 1px solid #e0e0e0;
+}

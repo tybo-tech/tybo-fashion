@@ -1,0 +1,187 @@
+<div class="actions" if>
+  <div class="mb-1 mt-4 d-flex align-items-center justify-content-between">
+    <h5 class="">Contact details</h5>
+    <a
+      [routerLink]="['/home/sign-in/checkout']"
+      *ngIf="!isUserLoggedIn"
+      class="small btn btn-sm btn-light"
+    >
+      <i class="bi bi-lock-fill"></i> Login
+    </a>
+    <button
+      (click)="logout()"
+      *ngIf="isUserLoggedIn"
+      class="small btn btn-sm btn-light"
+    >
+      <i class="bi bi-box-arrow-in-right"></i> Logout
+    </button>
+  </div>
+
+  <form>
+    <div class="form-floating">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Your full name"
+        [(ngModel)]="user.Name"
+        (change)="validateForm()"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="name">Your full name</label>
+    </div>
+    <app-input-error [errors]="errors" key="name"></app-input-error>
+    <div class="form-floating mt-3">
+      <input
+        type="text"
+        (change)="validateForm()"
+        class="form-control"
+        id="phone"
+        placeholder="Phone"
+        [(ngModel)]="user.PhoneNumber"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="phone">Phone</label>
+    </div>
+    <app-input-error [errors]="errors" key="phone"></app-input-error>
+    <div class="form-floating mt-3">
+      <input
+        type="email"
+        (change)="validateForm()"
+        (input)="checkEmail()"
+        class="form-control"
+        id="email"
+        placeholder="Email"
+        [(ngModel)]="user.Email"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="email">Email</label>
+    </div>
+    <div class="" *ngIf="existingUser">
+      <div class="alert alert-warning mt-3">
+        <i class="bi bi-exclamation-triangle-fill pe-2"></i>
+        <div>
+          <h6>Email already exists</h6>
+          <small>
+            This email address is already registered. Please
+            <a [routerLink]="['/home/sign-in/checkout']" class="link-info">
+              <b>Login</b>
+            </a>
+            or use a different email address.
+          </small>
+        </div>
+      </div>
+    </div>
+    <app-input-error [errors]="errors" key="email"></app-input-error>
+    <div
+      *ngIf="!isUserLoggedIn"
+      class="form-group form-check mb-5 d-flex align-items-center gap-2 p-0"
+    >
+      <input
+        type="checkbox"
+        (change)="validateForm()"
+        class="form-check-input m-0"
+        id="createAccount"
+        [(ngModel)]="createAccount"
+        [ngModelOptions]="{ standalone: true }"
+        name="createAccount"
+      />
+      <label class="form-check-label" for="createAccount">
+        Create an account?
+      </label>
+    </div>
+    <div class="form-floating mb-4" *ngIf="createAccount">
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        placeholder="Create password"
+        [(ngModel)]="user.Password"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="password">Create password</label>
+    </div>
+    <app-input-error [errors]="errors" key="password"></app-input-error>
+    <ng-container *ngIf="isDelivery">
+      <h5 class="mb-2 mt-4">Shipping address</h5>
+
+      <div class="form-floating mt-3">
+        <input
+          (change)="validateForm()"
+          type="text"
+          class="form-control"
+          id="AddressLineHome"
+          placeholder="Address Line 1"
+          [(ngModel)]="user.AddressLineHome"
+          [ngModelOptions]="{ standalone: true }"
+          required
+        />
+        <label for="AddressLineHome">Address Line 1</label>
+      </div>
+      <app-input-error [errors]="errors" key="addressLine1"></app-input-error>
+
+      <div class="form-floating mt-3">
+        <input
+          (change)="validateForm()"
+          type="text"
+          class="form-control"
+          id="AddressLine2"
+          placeholder="Address Line 2"
+          [(ngModel)]="user.AddressLine2"
+          [ngModelOptions]="{ standalone: true }"
+          required
+        />
+        <label for="AddressLine2">Address Line 2</label>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-floating mt-3">
+            <input
+              (change)="validateForm()"
+              type="text"
+              class="form-control"
+              id="City"
+              placeholder="City"
+              [(ngModel)]="user.City"
+              [ngModelOptions]="{ standalone: true }"
+              required
+            />
+            <label for="City">City</label>
+          </div>
+          <app-input-error [errors]="errors" key="city"></app-input-error>
+        </div>
+        <div class="col-md-6">
+          <div class="form-floating mt-3">
+            <input
+              (change)="validateForm()"
+              type="text"
+              class="form-control"
+              id="PostalCode"
+              placeholder="Postal Code"
+              [(ngModel)]="user.PostalCode"
+              [ngModelOptions]="{ standalone: true }"
+              required
+            />
+            <label for="PostalCode">Postal Code</label>
+          </div>
+          <app-input-error [errors]="errors" key="postalCode"></app-input-error>
+        </div>
+      </div>
+    </ng-container>
+
+    <button
+      type="submit"
+      class="w-100 btn btn-primary d-flex gap-4 mt-4"
+      (click)="continueToPayment()"
+    >
+      Continue to payment <i class="bi bi-lock-fill"></i>
+    </button>
+  </form>
+</div>
+
+<!-- <app-login-modal /> -->

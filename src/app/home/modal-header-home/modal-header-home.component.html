@@ -1,0 +1,16 @@
+<div
+  *ngIf="show_x"
+  class="d-flex align-items-center justify-content-between header w-100 mb-4 gap-3"
+>
+  <h4 class="h5 m-0">
+    {{ title }}
+  </h4>
+  <i (click)="onClose.emit()" class="bi bi-x-lg"></i>
+</div>
+
+<div *ngIf="!show_x" class="d-flex align-items-center w-100 header mb-4 gap-3">
+  <i (click)="onClose.emit()" class="bi bi-arrow-left"></i>
+  <h4 class="h5 m-0">
+    {{ title }}
+  </h4>
+</div>

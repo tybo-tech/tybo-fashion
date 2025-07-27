@@ -1,0 +1,57 @@
+<div class="section">
+  <div class="container">
+    <div class="row align-items-center hero">
+      <div class="col-md-6 mb-4 mb-md-0">
+        <h1 class="display-5 fw-bold">
+          High quality clothing made by local fashion designers
+        </h1>
+        <p class="lead mb-4">
+          Tybo Fashion is the platform where creative fashion designers showcase
+          their designs and customers can purchase without a hassle.
+        </p>
+        <a class="btn btn-primary w-100 p-3" routerLink="/home/shops">
+          Explore shops
+        </a>
+      </div>
+      <div class="col-md-6">
+        <div class="d-flex justify-content-center align-items-center h-100">
+          <aside class="col-12" style="min-height: 14vh">
+            <app-product-slider *ngIf="images.length" [images]="images"></app-product-slider>
+          </aside>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="py-5 bg-light">
+  <div class="container">
+    <h3 class="text-center mb-4">
+      Tybo Fashion is the platform where creative fashion designers showcase their
+      designs and customers can purchase without a hassle.
+    </h3>
+    <p class="text-center">
+      Welcome to Tybo Fashion, the premier platform dedicated to bringing you the
+      finest clothing designed by talented local fashion designers. At Tybo Fashion,
+      we believe in celebrating creativity, supporting local talent, and providing our
+      customers with seamless shopping experiences.
+    </p>
+  </div>
+</div>
+
+<div class="section-1 py-5">
+  <div class="container px-4 py-5" id="hanging-icons">
+    <h3 class="text-center mb-5">Why Choose Tybo Fashion?</h3>
+    <div class="row g-4">
+      <div class="col-md-4 d-flex flex-column align-items-center" *ngFor="let item of benefits">
+        <h5 class="display-1 text-primary mb-3">
+          <i [ngClass]="item.icon"></i>
+        </h5>
+        <h3 class="fs-5 text-center">{{ item.title }}</h3>
+        <p class="text-center">{{ item.description }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-footer></app-footer>

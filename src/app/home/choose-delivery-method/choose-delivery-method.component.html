@@ -1,0 +1,28 @@
+<ng-container *ngIf="job">
+  <label class="mb-2"> How would you like your order delivered? </label>
+  <ul class="list-group">
+    <label
+      [for]="option.name.toLowerCase()"
+      class="list-group-item d-flex justify-content-between align-items-center pointer"
+      *ngFor="let option of shippingOptions"
+    >
+      <div class="d-flex gap-2 align-items-center">
+        <input
+          class="form-check-input m-0"
+          type="radio"
+          name="delivery"
+          [id]="option.name.toLowerCase()"
+          (change)="update_delivery()"
+          [value]="option.name.toLowerCase()"
+          [(ngModel)]="job.Shipping"
+        />
+        <span class="form-check-label">
+          {{ option.name }}
+        </span>
+      </div>
+      <span *ngIf="option.price" class="form-check-label">
+        R{{ option.price }}
+      </span>
+    </label>
+  </ul>
+</ng-container>

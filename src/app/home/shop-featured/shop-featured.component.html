@@ -1,0 +1,29 @@
+<section class="section">
+  <h4 class="section-title">Featured items</h4>
+  <div
+    class="testimonials d-flex"
+    *ngIf="company && company.PinnedProducts"
+  >
+    <app-product-card
+      *ngFor="let product of company.PinnedProducts"
+      [product]="product"
+      [companySlug]="company.Slug"
+      class="product-card"
+    />
+  </div>
+  <div class="p-2">
+    <a
+      [routerLink]="['/', company?.Slug, 'collections']"
+      class="btn btn-dark w-100 mb-2 d-block"
+    >
+      Shop available designs
+    </a>
+    <a
+      [href]="company?.whatsappLink"
+      *ngIf="company?.whatsappLink"
+      class="btn btn-dark w-100 mb-2"
+    >
+      Book a consultation for your own design
+    </a>
+  </div>
+</section>

@@ -1,0 +1,10 @@
+:host {
+  button {
+    width: fit-content !important;
+  }
+
+  .active {
+    background-color: var(--primary) !important;
+    color: white !important;
+  }
+}

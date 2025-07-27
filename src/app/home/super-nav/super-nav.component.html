@@ -1,0 +1,29 @@
+<div class="menu-items">
+  <div class="menu-item" *ngFor="let item of menu">
+    <i [ngClass]="item.icon"></i>
+    <a
+      *ngIf="!item.children"
+      [routerLink]="item.link"
+      routerLinkActive="active"
+      >{{ item.name }}</a
+    >
+    
+    <a *ngIf="item.children"
+      >{{ item.name }}
+      <div
+        *ngIf="item.children"
+        class="sub-menu"
+        [ngClass]="{ show: item.show }"
+      >
+        <div class="menu-item" *ngFor="let child of item.children">
+          <i [ngClass]="child.icon"></i>
+          <a [routerLink]="child.link" routerLinkActive="active">{{
+            child.name
+          }}</a>
+        </div>
+      </div></a
+    >
+
+
+  </div>
+</div>

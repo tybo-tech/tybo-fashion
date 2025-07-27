@@ -1,0 +1,24 @@
+.variation-group {
+    margin-bottom: 1.5rem;
+  
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+  
+    .variation-select {
+      width: 100%;
+      padding: 0.5rem;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 1rem;
+      background: white;
+  
+      &:focus {
+        outline: none;
+        border-color: #000;
+      }
+    }
+  }
+  

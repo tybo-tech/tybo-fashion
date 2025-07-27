@@ -1,0 +1,102 @@
+<div *ngIf="user && company && menuItems.length">
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/store/admin/">Dashboard</a></li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <small> Settings </small>
+      </li>
+    </ol>
+  </nav>
+  <h4 class="d-flex justify-content-between align-items-center mb-3">
+    <span class="text-muted">Settings</span>
+  </h4>
+
+  <div *ngFor="let group of menuItems" class="item-group">
+    <h6 class="text-info">
+      {{ group.name }}
+    </h6>
+    <div
+      *ngFor="let item of group.items"
+      (click)="modal = item.link || ''"
+      class="d-flex justify-content-between align-items-center item"
+    >
+      <p class="my-0">
+        <span class="icon">
+          <i [ngClass]="item.icon"></i>
+        </span>
+        {{ item.name }}
+      </p>
+      <span class="text-muted" *ngIf="item.count"> {{ item.count }}</span>
+    </div>
+  </div>
+</div>
+
+<app-company-contact-info
+  *ngIf="company && modal === 'contact'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-testimaonails-settings
+  *ngIf="company && modal === 'testimonials'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-banners-settings
+  *ngIf="company && modal === 'banners'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-about-us-settings
+  *ngIf="company && modal === 'about'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-company-address-settings
+  *ngIf="company && modal === 'address'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-socail-settings
+  *ngIf="company && modal === 'social'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-stat-settings
+  *ngIf="company && modal === 'stat'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-system-measurements
+  *ngIf="modal === 'measurements'"
+  (closed)="modal = ''"
+/>
+
+<app-order-settings
+  *ngIf="modal === 'order'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+/>
+
+<app-system-sizes *ngIf="modal === 'sizes'" (closed)="modal = ''" />
+<app-branding
+  *ngIf="modal === 'branding'"
+  [company]="company"
+  (closed)="modal = ''"
+  (updated)="company = $event; save(); modal = ''"
+  (closed)="modal = ''"
+/>

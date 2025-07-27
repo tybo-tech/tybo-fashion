@@ -1,0 +1,106 @@
+<div class="alert alert-info" role="alert" *ngIf="showInofNotice">
+  <small>
+    Please select the units of measurement you would like to use. And make sure
+    to fill in all the measurements before you can proceed. It is very important
+    that you provide accurate measurements, as we will use these to make your
+    outfit.
+  </small>
+</div>
+<table class="table mb-5" *ngIf="measurements && systemMeasurements">
+  <tbody>
+    <tr>
+      <td colspan="2" class="td">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+          <div>
+            <app-toggle-button
+              [options]="systemUnits"
+              [selectedKey]="units"
+              (selectionChange)="handleUnitSelection($event)"
+            />
+
+            <small class="text-danger w-100 text-left" *ngIf="unit_error">
+              {{ unit_error }}
+            </small>
+          </div>
+
+          <button
+            class="btn btn-light btn-sm"
+            (click)="showHelp = !showHelp"
+            *ngIf="systemMeasurements && systemMeasurements.ImageUrl"
+          >
+            <i class="bi bi-question-circle"></i>
+            Help
+          </button>
+        </div>
+      </td>
+    </tr>
+    <tr *ngFor="let item of measurements; let i = index">
+      <td style="width: 50%">
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="email"
+          *ngIf="can_edit"
+          [(ngModel)]="item.Name"
+          required
+        />
+        <p *ngIf="!can_edit" class="text-muted mt-1 small">{{ item.Name }}</p>
+      </td>
+      <td>
+        <div class="d-flex gap-1 align-items-center">
+          <div class="group form-control">
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              class="form-control"
+              id="email"
+              [(ngModel)]="item.Value"
+              required
+              placeholder="Value..."
+              autocomplete="off"
+            />
+            <p class="units">
+              {{ units }}
+            </p>
+          </div>
+
+          <i *ngIf="can_delete" class="bi bi-trash" (click)="delete(i)"></i>
+        </div>
+      </td>
+    </tr>
+    <tr *ngIf="can_add">
+      <td colspan="2" align="right" class="td">
+        <button class="btn btn-light" (click)="add_measurement()">
+          Add Line
+        </button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<small
+  class="text-danger d-block w-100 text-left mt-2 mb-3"
+  *ngIf="values_error"
+>
+  {{ values_error }}
+</small>
+<div class="d-flex align-items-center justify-content-end">
+  <button class="btn btn-dark" (click)="onDone()">Submit Measurements</button>
+</div>
+
+<div class="app-overlay" *ngIf="showHelp && systemMeasurements">
+  <div class="my-modal cloud full-height">
+    <app-modal-header-home
+      [title]="'How to take your measurements?'"
+      [show_x]="false"
+      (onClose)="showHelp = false"
+    />
+    <div class="actions">
+      <img [src]="systemMeasurements.ImageUrl" class="w-100 mb-2" alt="" />
+
+      <p *ngIf="systemMeasurements.Decription" class="text-muted mt-3 small">
+        {{ systemMeasurements.Decription }}
+      </p>
+    </div>
+  </div>
+</div>

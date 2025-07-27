@@ -1,0 +1,78 @@
+/* Carousel styling */
+#introCarousel,
+.carousel-inner,
+.carousel-item,
+.carousel-item.active {
+  height: 100vh;
+}
+
+.carousel-item:nth-child(1) {
+  background-image: url("https://mdbootstrap.com/img/Photos/Others/images/76.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+.carousel-item:nth-child(2) {
+  background-image: url("https://mdbootstrap.com/img/Photos/Others/images/77.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+.carousel-item:nth-child(3) {
+  background-image: url("https://mdbootstrap.com/img/Photos/Others/images/78.jpg");
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center center;
+}
+
+/* Height for devices larger than 576px */
+@media (min-width: 992px) {
+  #introCarousel {
+    margin-top: -58.59px;
+  }
+  #introCarousel,
+  .carousel-inner,
+  .carousel-item,
+  .carousel-item.active {
+    height: 50vh;
+  }
+}
+
+.navbar .nav-link {
+  color: #fff !important;
+}
+
+.shop-layout {
+  display: grid;
+  grid-template-columns: 300px auto;
+  grid-gap: 1rem;
+
+  .shop-nav {
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    padding: 0;
+    z-index: 1000000;
+  }
+
+  .shop-content {
+    width: 600px;
+    margin: 24px auto;
+    height: calc(100vh - 48px);
+    overflow-y: auto;
+    overflow-x: hidden;
+    // box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  @media only screen and (max-width: 600px) {
+    grid-template-columns: 100%;
+    .shop-nav {
+      padding: 0;
+    }
+    .shop-content {
+      max-width: 100%;
+      margin: 0;
+      height: 100vh;
+      padding: 0;
+    }
+  }
+}

@@ -1,0 +1,19 @@
+<div class="variation-group" *ngFor="let variation of variations">
+  <label [for]="'variation-' + variation.VariationId">{{
+    variation.Name
+  }}</label>
+  <select
+    class="variation-select"
+    [id]="'variation-' + variation.VariationId"
+    [(ngModel)]="variation.selectedOptionId"
+    (change)="variationChange.emit(variation)"
+  >
+    <option disabled selected value="">Select {{ variation.Name }}</option>
+    <option
+      *ngFor="let option of variation.Options"
+      [value]="option.VariationOptionId"
+    >
+      {{ option.Name }}
+    </option>
+  </select>
+</div>

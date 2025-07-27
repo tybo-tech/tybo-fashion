@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
+  <div class="container-fluid">
+    <!-- Logo -->
+    <a class="navbar-brand d-flex align-items-center" [routerLink]="['/']">
+      <img *ngIf="company?.Logo" [src]="company.Logo" alt="Logo" height="30" class="me-2" />
+      <span class="fw-bold" *ngIf="!company?.Logo">Type of <i>Fashion</i></span>
+    </a>
+
+    <!-- Mobile Toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav Links -->
+    <div class="collapse navbar-collapse" id="mainNavbar">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item"><a class="nav-link" routerLink="/">Home</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/designers">Explore Designers</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/collections">Shop</a></li>
+        <li class="nav-item"><a class="nav-link" routerLink="/about">About</a></li>
+      </ul>
+
+      <!-- Right Side -->
+      <ul class="navbar-nav d-flex align-items-center gap-3">
+        <!-- Not Logged In -->
+        <ng-container *ngIf="!user">
+          <li class="nav-item"><a class="nav-link" routerLink="/home/sign-in">Login</a></li>
+          <li class="nav-item"><a class="btn btn-primary" routerLink="/home/sign-up">Sign Up</a></li>
+        </ng-container>
+
+        <!-- Logged In -->
+        <ng-container *ngIf="user">
+          <!-- Cart -->
+          <li class="nav-item">
+            <a class="nav-link position-relative" (click)="cartClick()">
+              <i class="bi bi-cart fs-5"></i>
+              <!-- Optional badge -->
+              <!-- <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">2</span> -->
+            </a>
+          </li>
+
+          <!-- Profile Dropdown -->
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle text-capitalize" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i> {{ user.Name }}
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" routerLink="/dashboard">Dashboard</a></li>
+              <li><a class="dropdown-item" routerLink="/settings">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" (click)="logout()">Logout</a></li>
+            </ul>
+          </li>
+        </ng-container>
+      </ul>
+    </div>
+  </div>
+</nav>

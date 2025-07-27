@@ -1,0 +1,27 @@
+:host {
+  .text-primary{
+    color: #656af0 !important;
+  }
+  .grid-2 {
+    align-items: flex-start;
+  }
+  h4 {
+    a {
+      font-family: inherit;
+      color: #000;
+    }
+  }
+  .checkout-section {
+    // max-width: 800px;
+    gap: 32px;
+    @media only screen and (max-width: 600px) {
+      gap: 8px;
+    }
+  }
+  .summary {
+    margin-top: 3.4rem;
+    @media only screen and (max-width: 600px) {
+      margin-top: 1rem;
+    }
+  }
+}

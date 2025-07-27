@@ -1,0 +1,47 @@
+<div class="list-group max-600 w-auto" *ngIf="customers && !show_add">
+  <app-filter-panel
+    addText="Customer"
+    (onAdd)="show_add = true; initCustomer()"
+    (onSearch)="query = $event; filter()"
+  />
+  <div
+    *ngFor="let customer of customers"
+    class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3"
+    aria-current="true"
+    (click)="onSelect.emit(customer)"
+  >
+    <i class="bi bi-breafcase"></i>
+    <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
+      <div>
+        <h6 class="mb-0">
+          {{ customer?.Name }}
+          <span>
+            <i class="bi bi-calendar-check"></i>
+            {{ customer?.CreateDate | date }}
+          </span>
+        </h6>
+      </div>
+      <small class="opacity-80 text-nowrap">
+        <b>
+          <span class="text-success">{{ customer.PhoneNumber }}</span>
+        </b>
+      </small>
+    </div>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="show_add && newCustomer">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header (onClose)="show_add = false" title="Add customer" />
+    <div class="actions">
+      <div class="p-1">
+        <app-customer-form
+          (onSave)="onAdd.emit($event); load_customers(); show_add = false"
+          [customer]="newCustomer"
+        />
+        <br />
+        <br />
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,35 @@
+<div class="app-overlay">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="Login to your account"
+      (onClose)="open('')"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <form>
+        <app-input
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          (inputChanged)="email = $event"
+        />
+
+        <app-input
+          label="Password"
+          type="password"
+          placeholder="Enter your password..."
+          (inputChanged)="password = $event"
+        />
+        <button type="submit" class="w-100 btn btn-dark mb-2" (click)="login()">
+          Login
+        </button>
+        <button class="btn link-info" (click)="showRegister = true">
+          <small> Don't have an account? Register </small>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<app-sign-up-modal *ngIf="showRegister" />
+<app-forgot-password-modal *ngIf="showForgotPassword" />

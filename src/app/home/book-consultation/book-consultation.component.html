@@ -1,0 +1,30 @@
+<div class="app-overlay" *ngIf="company">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      [title]="'Consultation with ' + company.Name"
+      (onClose)="onClose.emit()"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <h6>Chat with Us on WhatsApp!</h6>
+      <p>Customize your message and start chatting with us right away.</p>
+      
+      <textarea
+        [(ngModel)]="message"
+        class="custom-textarea"
+        rows="4"
+        placeholder="Type your message here..."
+      ></textarea>
+
+      <a
+        class="btn btn-primary d-flex align-items-center gap-2 mt-3"
+        [href]="whatsappLink"
+        target="_blank"
+        rel="noopener noreferrer"
+        (click)="onClose.emit()"
+      >
+        <i class="bi bi-whatsapp"></i> Send on WhatsApp
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,48 @@
+.my-modal {
+    height: 100vh;
+    border-radius: 0 !important;
+    background: rgb(255, 255, 255);
+    overflow-y: auto;
+  
+    .body {
+      overflow-y: auto;
+      max-height: 44vh;
+      border-bottom: 1px solid #e0e0e0;
+    }
+  }
+  
+  .actions {
+    margin: 0 12px !important;
+    border-bottom: 1px solid #e0e0e0;
+    h6{
+        font-size: 14px;
+        font-weight: 500;
+        color: #000;
+        margin: 0;
+        padding: 4px 0;
+    }
+  }
+  
+  :host{
+
+    .bank-item{
+      display: grid;
+      align-items: center;
+      grid-template-columns: 40% auto;
+      gap: 8px;
+      margin-bottom: 8px;
+      p,h6{
+        margin: 0;
+      }
+      h6{
+        font-family: "poppins" !important;
+        font-size: 12px !important;
+        font-weight: 500 !important;
+        color: #7c7c7c !important;
+      }
+      p{
+        font-size: 11px;
+        font-weight: 600;
+      }
+    }
+  }

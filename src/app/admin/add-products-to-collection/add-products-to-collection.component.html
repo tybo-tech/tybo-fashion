@@ -1,0 +1,29 @@
+<div class="app-overlay" *ngIf="category">
+    <div class="my-modal cloud full-height">
+      <app-admin-modal-header
+        [title]="'Products in (' + category.Name + ')'"
+        (onClose)="onClose.emit()"
+      />
+      <div class="actions">
+        <div class="p-1">
+          <div class="form-group">
+            <app-image-widget
+              [image_url]="category.ImageUrl"
+              (imageChangedEvent)="category.ImageUrl = $event"
+            />
+            <br />
+            <input
+              type="text"
+              id="newSetting"
+              class="form-control w-100"
+              [(ngModel)]="category.Name"
+              placeholder="Enter value here...."
+              appAutofocus
+            />
+            <br />
+            <button class="btn btn-primary w-100" (click)="save()">Save</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>

@@ -1,0 +1,17 @@
+<div class="row p-2 mt-3 mb-3" *ngIf="company && company.Metadata?.About">
+  <div class="col-md-6">
+    <h4>
+      {{ company.Metadata?.AboutTitle || "About us" }}
+    </h4>
+
+    <p [innerHTML]="company.Metadata?.About" class="mb-2">
+      Lorem ipsum, dolor sit amet consectetur adipisicing elit. Consequatur,
+      ducimus nulla et aliquam inventore vero itaque incidunt in facilis,
+      quaerat illum corporis, provident recusandae doloribus neque. Perspiciatis
+      ducimus sit quisquam.
+    </p>
+  </div>
+  <div class="col-md-6" *ngIf="company.Metadata?.AboutImage">
+    <img [src]="company.Metadata?.AboutImage" alt="" />
+  </div>
+</div>

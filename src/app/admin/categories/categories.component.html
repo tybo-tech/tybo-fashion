@@ -1,0 +1,118 @@
+<app-list-bread currentPage="Categories" />
+
+<section class="fade-in mt-5 mb-5" *ngIf="user">
+  <div class="container">
+    <!-- Header with Add Category Button -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <h2>Manage Categories</h2>
+      </div>
+      <div class="col-md-6 text-end">
+        <button
+          class="btn btn-primary"
+          (click)="showAddCategoryModal = true; initCategory()"
+          [disabled]="isLoading || isAddingCategory"
+        >
+          <i class="fas fa-plus"></i> Add Category
+        </button>
+      </div>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="row mb-4">
+      <div class="col-md-8">
+        <div class="input-group">
+          <span class="input-group-text">
+            <i class="fas fa-search"></i>
+          </span>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search categories..."
+            [value]="searchQuery"
+            (input)="searchCategories($event)"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+      <div class="col-md-4 text-end">
+        <button
+          class="btn btn-outline-secondary"
+          (click)="refreshCategories()"
+          [disabled]="isLoading"
+        >
+          <i class="fas fa-refresh"></i> Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="alert alert-danger" *ngIf="hasError">
+      <i class="fas fa-exclamation-triangle"></i> {{ errorMessage }}
+    </div>
+
+    <!-- Loading State -->
+    <div class="text-center my-5" *ngIf="isLoading">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+      <p class="mt-2">Loading categories...</p>
+    </div>
+
+    <!-- No Categories Message -->
+    <div
+      class="text-center my-5"
+      *ngIf="!isLoading && !hasCategories && !hasError"
+    >
+      <i class="fas fa-folder-open fa-3x text-muted mb-3"></i>
+      <h4>No Categories Found</h4>
+      <p class="text-muted">
+        {{
+          searchQuery
+            ? "No categories match your search."
+            : "Start by adding your first category."
+        }}
+      </p>
+      <button
+        class="btn btn-primary"
+        (click)="showAddCategoryModal = true"
+        *ngIf="!searchQuery"
+      >
+        <i class="fas fa-plus"></i> Add Your First Category
+      </button>
+    </div>
+
+    <!-- Categories List -->
+    <div class="row" *ngIf="hasCategories && !isLoading">
+      <div
+        class="col-12"
+        *ngFor="let category of filteredCategories; trackBy: trackByCategory"
+      >
+        <div class="card mb-3">
+          <div class="card-body">
+            <app-category-section
+              [isAdmin]="true"
+              [category]="category"
+              [slug]="user.Company?.Slug || user.CompanyId"
+              (onCategoryDeleted)="onCategoryDeleted($event)"
+              (onCategoryUpdated)="onCategoryUpdated($event)"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Add Category Form -->
+<app-category-form
+  *ngIf="showAddCategoryModal && category"
+  [showModal]="showAddCategoryModal"
+  [category]="category"
+  (showModalChange)="showAddCategoryModal = $event"
+  (onSave)="onAddCategorySave($event)"
+  (onCancel)="onAddCategoryCancel()"
+  modalTitle="Add New Category"
+  submitButtonText="Add Category"
+>
+</app-category-form>

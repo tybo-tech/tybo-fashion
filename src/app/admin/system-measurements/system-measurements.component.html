@@ -1,0 +1,76 @@
+<div class="app-overlay" *ngIf="measurement">
+  <div class="my-modal full-height">
+    <app-admin-modal-header
+      title="System Measurements"
+      (onClose)="closed.emit()"
+    />
+    <div class="actions">
+      <div class="alert alert-secondary d-flex gap-2">
+        <input
+          type="search"
+          class="form-control"
+          placeholder="Search"
+          [(ngModel)]="query"
+        />
+        <button
+          class="btn btn-light btn-sm w-fit d-flex gap-1"
+          (click)="show_main = true"
+        >
+          <i class="bi bi-pen"></i>
+          <span> Edit </span>
+          <span> Help </span>
+          <span> Info </span>
+        </button>
+      </div>
+      <div
+        *ngFor="
+          let setting of measurement.ItemValue | measurementPipe : query;
+          let i = index
+        "
+        class="d-flex justify-content-between align-items-center p-3 border-bottom"
+      >
+        <div class="d-flex gap-3 align-items-center">
+          <app-list-icon
+            [color]="colors[i]"
+            [name]="setting.Name"
+            (iconClick)="edit(i, setting)"
+          />
+          <span class="pointer link-info" (click)="edit(i, setting)">
+            <b>
+              {{ setting.Name | titlecase }}
+            </b>
+            <small class="d-block">
+              <i class="bi bi-pencil"></i>
+              Edit
+            </small>
+          </span>
+        </div>
+        <app-trash (delete)="delete_item(i)" />
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-form-modal
+  (onClose)="show_add = false"
+  (onSubmit)="afterAdd($event)"
+  [form]="form"
+  *ngIf="show_add"
+/>
+<app-form-modal
+  (onClose)="show_edit = false"
+  (onSubmit)="afterEdit($event)"
+  [form]="form"
+  *ngIf="show_edit"
+/>
+<app-form-modal
+  (onClose)="show_main = false"
+  (onSubmit)="afterEditMain($event)"
+  [form]="mainForm"
+  *ngIf="show_main && measurement"
+/>
+
+<app-float-add
+  (add)="add()"
+  *ngIf="!show_add && !show_edit && !show_main && measurement"
+/>

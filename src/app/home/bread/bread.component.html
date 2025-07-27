@@ -1,0 +1,37 @@
+<nav aria-label="breadcrumb d-flex gap-2 align-items-center">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      <li class="breadcrumb-item" *ngIf="prevPage && prevLink">
+        <a [href]="prevLink">{{ prevPage }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        <small> {{ currentPage }} </small>
+      </li>
+      <li>
+        <i
+          *ngIf="showDelete"
+          style="margin-left: 40px; position: relative; top: -5px"
+          (click)="onDelete.emit()"
+          class="bi bi-trash pointer link-danger"
+        ></i>
+      </li>
+    </ol>
+  
+  </nav>
+  
+  <div class="phone-bread">
+   <ng-container *ngFor="let item of links">
+      <a [routerLink]="item.link">{{ item.name }}</a>
+      <i class="bi bi-chevron-right"></i>
+   </ng-container>
+    <!-- <a [routerLink]="prevLink || '/'">
+      <i class="bi bi-arrow-left"></i>
+    </a>
+    <div class="d-flex gap-2 align-items-center">
+      <h4 class="h5 m-0">
+        {{ currentPage }}
+      </h4>
+      <i *ngIf="showDelete" (click)="onDelete.emit()" class="bi bi-trash pointer link-danger text-small"></i>
+    </div> -->
+  </div>
+  

@@ -1,0 +1,71 @@
+<div *ngIf="workGallery">
+  <app-list-bread
+    currentPage="Edit work gallery"
+    prevPage="Users"
+    [prevLink]="prevPage"
+    [showDelete]="true"
+    (onDelete)="onDelete()"
+  />
+  <div class="header" (click)="show_modal = true">
+    <img [src]="workGallery.ImageUrl" alt="" />
+    <div class="details">
+      <h6 class="text-muted"
+      >{{ workGallery.Name }}</h6>
+      <div class="d-flex align-items-center gap-2 justify-content-between">
+        <a class="link-info"> <i class="bi bi-pencil"></i> Edit </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="show_modal && workGallery">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      [title]="'Edit work gallery'"
+      (onClose)="show_modal = false"
+    />
+    <div class="actions">
+      <div class="p-1">
+        <div class="from-group">
+          <app-image-grid
+            [images]="workGallery.ItemValue.Images || []"
+            [selected]="workGallery.ItemValue.coverImage"
+            (imageRemoved)="onImageRemoved($event)"
+            (imageSetAsMain)="onImageSetAsMain($event)"
+          ></app-image-grid>
+          <button
+            class="btn btn-light border border-dark mt-3"
+            (click)="showUpload = true"
+            type="button"
+          >
+            Upload Images
+          </button>
+        </div>
+
+        <app-upload
+          *ngIf="showUpload"
+          (closed)="showUpload = false"
+          (files)="fileUploaded($event)"
+        />
+
+        <div class="form-group">
+          <!-- <app-image-widget
+            [image_url]="workGallery.ImageUrl"
+            (imageChangedEvent)="workGallery.ImageUrl = $event"
+          />
+          <br /> -->
+          <input
+            type="text"
+            id="newSetting"
+            class="form-control w-100"
+            [(ngModel)]="workGallery.Name"
+            placeholder="Enter value here...."
+            appAutofocus
+          />
+          <br />
+          <button class="btn btn-primary w-100" (click)="save()">Save</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

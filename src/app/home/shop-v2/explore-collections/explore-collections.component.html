@@ -1,0 +1,33 @@
+<app-book-consultation
+  [company]="company"
+  *ngIf="showBookConsultation && company"
+  (onClose)="showBookConsultation = false"
+/>
+<main class="main p-0" *ngIf="company && company.Metadata">
+  <section class="nav-section">
+    <div class="box">
+      <app-tui-nav
+        [company]="company"
+        [showShare]="true"
+        (onShare)="onShare()"
+      />
+    </div>
+  </section>
+
+  <app-hero-header
+    (showBookConsultation)="showBookConsultation = true"
+    *ngIf="heroHeaderData && heroHeaderData.image"
+    [data]="heroHeaderData"
+  ></app-hero-header>
+  <section class="fade-in mt-5 mb-5">
+    <div class="container">
+      <app-category-section
+        *ngFor="let category of categories"
+        [category]="category"
+        [slug]="slug"
+      />
+    </div>
+  </section>
+
+  <app-store-footer [company]="company" />
+</main>

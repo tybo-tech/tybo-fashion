@@ -1,0 +1,24 @@
+<app-checkout-nav [settings]="settings" />
+
+<section class="mt-4" *ngIf="job">
+  <div class="container pt-4">
+    <div class="checkout-section grid-2">
+      <div class="details">
+        <app-choose-delivery-method
+          [job]="job"
+          (deliveryMethodChanged)="job.Shipping = $event; update_delivery()"
+        />
+
+        <app-checkout-customer />
+
+        <div class="mb-5"></div>
+        <div class="mb-5"></div>
+        <div class="mb-5"></div>
+      </div>
+
+      <div class="summary">
+        <app-order-summary  [showDiscountCode]="true" [job]="job" />
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,14 @@
+<div class="app-overlay">
+  <div class="my-modal full-height">
+    <app-modal-header-home title="My favourite items" (onClose)="open('')" />
+    <div class="actions">
+      <div class="collections" *ngIf="favourites.length">
+        <app-product-card
+          *ngFor="let product of favourites"
+          [product]="product"
+          [companySlug]="product.CompanyId"
+        />
+      </div>
+    </div>
+  </div>
+</div>

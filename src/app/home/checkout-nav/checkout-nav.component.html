@@ -1,0 +1,17 @@
+<section class="border-bottom p-2 bg-white mb-4">
+  <div class="container">
+    <div class="d-flex align-items-center justify-content-between">
+      <div class="d-flex gap-2 align-items-center">
+        <span *ngIf="settings.hideBack"></span>
+        <a [routerLink]="settings.back"
+          ><i
+            class="bi bi-arrow-left pointer text-dark"
+            *ngIf="!settings.hideBack"
+          ></i
+        ></a>
+        <h4 class="h4 p-2">{{ settings.title }}</h4>
+      </div>
+      <p>{{ settings.subTitle }}</p>
+    </div>
+  </div>
+</section>

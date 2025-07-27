@@ -1,0 +1,8 @@
+<div class="grid-4 fade-in" *ngIf="products">
+  <app-product-card class="w-100 d-block"
+    *ngFor="let product of products"
+    [companySlug]="product.CompanyId"
+    [product]="product"
+  ></app-product-card>
+</div>
+<app-see-more [url]="showMoreUrl" />

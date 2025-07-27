@@ -1,0 +1,93 @@
+<div
+  *ngIf="jobItem"
+  class="form-select"
+  style="height: 35px"
+  (click)="toggle_sizes()"
+>
+  {{ size || "Select Size" }}
+</div>
+
+<div class="app-overlay" *ngIf="show_sizes && jobItem">
+  <div class="my-modal">
+    <app-admin-modal-header title="Select Size" (onClose)="toggle_sizes()" />
+    <div class="actions" *ngIf="sizes && sizes.ItemValue && sizes.ItemValue">
+      <div
+        class="d-flex gap-2 flex-wrap p-3 mb-3 align-items-center justify-content-center"
+        *ngIf="sizes.ItemValue.length"
+      >
+        <button
+          class="btn btn-light shadow btn-light-picker"
+          [ngClass]="{ active: size === item }"
+          (click)="size = item; selectSize.emit(item); toggle_sizes()"
+          *ngFor="let item of sizes.ItemValue"
+        >
+          {{ item }}
+        </button>
+
+        <!-- New size -->
+        <button
+          class="btn  shadow btn-success"
+          (click)="show_new_size = !show_new_size"
+        >
+          New Size
+        </button>
+      </div>
+
+
+      <div class="app-overlay" *ngIf="show_new_size">
+        <div class="my-modal cloud full-height">
+          <app-admin-modal-header
+            title="Adding new size..."
+            [show_x]="false"
+            (onClose)="show_new_size = false"
+          />
+          <div class="actions">
+              <!-- Input -->
+               <input type="text" placeholder="e.g. XXL" [(ngModel)]="name" class="form-control mb-3 p-2">
+               <button class="btn btn-primary w-100" (click)="addSize()">Save</button>
+    
+          </div>
+        </div>
+      </div>
+      
+      <h6 class="text-center mb-3" *ngIf="sizes.ItemValue.length">Or</h6>
+      <!-- <button class="w-100 mb-2 btn btn-primary" (click)="show_measurements()">
+        Use Measurements
+      </button> -->
+      <button
+        class="w-100 mb-2 btn btn-primary"
+        (click)="
+          selectSize.emit('Measurements'); hide_measurements(); hide_sizes()
+        "
+      >
+        Use Measurements
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="app-overlay" *ngIf="show_measurement && jobItem">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      [show_x]="false"
+      title="Enter Measurements"
+      (onClose)="
+        show_measurement = !show_measurement; show_sizes = !show_measurement
+      "
+    />
+    <div class="actions">
+      <app-admin-measurements
+        [systemMeasurements]="systemMeasurements"
+        [measurements]="measurements"
+        (onCaptured)="measurements_captured($event)"
+      />
+      <h6 class="text-center mb-3" *ngIf="sizes.length">Or</h6>
+      <button
+        class="w-100 mb-2 btn btn-light"
+        (click)="selectSize.emit('Later'); hide_measurements(); hide_sizes()"
+      >
+        Capture measurements later
+      </button>
+    </div>
+  </div>
+</div> -->

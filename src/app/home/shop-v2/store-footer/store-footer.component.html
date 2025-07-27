@@ -1,0 +1,38 @@
+<footer class="store-footer" *ngIf="company && company.Metadata">
+    <div class="box">
+      <div class="footer-content">
+        <div class="logo-col">
+          <img [src]="company.Metadata.WebLogo" alt="logo" />
+          <h5>{{ company.Name }}</h5>
+          <p>{{ company.AddressLine }}</p>
+          <p>{{ company.City }} {{ company.PostalCode }}</p>
+        </div>
+  
+        <div class="contact-col">
+          <h6>Contact</h6>
+          <p *ngIf="company.Phone">
+            <a [href]="'tel:' + company.Phone">{{ company.Phone }}</a>
+          </p>
+          <p *ngIf="whatsappLink">
+            <a [href]="whatsappLink" target="_blank" rel="noopener">
+              WhatsApp <i class="bi bi-whatsapp"></i>
+            </a>
+          </p>
+          <p *ngIf="company.Email">
+            <a [href]="'mailto:' + company.Email">{{ company.Email }}</a>
+          </p>
+        </div>
+  
+        <div class="social-col">
+          <h6>Follow Us</h6>
+          <a *ngIf="company.Metadata.Instagram" [href]="company.Metadata.Instagram" target="_blank">
+            <i class="bi bi-instagram"></i>
+          </a>
+          <a *ngIf="company.Metadata.TikTok" [href]="company.Metadata.TikTok" target="_blank">
+            <i class="bi bi-tiktok"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  

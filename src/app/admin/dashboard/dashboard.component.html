@@ -1,0 +1,52 @@
+<div class="container mt-4" *ngIf="user">
+  <h1 class="mb-4">Welcome, {{ user.Name }}!</h1>
+  <div class="row">
+    <!-- Products, Customer -->
+    <a
+      class="col-6 mb-4"
+      *ngFor="let status of cards"
+      [routerLink]="status.link"
+    >
+      <div class="card text-center" [ngClass]="status.classes">
+        <div class="card-body">
+          <h5 class="card-title">{{ status.title }}</h5>
+          <p class="card-text" [ngClass]="status.classes">
+            {{ status.count }}
+          </p>
+        </div>
+      </div>
+    </a>
+
+    <!-- Jobs Cards -->
+    <h5>Jobs</h5>
+    <a
+      class="col-6 mb-4"
+      *ngFor="let status of jobStatuses"
+      [routerLink]="status.link"
+    >
+      <div class="card text-center" [ngClass]="status.classes">
+        <div class="card-body">
+          <h5 class="card-title">{{ status.name }}</h5>
+          <p class="card-text" [ngClass]="status.classes">
+            {{ status.count }} Jobs
+          </p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+  <!-- Shortcuts Section -->
+  <div class="row mt-4">
+    <div class="col-12">
+      <h5>Quick Links</h5>
+    </div>
+    <div class="col-6 mb-1" *ngFor="let shortcut of shortcuts">
+      <button
+        class="btn btn-light quick-link w-100"
+        (click)="navigateTo(shortcut.route)"
+      >
+        {{ shortcut.label }}
+      </button>
+    </div>
+  </div>
+</div>

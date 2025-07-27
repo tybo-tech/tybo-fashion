@@ -1,0 +1,79 @@
+<div class="comment-section">
+  <h4 class="mb-2">{{ title }}</h4>
+  <div *ngFor="let comment of comments" class="comment">
+    <div class="comment-header">
+      <img
+        *ngIf="comment.userImage"
+        [src]="comment.userImage"
+        alt="{{ comment.userDisplayName }}"
+        class="user-image"
+      />
+      <div class="comment-info">
+        <span class="user-name">{{ comment.userDisplayName }}</span>
+        <span class="comment-date">{{ comment.date }}</span>
+      </div>
+      <div class="comment-options">
+        <i class="bi bi-three-dots" (click)="openMenu(comment)"></i>
+        <div class="menu" *ngIf="selectedComment === comment">
+          <ul>
+            <li (click)="editComment(comment)">Edit</li>
+            <li (click)="deleteComment(comment)">Delete</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="comment-body">
+      <div *ngIf="editingComment !== comment">
+        <p>{{ comment.comment }}</p>
+      </div>
+      <div *ngIf="editingComment === comment">
+        <textarea [(ngModel)]="editingComment.comment"></textarea>
+        <button (click)="saveEditComment(comment)">Save</button>
+      </div>
+      <img
+        *ngIf="comment.attachment"
+        [src]="comment.attachment"
+        alt="attachment"
+        class="attachment"
+      />
+    </div>
+  </div>
+  <div class="add-comment">
+    <textarea
+      class="form-control"
+      [(ngModel)]="comment"
+      placeholder="Add a comment..."
+    ></textarea>
+    <div class="d-flex gap-3 align-items-center">
+      <button class="btn btn-dark" [disabled]="!comment" (click)="addComment()">
+        Comment
+      </button>
+      <h3
+        *ngIf="!attachment"
+        class="m-0 p-0 d-flex align-items-center justify-content-center link-info"
+      >
+        <i class="bi bi-camera" (click)="show_attachment = true"></i>
+      </h3>
+      <a (click)="show_attachment = true" *ngIf="attachment" class="link-info">
+        <i class="bi bi-check"></i> Image attached.
+      </a>
+    </div>
+  </div>
+
+  <div class="app-overlay" *ngIf="show_attachment">
+    <div class="my-modal">
+      <div
+        class="d-flex align-items-center justify-content-between header w-100"
+      >
+        <h4 class="">Attach Image</h4>
+        <i class="bi bi-x-lg" (click)="show_attachment = false"></i>
+      </div>
+      <div class="body">
+        <app-image-widget
+          [image_url]="attachment"
+          (imageChangedEvent)="image_changed($event)"
+        />
+      </div>
+    </div>
+  </div>
+</div>

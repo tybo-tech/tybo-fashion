@@ -1,0 +1,12 @@
+<div class="container">
+  <div class="d-flex gap-5 flex-wrap align-items-center justify-content-center">
+    <a class="shop" [routerLink]="['/', shop.Slug]" *ngFor="let shop of shops">
+      <img src="{{ shop.Dp }}" class="card-img-top" alt="{{ shop.Name }}" />
+      <h5 class="card-title text-dark">{{ shop.Name }}</h5>
+      <a  class="link-info">Visit Shop</a>
+    </a>
+
+    <app-shop-placeholder bg="#f1f2f6" />
+    <!-- <app-shop-placeholder bg="#f1f2f6"/> -->
+  </div>
+</div>

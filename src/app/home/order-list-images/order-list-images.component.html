@@ -1,0 +1,6 @@
+<div class="image-container">
+    <ng-container *ngFor="let url of imageUrls; let i = index">
+      <img [src]="url" [style.left.px]="i * 15" alt="Image {{ i + 1 }}" />
+    </ng-container>
+  </div>
+  

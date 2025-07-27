@@ -1,0 +1,36 @@
+.table {
+  .form-control,
+  .form-select {
+    font-size: 0.8rem !important;
+    padding: 4px 8px !important;
+    background: #f8f9fa !important;
+  }
+}
+
+.alert {
+  max-width: 500px;
+}
+
+:host {
+  .group {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 60% auto;
+    background: rgb(235, 235, 245);
+    gap: 10px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    p,
+    input {
+      margin: 0 !important;
+      background: none !important;
+      border: none !important;
+      font-size: 0.8rem !important;
+    }
+  }
+  .btn-sm{
+    font-size: 0.8rem !important;
+    padding: 4px 8px !important;
+    width: fit-content !important;
+  }
+}

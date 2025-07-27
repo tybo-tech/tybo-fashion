@@ -1,0 +1,93 @@
+<app-book-consultation
+  [company]="company"
+  *ngIf="showBookConsultation && company"
+  (onClose)="showBookConsultation = false"
+/>
+<main class="main p-0" *ngIf="company && company.Metadata">
+  <section class="nav-section">
+    <div class="box">
+      <app-tui-nav
+        [company]="company"
+        [showShare]="true"
+        (onShare)="onShare()"
+      />
+    </div>
+  </section>
+
+  <app-hero-header
+    (showBookConsultation)="showBookConsultation = true"
+    *ngIf="heroHeaderData && heroHeaderData.image"
+    [data]="heroHeaderData"
+  ></app-hero-header>
+  <section *ngIf="company.RecentProducts && company.RecentProducts.length">
+    <br>
+    <div class="container">
+      <app-featured-products-section
+        [products]="company.RecentProducts"
+        [link]="'/home/products/' + slug"
+        heading="New Arrivals"
+      />
+    </div>
+    <br />
+  </section>
+
+  <section *ngIf="company.PinnedProducts && company.PinnedProducts.length">
+    <div class="container">
+      <app-featured-products-section
+        [products]="company.PinnedProducts"
+        heading="📌Pinned items"
+      />
+    </div>
+    <br />
+  </section>
+
+  <section>
+    <div class="container">
+      <app-category-section
+        *ngFor="let category of categories"
+        [category]="category"
+        [slug]="slug"
+      />
+    </div>
+  </section>
+
+  <section *ngIf="slides.length" class="slide-from-right delay-0-5">
+    <div class="box">
+      <app-slides [company]="company" />
+    </div>
+  </section>
+
+  <section class="slide-from-right delay-0-5">
+    <div class="container">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h6 class="p-1">Our work</h6>
+        <a
+          class="btn btn-dark btn-sm w-fit"
+          [routerLink]="
+            '/home/work-show-case/' + company.CompanyId + '/' + company.Slug
+          "
+        >
+          See More <i class="bi bi-arrow-up-right-circle-fill"></i>
+        </a>
+      </div>
+      <app-gallery-show-case [company]="company" [pageSize]="4" />
+    </div>
+  </section>
+
+  <section class="p-4">
+    <div class="box">
+      <app-intro [company]="company" />
+    </div>
+  </section>
+
+  <section
+    style="padding: 8rem 1rem"
+    *ngIf="company.Metadata.Testimonials?.length"
+  >
+    <div class="box">
+      <app-shop-feedback [testimonials]="company.Metadata.Testimonials" />
+    </div>
+  </section>
+
+  <app-store-footer [company]="company" />
+</main>

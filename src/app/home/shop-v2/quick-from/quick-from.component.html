@@ -1,0 +1,81 @@
+<div class="app-overlay"></div>
+
+<div class="app-overlay" *ngIf="form">
+  <div class="my-modal cloud full-height">
+    <div class="modal-header d-flex justify-between align-items-center">
+      <h4 class="m-0">{{ form.title }}</h4>
+      <button
+        *ngIf="show_x"
+        type="button"
+        class="btn-close"
+        (click)="onClose.emit()"
+      ></button>
+    </div>
+
+    <div class="modal-body">
+      <div class="form-group" *ngFor="let item of form.items; let i = index">
+        <label class="form-label mb-1">{{ item.label }}</label>
+
+        <input
+          *ngIf="item.type === 'text' || item.type === 'email' || item.type === 'number'"
+          class="form-control"
+          [type]="item.type"
+          [placeholder]="item.placeholder"
+          [(ngModel)]="item.value"
+        />
+
+        <div *ngIf="item.type === 'password'" class="input-group">
+          <input
+            class="form-control"
+            [type]="is_password_visible ? 'text' : 'password'"
+            [placeholder]="item.placeholder"
+            [(ngModel)]="item.value"
+          />
+          <span
+            class="input-group-text"
+            role="button"
+            (click)="is_password_visible = !is_password_visible"
+          >
+            <i
+              [ngClass]="is_password_visible ? 'bi bi-eye-slash' : 'bi bi-eye'"
+            ></i>
+          </span>
+        </div>
+
+        <textarea
+          *ngIf="item.type === 'textarea'"
+          class="form-control"
+          [placeholder]="item.placeholder"
+          [(ngModel)]="item.value"
+        ></textarea>
+
+        <select
+          *ngIf="item.type === 'select'"
+          class="form-select"
+          [(ngModel)]="item.value"
+        >
+          <option [value]="null" disabled selected>
+            {{ item.placeholder }}
+          </option>
+          <option *ngFor="let opt of item.options" [value]="opt.value">
+            {{ opt.label }}
+          </option>
+        </select>
+
+        <input
+          *ngIf="item.type === 'date' || item.type === 'time'"
+          class="form-control"
+          [type]="item.type"
+          [placeholder]="item.placeholder"
+          [(ngModel)]="item.value"
+        />
+      </div>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn btn-primary w-100" (click)="submit()">
+        {{ form.submitText }}
+      </button>
+    </div>
+  </div>
+</div>

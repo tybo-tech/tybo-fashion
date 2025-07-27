@@ -1,0 +1,54 @@
+<div class="app-overlay" *ngIf="user">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      title="Add User"
+      [show_x]="false"
+      (onClose)="closed.emit()"
+    />
+    <div class="actions">
+      <form>
+        <app-admin-input
+          label="Name"
+          type="text"
+          [value]="user.Name"
+          placeholder="Full name"
+          (inputChanged)="user.Name = $event"
+        />
+        <app-admin-input
+          label="Email"
+          type="text"
+          [value]="user.Email"
+          placeholder="Email address"
+          (inputChanged)="user.Email = $event"
+        />
+        <app-admin-input
+          label="Phone"
+          type="text"
+          [value]="user.PhoneNumber"
+          placeholder="Phone number"
+          (inputChanged)="user.PhoneNumber = $event"
+        />
+        <app-admin-input
+          label="Role"
+          type="select"
+          [options]="roles"
+          [value]="user.UserType"
+          placeholder="Select role"
+          (inputChanged)="user.UserType = $event"
+        />
+
+        <app-admin-input
+          label="Password"
+          type="password"
+          [value]="user.Password"
+          placeholder="**** **** ****"
+          (inputChanged)="user.Password = $event"
+        />
+
+        <button type="submit" class="w-100 btn btn-dark mb-2" (click)="save()">
+          Update user
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

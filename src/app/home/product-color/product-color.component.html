@@ -1,0 +1,7 @@
+<div class="d-flex gap-2 align-items-center" 
+*ngIf="product">
+  <span class="code" *ngIf="code" [style.background]="code"></span>
+  <span *ngIf="name">
+    {{ name }}
+  </span>
+</div>

@@ -1,0 +1,24 @@
+$size: 100px;
+:host {
+  .shop {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    align-items: center;
+    img {
+      width: $size;
+      height: $size;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid var(--accent);
+      padding: 8px;
+      background: var(--white);
+      transition: all .3s;
+      scale: .8;
+      &:hover {
+        scale: 1;
+      }
+    }
+  }
+}

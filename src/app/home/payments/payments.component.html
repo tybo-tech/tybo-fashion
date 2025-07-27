@@ -1,0 +1,56 @@
+<app-checkout-nav [settings]="settings" />
+<app-contact-us-modal
+  (closeModal)="showContactUs = false"
+  *ngIf="showContactUs"
+  subject="Payment issue"
+  body="I was trying, but I couldn't make a payment. Please help me."
+  [senderEmail]="user?.Email || ''"
+  [senderName]="user?.Name || ''"
+/>
+<section class="mt-4" *ngIf="job">
+  <div class="container pt-4">
+    <div class="alert alert-warning" role="alert" *ngIf="isPaymentCancelled">
+      <h4><i class="bi bi-exclamation-triangle"></i> Payment cancelled</h4>
+      <p>
+        Your payment was cancelled. Please try again or
+        <a
+          (click)="showContactUs = true"
+          href="javascript:void(0)"
+          class="text-primary text-decoration-underline"
+        >
+          contact us
+        </a>
+        if you need help.
+      </p>
+    </div>
+    <div class="checkout-section grid-2">
+      <div class="details">
+        <h5 class="mt-4">Payments</h5>
+        <app-choose-payment-amount
+          (deliveryMethodChanged)="payment_amount_changed($event)"
+          [job]="job"
+        />
+        <div class="mb-5"></div>
+        <app-choose-payment-method
+          (deliveryMethodChanged)="job.PaymentMethod = $event; update_cart()"
+          [job]="job"
+        />
+
+        <div class="actions mt-3 mb-5">
+          <app-payfast *ngIf="is_payfast" [job]="job" />
+          <button
+            (click)="placeOrder()"
+            *ngIf="is_bank"
+            class="w-100 btn btn-primary"
+          >
+            Place order <i class="bi bi-check"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="summary" sty>
+        <app-order-summary [job]="job" />
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,75 @@
+<table class="table mb-5" *ngIf="measurements.length">
+  <tbody>
+    <tr>
+      <td colspan="2" class="td">
+        <select
+          [(ngModel)]="units"
+          name=""
+          id=""
+          class="form-select"
+          (change)="onUnits(); onDone()"
+        >
+          <option [value]="u" *ngFor="let u of systemUnits">
+            {{ u || "Select Units" }}
+          </option>
+        </select>
+        <small class="text-danger w-100 text-left" *ngIf="unit_error">
+          {{ unit_error }}
+        </small>
+      </td>
+    </tr>
+    <tr *ngFor="let item of measurements; let i = index">
+      <td style="width: 70%">
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="email"
+          [(ngModel)]="item.Name"
+          [readOnly]="!can_edit"
+          required
+          (change)="onDone()"
+        />
+      </td>
+      <td>
+        <div class="d-flex gap-1 align-items-center">
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="number"
+            class="form-control"
+            [id]="'value' + i"
+            [(ngModel)]="item.Value"
+            required
+            (change)="onDone()"
+          />
+
+          <i *ngIf="can_delete" class="bi bi-trash" (click)="delete(i)"></i>
+        </div>
+      </td>
+    </tr>
+    <tr *ngIf="can_add">
+      <td colspan="2" align="right" class="td">
+        <div class="d-flex gap-2">
+          <button class="btn border btn-light" (click)="add_measurement()">
+            Add Line
+          </button>
+        </div>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="" *ngIf="!measurements.length">
+  <div class="alert alert-info">
+    No measurements found
+    <!-- Add New Measurement -->
+    <button class="btn btn-light border mt-2 mb-2 d-block" (click)="add_measurement()">Add new</button>
+  </div>
+</div>
+
+<app-system-measurements
+  mode="view"
+  *ngIf="show_picker"
+  (closed)="show_picker = false"
+  (doneSelecting)="doneSelectingFromSystem($event)"
+/>

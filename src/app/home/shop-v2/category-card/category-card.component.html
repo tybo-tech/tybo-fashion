@@ -1,0 +1,53 @@
+<div class="category-card-wrapper">
+  <a class="category-card" [routerLink]="isAdmin ? [] : homeUrl" [class.admin-mode]="isAdmin">
+    <div class="image-wrapper">
+      <img
+        *ngIf="category.ImageUrl"
+        [src]="category.ImageUrl || 'assets/images/placeholder.png'"
+        [alt]="category.Name"
+      />
+      <div *ngIf="!category.ImageUrl" class="image-placeholder">
+        <p>
+          <i class="bi bi-image"></i>
+        </p>
+      </div>
+    </div>
+    <div class="text-wrapper">
+      <h6>
+        {{ category.Name }}
+        <span *ngIf="category.Discount">
+          <span class="discount link-danger">
+            <ng-container
+              *ngIf="category.Discount.DiscountValueType === 'Percentage'"
+            >
+              {{ category.Discount.DiscountValue }}% off
+            </ng-container>
+          </span>
+        </span>
+      </h6>
+      <p *ngIf="category.CountProducts">{{ category.CountProducts }} Products</p>
+      
+      <!-- Admin Actions -->
+      <div class="admin-actions mt-3" *ngIf="isAdmin">
+        <div class="btn-group w-100" role="group">
+          <a
+            class="btn btn-outline-primary btn-sm"
+            [routerLink]="adminUrl"
+            (click)="$event.stopPropagation()"
+          >
+            <i class="bi bi-pencil"></i> Edit
+          </a>
+          <button
+            class="btn btn-outline-danger btn-sm"
+            (click)="deleteCategory($event)"
+            [disabled]="isDeleting"
+          >
+            <span *ngIf="isDeleting" class="spinner-border spinner-border-sm me-1"></span>
+            <i class="bi bi-trash" *ngIf="!isDeleting"></i>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  </a>
+</div>

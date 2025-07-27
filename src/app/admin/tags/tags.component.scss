@@ -1,0 +1,20 @@
+.badge {
+  font-weight: 500 !important;
+}
+$bg-light: rgb(240, 254, 241);
+.text-bg-light {
+  background: $bg-light !important;
+  border: 1px solid rgb(193, 193, 193) !important;
+  color: rgb(43, 138, 49) !important;
+}
+
+:host{
+  .grey{
+    background: rgb(234, 234, 234) !important;
+    color: grey !important;
+  }
+  .black{
+    background: rgb(0, 0, 0) !important;
+    color: rgb(255, 255, 255) !important;
+  }
+}

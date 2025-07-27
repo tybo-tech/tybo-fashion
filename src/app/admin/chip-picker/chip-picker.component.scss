@@ -1,0 +1,123 @@
+:host {
+  position: relative;
+
+  .chip-wrapper {
+    border: 1px solid #ccc;
+    padding: 0.75rem;
+    border-radius: 8px;
+    position: relative;
+    background: #fff;
+  }
+
+  .chip-input {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  .chip {
+    background: #f0f0f0;
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    color: #333;
+
+    transition: background 0.2s ease;
+    &:hover {
+      background: #e0e0e0;
+    }
+
+    button {
+      border: none;
+      background: transparent;
+      margin-left: 6px;
+      font-size: 14px;
+      color: #888;
+      cursor: pointer;
+
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+
+  input[type="checkbox"]:checked + label {
+    font-weight: 600;
+    border-radius: 6px;
+    padding: 0.25rem 0.5rem;
+    color: rgb(73, 73, 189);
+  }
+}
+
+/* Searchable Side Panel Enhancements */
+.my-modal .actions {
+  padding: 12px;
+
+  .chip-search {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: #fff;
+    padding: 8px 12px;
+    border-bottom: 1px solid #e5e5e5;
+
+    input {
+      width: 100%;
+      padding: 6px 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+  }
+
+  .wrapped {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding-top: 12px;
+  }
+
+  .wrapped-item {
+    flex: 1 1 45%;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px;
+    background: #f9f9f9;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+
+    &:hover {
+      background: #f1f1f1;
+    }
+
+    input[type="checkbox"] {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+
+    label {
+      cursor: pointer;
+      font-size: 14px;
+      margin: 0;
+    }
+  }
+}
+
+/* Reuse for layout previews */
+.wrapped {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  max-width: 350px;
+  align-items: center;
+
+  .wrapped-item {
+    width: fit-content;
+  }
+}

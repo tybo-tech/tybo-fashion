@@ -1,0 +1,14 @@
+:host {
+  h4 {
+    margin: 0;
+    // responsive font size
+    font-size: clamp(1rem, 1.5vw, 1rem);
+    a {
+      font-family: inherit;
+      color: #000;
+    }
+  }
+  p {
+    margin: 0;
+  }
+}

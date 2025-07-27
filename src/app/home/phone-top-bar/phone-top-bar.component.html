@@ -1,0 +1,22 @@
+<div class="phone-nav">
+  <div
+    class="container w-100 d-flex align-items-center justify-content-between"
+  >
+    <i
+      class="bi bi-list"
+      (click)="toggleNav.emit()"
+      style="font-size: 34px"
+    ></i>
+    <a [href]="logo_url_to">
+      <img  [src]="logo_url" alt="" />
+    </a>
+    <div class="d-flex gap-2">
+      <i class="bi bi-search" style="font-size: 20px"></i>
+      <div class="relative" (click)="toggle_cart()">
+        <i class="bi bi-cart" style="font-size: 20px"></i>
+
+        <span class="cart-icon"> {{ cart_count }}</span>
+      </div>
+    </div>
+  </div>
+</div>

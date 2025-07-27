@@ -1,0 +1,89 @@
+<div class="main-nav" *ngIf="company">
+  <div class="container w-100 d-flex align-items-start justify-content-between">
+    <a [href]="'/' + company.Slug">
+      <img style="height: 42px; width: auto" [src]="company.Dp" alt=""
+    /></a>
+    <div class="nav-items d-flex gap-2">
+      <div class="d-flex align-items-center justify-end"></div>
+
+      <a
+        [routerLink]="item.url"
+        [routerLinkActive]="'active'"
+        [routerLinkActiveOptions]="{ exact: true }"
+        *ngFor="let item of navItems"
+        [innerHTML]="item.name"
+      ></a>
+    </div>
+  </div>
+</div>
+
+<!-- <div class="phone-nav" *ngIf="company">
+  <div
+    class="container w-100 d-flex align-items-center justify-content-between"
+  >
+    <i
+      class="bi bi-list"
+      (click)="nav_open = !nav_open"
+      style="font-size: 34px"
+    ></i>
+    <a [href]="'/' + company.Slug">
+      <img style="height: 42px; width: auto" [src]="company.Dp" alt="" />
+    </a>
+    <div class="d-flex gap-2">
+      <i class="bi bi-search" style="font-size: 20px"></i>
+      <div class="relative" (click)="toggle_cart()">
+        <i class="bi bi-cart" style="font-size: 20px"></i>
+
+        <span class="cart-icon"> {{ cart_count }}</span>
+      </div>
+    </div>
+    <div
+      class="nav-items d-flex gap-2 slide=from-top slide-from-left"
+      *ngIf="nav_open"
+    >
+      <div class="d-flex align-items-center w-100 p-2">
+        <i
+          class="bi bi-x"
+          (click)="nav_open = !nav_open"
+          style="font-size: 34px"
+        ></i>
+      </div>
+
+      <a
+        (click)="nav_open = false"
+        [routerLink]="item.url"
+        [routerLinkActive]="'active'"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [innerHTML]="item.name"
+        *ngFor="let item of navItems"
+      ></a>
+
+      <a
+        *ngIf="!user"
+        (click)="open(UX_MODALS.login)"
+        [innerHTML]="'Login'"
+      ></a>
+
+      <a
+        *ngIf="!user"
+        (click)="open(UX_MODALS.register)"
+        [innerHTML]="'Register'"
+      ></a>
+
+      <a
+        *ngIf="user && user.UserType === 'Customer'"
+        (click)="open(UX_MODALS.profile)"
+      >
+        <i class="bi bi-person"></i> My profile
+      </a>
+
+      <a *ngIf="user && user.UserType === 'Admin'" routerLink="/home/sign-in">
+        <i class="bi bi-person"></i> My dashboard
+      </a>
+
+      <a *ngIf="user" (click)="logout()">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </div>
+  </div>
+</div> -->

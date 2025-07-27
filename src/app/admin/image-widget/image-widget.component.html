@@ -1,0 +1,40 @@
+<!-- <input
+  type="file"
+  accept="image/png, image/jpeg"
+  #file
+  placeholder="Choose file"
+  multiple
+  (change)="uploadFile($event,0)"
+  style="display: none"
+/> -->
+
+<input
+  type="file"
+  accept="image/png, image/jpeg"
+  #file
+  placeholder="Choose file"
+  multiple
+  (change)="uploadFile(file.files, 0)"
+  style="display: none"
+/>
+
+<div class="preview" *ngIf="image && image.Url && image.Url.length">
+  <img (click)="file.click()" [src]="image.Url" alt="" />
+  <div
+    *ngIf="image && image.Url && image.Url.length"
+    (click)="showMenu = true"
+    class="link-dark delete"
+  >
+    <i class="bi bi-three-dots"></i>
+    <div class="_menu" *ngIf="showMenu" (mouseleave)="showMenu = false">
+      <span (click)="makeMain()">Main image</span>
+      <span (click)="remove()">Delete file</span>
+    </div>
+  </div>
+  <span *ngIf="loading" class="loader"></span>
+</div>
+
+<div class="no-image" *ngIf="!image?.Url">
+  <i class="_upload bi bi-upload" (click)="file.click()" alt=""></i>
+  <span *ngIf="loading" class="loader"></span>
+</div>

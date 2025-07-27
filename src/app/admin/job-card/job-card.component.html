@@ -1,0 +1,146 @@
+<p>job-card works!</p>
+<div class="app-overlay" *ngIf="jobItem && jobCard && user">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      (onClose)="onClose.emit()"
+      [title]="'Job Card:' + jobCard.JobNo"
+    />
+    <div class="actions">
+      <div class="p-2">
+        <div class="row">
+          <div class="col-12">
+            <app-image-widget
+              [image_url]="jobItem.FeaturedImageUrl"
+              (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"
+            />
+          </div>
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="RegularPrice" class="form-label">Name</label>
+              <input
+                type="search"
+                id="RegularPrice"
+                [(ngModel)]="jobItem.ItemName"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Size</label>
+
+              <app-admin-select-size
+                [user]="user"
+                [measurements]="jobItem.Metadata.Measurements || []"
+                [size]="jobItem.Size"
+                (selectSize)="jobItem.Size = $event; sizeChanged($event)"
+                (on_measurements_captured)="
+                  jobItem.Metadata.Measurements = $event
+                "
+                [jobItem]="jobItem"
+              />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Color</label>
+              <input
+                type="search"
+                id="TotalStock"
+                [(ngModel)]="jobItem.Colour"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div
+            class="col-12"
+            *ngIf="
+              isMeasurements &&
+              jobItem.Metadata &&
+              jobItem.Metadata.Measurements
+            "
+          >
+            <label for="RegularPrice" class="form-label">Measurements</label>
+            <app-admin-measurements
+              [measurements]="jobItem.Metadata.Measurements"
+              (onCaptured)="jobItem.Metadata.Measurements = $event"
+            />
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Quantity</label>
+              <input
+                type="number"
+                id="TotalStock"
+                [(ngModel)]="jobItem.Quantity"
+                class="form-control"
+              />
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Price</label>
+              <input
+                type="number"
+                id="TotalStock"
+                [(ngModel)]="jobItem.UnitPrice"
+                class="form-control"
+              />
+            </div>
+          </div>
+
+          <div class="col-12">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Notes</label>
+              <textarea
+                type="text"
+                id="TotalStock"
+                [(ngModel)]="jobItem.Metadata.Notes"
+                class="form-control"
+              ></textarea>
+            </div>
+          </div>
+          <div class="col-12" *ngIf="users.length">
+            <div class="mb-3">
+              <label for="TotalStock" class="form-label">Assigned to</label>
+              <select
+                type="text"
+                (change)="onUserChange(users)"
+                id="TotalStock"
+                [(ngModel)]="jobItem.Metadata.AssignedTo"
+                class="form-select"
+              >
+                <option [value]="u.UserId" *ngFor="let u of users">
+                  {{ u.Name }}
+                </option>
+              </select>
+            </div>
+          </div>
+
+          <div class="p-3">
+            <button
+              class="btn btn-primary border w-100 mb-2 col-12"
+              (click)="updateJobItem()"
+            >
+              Save changes
+            </button>
+            <a
+              class="btn btn-light border w-100 mb-2 col-12"
+              [routerLink]="['/store/admin/job', jobCard.JobId, 'job-cards']"
+            >
+              Go to job
+            </a>
+
+            <a
+              class="btn btn-light border w-100 mb-2 col-12"
+              [href]="jobCardPrint"
+              target="_blank"
+            >
+              <i class="bi bi-printer"></i> Job card
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

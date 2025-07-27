@@ -1,0 +1,34 @@
+<div
+  class="px-0 border rounded-2 shadow-0"
+  *ngIf="product && product.Company && products.length"
+>
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">You may also like these</h4>
+      <a
+        [href]="url(item)"
+        class="d-flex mb-3"
+        *ngFor="let item of products"
+      >
+        <a class="me-3">
+          <img
+            [src]="item.FeaturedImageUrl"
+            style="width: 96px; height: 96px"
+            class="img-md img-thumbnail"
+          />
+        </a>
+        <div class="info">
+          <a class="nav-link mb-1">
+            {{ item.Name }}
+          </a>
+          <strong class="text-dark">
+            {{ item.RegularPrice | currency : "R" }}
+          </strong>
+          <small class="d-block text-success type-stock">
+            {{item.IsJustInTime}}
+          </small>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,19 @@
+<div class="gallery-grid" *ngIf="items?.length">
+  <div class="gallery-card" *ngFor="let item of items" [routerLink]="'/'+item.ItemCode">
+    <img
+      [src]="item.ImageUrl"
+      [alt]="item.Name"
+      loading="lazy"
+      onerror="this.src='assets/images/placeholder.png'"
+    />
+    <div class="info">
+      <h5 [innerHTML]="item.Name"></h5>
+      <h6 *ngIf="item.Decription" [innerHTML]="item.Decription"></h6>
+    </div>
+  </div>
+</div>
+
+<app-see-more
+  *ngIf="company && showMore"
+  [url]="'/home/work-show-case/' + company.CompanyId + '/' + company.Slug"
+></app-see-more>

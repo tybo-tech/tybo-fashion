@@ -1,0 +1,47 @@
+.max-width-50 {
+  max-width: 50%;
+  margin: 1rem auto;
+}
+
+.section {
+  // background: var(--gradient-subtle);
+  // background: var(--cloud);
+  background: white;
+}
+
+.hero {
+  padding: 42px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .hero-image {
+    object-fit: cover;
+    border-radius: 8px;
+    height: 518px;
+  }
+  .hero-image-2 {
+    height: 250px;
+    margin-bottom: 16px;
+  }
+  .hero-image-3 {
+    height: 250px;
+  }
+}
+
+.text-center-boxed {
+  max-width: 800px;
+  margin: 1rem auto;
+}
+.section-1 {
+  background: #fcfcfc;
+}
+
+.my-card {
+  background: #fffdee;
+  padding: 8px;
+  margin: 8px;
+  width: 30%;
+}
+.icon-square{
+  font-size: 3rem;
+}

@@ -1,0 +1,97 @@
+<div class="form-group mb-3">
+  <div class="d-flex gap-2 align-items-center">
+    <label
+      *ngIf="label"
+      [innerHtml]="label"
+      [for]="id"
+      class="form-label m-0"
+    ></label>
+    <i
+      [ngClass]="is_password_visible ? 'bi bi-eye-slash' : 'bi bi-eye'"
+      (click)="is_password_visible = !is_password_visible"
+      *ngIf="type === 'password'"
+    ></i>
+  </div>
+  <ng-container [ngSwitch]="type">
+    <input
+      *ngSwitchCase="'email'"
+      [ngModelOptions]="{ standalone: true }"
+      type="email"
+      [attr.autocomplete]="autocomplete"
+      class="form-control mb-3"
+      [id]="id"
+      [placeholder]="placeholder"
+      [(ngModel)]="value"
+      (change)="inputChanged.emit(value)"
+      required
+    />
+
+    <input
+      *ngSwitchCase="'password'"
+      [type]="is_password_visible ? 'text' : 'password'"
+      class="form-control mb-0"
+      [id]="id"
+      [attr.autocomplete]="autocomplete"
+      [placeholder]="placeholder"
+      [(ngModel)]="value"
+      (change)="inputChanged.emit(value)"
+      [ngModelOptions]="{ standalone: true }"
+      required
+    />
+    <input
+      *ngSwitchCase="'number'"
+      type="number"
+      [attr.autocomplete]="autocomplete"
+      class="form-control mb-0"
+      [id]="id"
+      [placeholder]="placeholder"
+      [(ngModel)]="value"
+      (change)="inputChanged.emit(value)"
+      [ngModelOptions]="{ standalone: true }"
+      required
+    />
+
+    <input
+      *ngSwitchDefault
+      type="text"
+      class="form-control mb-3"
+      [id]="id"
+      [attr.autocomplete]="autocomplete"
+      [placeholder]="placeholder"
+      (change)="inputChanged.emit(value)"
+      [(ngModel)]="value"
+      required
+    />
+
+    <textarea
+      *ngSwitchCase="'textarea'"
+      class="form-control mb-3"
+      [id]="id"
+      [placeholder]="placeholder"
+      (change)="inputChanged.emit(value)"
+      [(ngModel)]="value"
+      required
+    ></textarea>
+
+    <select
+      *ngSwitchCase="'select'"
+      class="form-control mb-3"
+      [id]="id"
+      (change)="inputChanged.emit(value)"
+      [(ngModel)]="value"
+      required
+    >
+      <option value="" disabled>
+        {{ placeholder }}
+      </option>
+      <option *ngFor="let option of options" [value]="option">
+        {{ option }}
+      </option>
+    </select>
+    <i
+      class="bi bi-trash link-danger"
+      *ngIf="show_delete"
+      (click)="delete.emit()"
+    ></i>
+  </ng-container>
+</div>

@@ -1,0 +1,31 @@
+<div class="app-overlay" *ngIf="user && systemMeasurements">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="My Measurements"
+      (onClose)="uxService.show_modal(UX_MODALS.profile)"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <form>
+        <app-home-measurements
+          [measurements]="user.Measurements ||  []"
+          (onCaptured)="user.Measurements = $event"
+          [showInofNotice]="false"
+          [can_add]="false"
+          [can_delete]="false"
+          [can_edit]="false"
+          [required]="false"
+          [systemMeasurements]="systemMeasurements"
+          (onCaptured)="user.Measurements = $event; save(UX_MODALS.profile)"
+        ></app-home-measurements>
+        <!-- <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="save(UX_MODALS.profile)"
+        >
+          Update Measurements
+        </button> -->
+      </form>
+    </div>
+  </div>
+</div>

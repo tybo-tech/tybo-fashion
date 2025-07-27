@@ -1,0 +1,64 @@
+<section class="nav-section bg-white box-shadow">
+  <div class="box">
+    <app-tui-nav />
+  </div>
+</section>
+<main class="form-signin w-100 m-auto">
+  <form>
+    <h1 class="h4">Register for an account</h1>
+    <p>
+      Enter your full name, email address, and password to register for an
+      account.
+    </p>
+    <div class="form-floating mb-4">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Your full name"
+        [(ngModel)]="new_user.Name"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="name">Your full name</label>
+    </div>
+
+    <div class="form-floating mb-4">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Email address"
+        [(ngModel)]="new_user.Email"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="name">Email address</label>
+    </div>
+
+    <div class="form-floating mb-4">
+      <input
+        type="password"
+        class="form-control"
+        id="password"
+        placeholder="Password"
+        [(ngModel)]="new_user.Password"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="password">Password</label>
+    </div>
+
+    <button
+      type="submit"
+      class="w-100 btn btn-primary mb-2"
+      (click)="sign_up()"
+    >
+      Register
+    </button>
+    <a class="link-info d-block mt-4" [routerLink]="['/home/sign-in', returnTo]">
+      Already have an account? Login
+    </a>
+  </form>
+</main>
+<app-footer></app-footer>

@@ -1,0 +1,31 @@
+<h2 class="text-center ">What our customers are saying.</h2>
+<p  class="text-center max-600 m-auto">
+  Hear what our customers have to say about our products and services. We value
+  your feedback and are always looking for ways to improve our services.
+</p>
+<div class="mb-5"></div>
+<div *ngFor="let testimonial of testimonials; let i = index">
+  <div class="testimonial" *ngIf="index === i">
+    <img [src]="testimonial.ImageUrl" alt="" />
+    <div class="testimonial-card">
+      <div class="info">
+        <i class="bi bi-quote" style="font-size: 4vw; line-height: 0"></i>
+
+        <h4>
+          {{ testimonial.Testimonial }}
+        </h4>
+        <p>- {{ testimonial.Name }}</p>
+      </div>
+    </div>
+    <div class="navigation">
+        <i
+            class="bi bi-arrow-left left"
+            (click)="index = index === 0 ? testimonials.length - 1 : index - 1"
+        ></i>
+        <i
+            class="bi bi-arrow-right right"
+            (click)="index = index === testimonials.length - 1 ? 0 : index + 1"
+        ></i>
+    </div>
+  </div>
+</div>

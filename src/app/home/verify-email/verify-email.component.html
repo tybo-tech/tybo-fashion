@@ -1,0 +1,28 @@
+<div class="app-overlay" *ngIf="job">
+  <div class="my-modal">
+    <div class="d-flex align-items-center justify-content-between header w-100">
+      <h4>Verify Email</h4>
+      <i class="bi bi-x-lg" (click)="closeCart()"></i>
+    </div>
+
+    <div class="actions">
+      <h5 class="mb-3 mt-4">Enter the verification code sent to your email.</h5>
+      <div class="form-group">
+        <label for="address">
+          We have sent a verification code to your email. Please enter it below.
+        </label>
+        <input
+          type="number"
+          class="form-control"
+          id="address"
+          placeholder="0000"
+          [(ngModel)]="verification_code"
+        />
+
+        <button class="w-100 mb-2 btn btn-dark" (click)="closeCart()">
+          Verify
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

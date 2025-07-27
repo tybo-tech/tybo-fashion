@@ -1,0 +1,26 @@
+<div class="app-overlay" *ngIf="form">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      [title]="form.title"
+      [show_x]="false"
+      (onClose)="onClose.emit()"
+    />
+    <div class="actions">
+      <div class="items">
+        <app-admin-input
+          [label]="item.label"
+          *ngFor="let item of form.items"
+          [type]="item.type"
+          [options]="item.options"
+          [value]="item.value"
+          [placeholder]="item.placeholder"
+          (inputChanged)="item.value = $event"
+          (onImageChanged)="item.value = $event"
+        />
+      </div>
+      <button class="btn btn-primary w-100" (click)="submit()">
+        {{ form.submitText }}
+      </button>
+    </div>
+  </div>
+</div>

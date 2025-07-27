@@ -1,0 +1,39 @@
+<div class="app-overlay" *ngIf="user">
+    <div class="my-modal full-height">
+      <app-modal-header-home
+        title="Your contact info"
+        (onClose)="uxService.show_modal(UX_MODALS.profile)"
+        [show_x]="false"
+      />
+      <div class="actions">
+        <form>
+          <!-- Name -->
+          <app-input
+            label="Name"
+            type="text"
+            [value]="user.Name"
+            placeholder="Your name"
+            (inputChanged)="user.Name = $event"
+          />
+          <app-input
+            label="Email"
+            type="text"
+            [value]="user.Email"
+            placeholder="Email address"
+            (inputChanged)="user.Email = $event"
+          />
+            <app-input
+                label="Phone"
+                type="text"
+                [value]="user.PhoneNumber"
+                placeholder="Phone number"
+                (inputChanged)="user.PhoneNumber = $event"
+            />
+          <button type="submit" class="w-100 btn btn-dark mb-2" (click)="save(UX_MODALS.profile)">
+            Update Contact Info
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+  

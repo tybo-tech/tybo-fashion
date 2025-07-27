@@ -1,0 +1,169 @@
+<div *ngIf="discount" class="max-600">
+  <app-list-bread
+    [currentPage]="discountType"
+    prevPage="Discounts"
+    [prevLink]="prevPage"
+  />
+
+  <div class="card mb-4" *ngIf="discount">
+    <div class="card-header">
+      <h5 class="card-title m-0">Discount details</h5>
+    </div>
+    <div class="card-body">
+      <div class="row">
+        <div
+        class="col-md-12"
+      >
+        <app-admin-input
+          label="Discount Title"
+          type="text"
+          [value]="discount.Name"
+          placeholder="Discount Title"
+          (inputChanged)="discount.Name = $event"
+        />
+      </div>
+        <div class="col-12">
+          <app-admin-input
+            label="Discount Type"
+            type="select"
+            [options]="discountTypesOptionsValueLabel"
+            [value]="discount.DiscountType"
+            placeholder="Select type"
+            (inputChanged)="discount.DiscountType = $event"
+          />
+        </div>
+        <div class="col-12">
+          <app-admin-input
+            label="Collection"
+            type="select"
+            [options]="collectionsOptions"
+            [value]="discount.CollectionId"
+            placeholder="Select collection"
+            (inputChanged)="discount.CollectionId= $event"
+          />
+        </div>
+
+        <div class="col-12">
+          <app-admin-input
+            label="Discount Code / Automatic"
+            type="select"
+            [options]="discountMethods"
+            [value]="discount.Method"
+            placeholder="Select role"
+            (inputChanged)="discount.Method = $event"
+          />
+        </div>
+
+        <div
+          class="col-md-6"
+          *ngIf="discount.Method === 'Discount Code'"
+        >
+          <app-admin-input
+            label="Discount Code"
+            type="text"
+            [value]="discount.DiscountCode"
+            placeholder="Discount Code"
+            (inputChanged)="discount.DiscountCode = $event"
+          />
+        </div>
+
+      
+
+        <div class="col-6">
+          <app-admin-input
+            label="Usage Limit"
+            type="number"
+            [value]="discount.MaxUses"
+            placeholder="Usage Limit"
+            (inputChanged)="discount.MaxUses = $event"
+          />
+        </div>
+        <div class="col-6">
+          <app-admin-input
+            label="User Limit"
+            type="number"
+            [value]="discount.MaxUsesPerUser"
+            placeholder="User Limit"
+            (inputChanged)="discount.MaxUsesPerUser = $event"
+          />
+        </div>
+        <div class="col-12">
+          <app-admin-input
+            label="Amount / Percentage Off"
+            type="select"
+            [options]="discountValueTypes"
+            [value]="discount.DiscountValueType"
+            placeholder="Select role"
+            (inputChanged)="discount.DiscountValueType = $event"
+          />
+        </div>
+
+        <div class="col-12" *ngIf="discount.DiscountType">
+          <app-admin-input
+            [label]="
+              'Discount Value (' + discount.DiscountType + ')'
+            "
+            type="number"
+            [value]="discount.DiscountValue"
+            placeholder="Discount Value"
+            (inputChanged)="discount.DiscountValue = $event"
+          />
+        </div>
+
+        <!-- startDate and endDate -->
+        <hr />
+        <h6 class="mt-3 mb-2">Discount Schedule.</h6>
+        <div class="col-6">
+          <app-admin-input
+            label="Start Date"
+            type="date"
+            [value]="discount.StartDate"
+            (inputChanged)="discount.StartDate = $event"
+          />
+        </div>
+
+        <div class="col-6">
+          <app-admin-input
+            label="Start Time"
+            type="time"
+            [value]="discount.StartTime"
+            (inputChanged)="discount.StartTime = $event"
+          />
+        </div>
+
+        <div class="col-6">
+          <app-admin-input
+            label="End Date"
+            type="date"
+            [value]="discount.EndDate"
+            (inputChanged)="discount.EndDate = $event"
+          />
+        </div>
+
+        <div class="col-6">
+          <app-admin-input
+            label="End Time"
+            type="time"
+            [value]="discount.EndTime"
+            (inputChanged)="discount.EndTime = $event"
+          />
+        </div>
+
+        <div class="card-footer">
+          <button
+            type="submit"
+            class="w-100 btn btn-dark mb-2 mt-2"
+            (click)="save()"
+          >
+            Save Discount
+          </button>
+
+          <!-- Delete Discount -->
+          <button type="submit" class="w-100 btn btn-danger" (click)="delete()">
+            Delete Discount
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

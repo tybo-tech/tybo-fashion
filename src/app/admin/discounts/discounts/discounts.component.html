@@ -1,0 +1,63 @@
+<div class="max-600">
+  <app-list-bread currentPage="Discounts" />
+  <div class="d-flex justify-content-between gap-3 mb-4">
+    <input
+      type="search"
+      class="form-control"
+      placeholder="Search by name"
+      [(ngModel)]="searchQuery"
+    />
+    <a class="btn btn-primary w-200px" routerLink="/store/admin/discount/add/new">
+      <i class="bi bi-plus"></i> Discount
+    </a>
+  </div>
+  <div class="list-group w-auto" *ngIf="discounts">
+    <a
+      *ngFor="let userItem of discounts"
+      [routerLink]="['/store/admin/discount', userItem.Id, 'edit']"
+      class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3 my-card"
+      aria-current="true"
+    >
+      <i class="bi bi-breafcase"></i>
+      <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
+        <div>
+          <h6 class="mb-0">
+            <!-- {{ discountTypesOptionMap[userItem.discountType] }} -->
+          </h6>
+          <p class="text-muted mb-0">
+            <small *ngIf="userItem.StartDate">
+              <i class="bi bi-calendar"></i>
+              {{ userItem.StartDate | date }}
+              {{ userItem.StartTime }} -
+              {{ userItem.EndDate | date }}
+              {{ userItem.EndTime }}
+            </small>
+          </p>
+          <hr />
+          <p class="text-muted mb-0">
+            <small *ngIf="userItem.StartDate">
+              <b>
+                <span *ngIf="userItem.DiscountType == 'Percentage'">
+                  {{ userItem.DiscountValue }} % Off
+                </span>
+                <span *ngIf="userItem.DiscountType == 'Amount'">
+                  {{ userItem.DiscountValue | currency : "R" }} Off
+                </span>
+              </b>
+            </small>
+          </p>
+          <span class="badge text-bg-primary">{{ userItem.Method }}</span>
+        </div>
+        <small class="opacity-80 text-nowrap">
+          <b>
+            <span class="text-success">{{ userItem.Name }}</span>
+          </b>
+        </small>
+      </div>
+    </a>
+  </div>
+  <app-discount-add-modal
+    (onClose)="showAddDiscount = false"
+    *ngIf="showAddDiscount"
+  />
+</div>

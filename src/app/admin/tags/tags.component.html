@@ -1,0 +1,21 @@
+<div class="d-flex gap-2 mt-1" *ngIf="product">
+    <p class="badge black text-bg-light">{{ product.IsJustInTime }}</p>
+    <p
+      *ngIf="product.IsFeatured === 'Yes'"
+      class="badge green text-bg-light"
+    >
+      Featured
+    </p>
+    <p
+      *ngIf="product.ShowOnline === '1'"
+      class="badge  text-bg-light"
+    >
+      Shown
+    </p>
+    <p
+      *ngIf="product.ShowOnline === '0'"
+      class="badge  text-bg-light grey"
+    >
+      Hidden
+    </p>
+  </div>

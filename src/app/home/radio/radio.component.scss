@@ -1,0 +1,14 @@
+:host {
+  .option {
+    white-space: nowrap;
+    font-size: 0.75rem;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0.2rem 0.4rem;
+    &.active {
+      background: #141414;
+      color: #fff;
+    }
+  }
+}

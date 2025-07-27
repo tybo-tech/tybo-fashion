@@ -1,0 +1,25 @@
+<div class="contact-us" *ngIf="company">
+  <h5>
+    {{ "Connect with " + company.Name }}
+    <span *ngIf="company.Phone">
+      <i class="bi bi-telephone"></i>
+      {{ company.Phone }}
+    </span>
+    <!-- Email -->
+    <span *ngIf="company.Email">
+      <i class="bi bi-envelope"></i>
+      {{ company.Email }}
+    </span>
+  </h5>
+  <div class="socials d-flex gap-1">
+    <a [href]="company.Metadata?.Facebook" target="_blank">
+      <i class="bi bi-facebook"></i>
+    </a>
+    <a [href]="company.Metadata?.Twitter" target="_blank">
+      <i class="bi bi-tiktok"></i>
+    </a>
+    <a [href]="company.Metadata?.Instagram" target="_blank">
+      <i class="bi bi-instagram"></i>
+    </a>
+  </div>
+</div>

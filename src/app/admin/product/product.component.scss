@@ -1,0 +1,21 @@
+:host {
+  .badge {
+    background: rgb(39, 0, 39);
+    color: white;
+    font-weight: 500;
+  }
+  ._body {
+    min-height: 80vh;
+  }
+
+  .form-control {
+    margin-bottom: 24px;
+  }
+
+  label {
+    font-size: 0.75rem;
+  }
+  textarea {
+    min-height: 250px !important;
+  }
+}

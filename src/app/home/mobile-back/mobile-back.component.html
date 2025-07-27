@@ -1,0 +1,21 @@
+<div class="back">
+  <a (click)="back()">
+    <i class="bi bi-arrow-left"></i>
+  </a>
+  <div class="d-flex gap-3 align-items-center">
+    <p *ngIf="text">
+      {{ text }}
+      <i
+        class="like share bi bi-share text-dark"
+        (click)="onShare.emit()"
+        *ngIf="showShare"
+      ></i>
+
+      <i
+        class="like share bi bi-heart-fill text-danger"
+        (click)="showFavourite()"
+      ></i>
+    </p>
+    <app-cart-icon />
+  </div>
+</div>

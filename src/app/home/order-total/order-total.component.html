@@ -1,0 +1,46 @@
+<ng-container *ngIf="job">
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <p class="m-0 h5">Sub Total:</p>
+    <p class="m-0 h5 text-dark">
+      {{ job.TotalCost - job.ShippingPrice | currency : "R" }}
+    </p>
+  </div>
+  <div
+    class="d-flex flex-wrap w-100 justify-content-between"
+    *ngIf="job.Metadata.discountAmount && job.Metadata.discount"
+  >
+    <p class="m-0 h5">Discount:</p>
+    <p class="m-0 h5 text-dark">
+      -{{ job.Metadata.discountAmount | currency : "R" }}
+    </p>
+ </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <p class="m-0 h5" *ngIf="!job.Shipping">Shipping:</p>
+    <p class="m-0 text-capitalize h5" *ngIf="job.Shipping">
+      {{ job.Shipping }}:
+    </p>
+    <p class="m-0 h5 text-dark">
+      <ng-container *ngIf="job.Shipping">
+        {{ job.ShippingPrice | currency : "R" }}
+      </ng-container>
+      <ng-container *ngIf="!job.Shipping">
+        Calculated on checkout
+      </ng-container>
+    </p>
+  </div>
+  <div class="d-flex flex-wrap w-100 justify-content-between">
+    <p class="m-0 font-weight-bold h5">Total:</p>
+    <p class="m-0 font-weight-bold h5 text-dark">
+      {{ job.TotalCost | currency : "R" }}
+    </p>
+  </div>
+  <div
+    class="d-flex flex-wrap w-100 justify-content-between"
+    *ngIf="job.PaymentAmount === 'deposit'"
+  >
+    <p class="m-0 font-weight-bold h5">Due today (50% deposit):</p>
+    <p class="m-0 font-weight-bold h5 text-dark">
+      {{ job.TotalCost / 2 | currency : "R" }}
+    </p>
+  </div>
+</ng-container>

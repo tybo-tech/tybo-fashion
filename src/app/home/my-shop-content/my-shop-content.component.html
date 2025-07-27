@@ -1,0 +1,10 @@
+<ng-container *ngIf="company">
+  <app-image-slider [company]="company" />
+  <app-shop-featured *ngIf="company.PinnedProducts" [company]="company" />
+  <!-- <app-shop-cta [company]="company" /> -->
+  <app-testimonials [company]="company" />
+  <app-about-shop [company]="company" />
+  <app-shop-stat [company]="company" />
+  <app-shop-cta [company]="company" />
+  <app-shop-contact [company]="company" />
+</ng-container>

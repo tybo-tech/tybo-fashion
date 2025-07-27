@@ -1,0 +1,14 @@
+.summary {
+  max-width: 400px;
+  margin-top: 2rem;
+  border: 1px solid #e0e0e0;
+  top: 100px !important;
+  .promo-code {
+    display: grid;
+    gap: 8px;
+    grid-template-columns: 60% auto;
+    .btn {
+      width: 100% !important;
+    }
+  }
+}

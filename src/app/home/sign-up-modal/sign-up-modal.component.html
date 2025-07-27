@@ -1,0 +1,95 @@
+<div class="app-overlay">
+  <div class="my-modal">
+    <div
+      class="d-flex align-items-center justify-content-between header w-100 mb-4"
+    >
+      <h4>Register your account.</h4>
+      <i class="bi bi-x-lg" (click)="open(UX_MODALS.login)"></i>
+    </div>
+    <div class="actions">
+      <form>
+        <div class="form-group mb-3">
+          <label for="name" class="form-label">Your full name*</label>
+          <input
+            type="name"
+            class="form-control mb-3"
+            id="name"
+            placeholder="Enter your name"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="new_user.Name"
+            required
+          />
+          <p
+            class="text-danger fade-in"
+            *ngIf="errors.name"
+            [innerHTML]="errors.name"
+          ></p>
+
+          <label for="phone_number" class="form-label">Phone number</label>
+          <input
+            type="phone_number"
+            class="form-control mb-3"
+            id="phone_number"
+            placeholder="For example, 08012345678"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="new_user.PhoneNumber"
+            required
+          />
+        
+          <p
+          class="text-danger fade-in"
+          *ngIf="errors.phone_number"
+          [innerHTML]="errors.phone_number"
+        ></p>
+        <p class="text-info">
+          We will use your phone number to reach you about your order, when
+          necessary.
+        </p>
+          <label for="email" class="form-label">Email*</label>
+          <input
+            type="email"
+            class="form-control mb-3"
+            id="email"
+            placeholder="Enter your email"
+            [ngModelOptions]="{ standalone: true }"
+            [(ngModel)]="new_user.Email"
+            required
+          />
+          <p
+            class="text-danger fade-in"
+            *ngIf="errors.email"
+            [innerHTML]="errors.email"
+          ></p>
+        
+        </div>
+        <div class="form-group mb-4">
+          <label for="password" class="form-label">Password*</label>
+          <input
+            type="password"
+            class="form-control mb-0"
+            id="password"
+            [ngModelOptions]="{ standalone: true }"
+            placeholder="Enter your password"
+            [(ngModel)]="new_user.Password"
+            required
+          />
+          <p
+            class="text-danger fade-in"
+            *ngIf="errors.password"
+            [innerHTML]="errors.password"
+          ></p>
+        </div>
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="sign_up()"
+        >
+          Register
+        </button>
+        <button class="btn link-info" (click)="open(UX_MODALS.login)">
+          <small> Already have an account? Login </small>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

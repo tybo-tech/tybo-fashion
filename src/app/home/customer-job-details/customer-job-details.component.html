@@ -1,0 +1,25 @@
+<div *ngIf="job">
+  <div *ngIf="!user">
+    <p>Please login or register to continue</p>
+    <div class="row">
+      <div class="col-6">
+        <button class="w-100 btn btn-primary" (click)="open(UX_MODALS.login)">
+          Login
+        </button>
+      </div>
+      <div class="col-6">
+        <button class="w-100 btn btn-dark" (click)="open(UX_MODALS.register)">
+          Register
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <ng-container *ngIf="user">
+    <app-view-user-contact *ngIf="user" [user]="user" [show_shipping]="true" />
+    <br />
+    <button class="w-100 btn btn-primary" (click)="open(UX_MODALS.payments)">
+      Continue to payments
+    </button>
+  </ng-container>
+</div>

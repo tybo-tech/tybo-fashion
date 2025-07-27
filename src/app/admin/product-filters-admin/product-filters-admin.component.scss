@@ -1,0 +1,19 @@
+:host {
+  .app-overlay {
+    align-items: center;
+    justify-content: center;
+    .rules {
+      background: white;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 400px;
+      .header {
+        padding: 1rem;
+        border-bottom: 1px solid #e4e4e4;
+      }
+      .body {
+        padding: 2rem;
+      }
+    }
+  }
+}

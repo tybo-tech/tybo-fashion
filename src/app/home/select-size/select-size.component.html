@@ -1,0 +1,86 @@
+<div
+  *ngIf="product"
+  class="form-select border round-0 p-111 border-secondary"
+  style="height: 35px"
+  (click)="show_options = !show_options"
+>
+  {{ size || "Select Size" }}
+</div>
+
+<div class="app-overlay" *ngIf="show_options && product">
+  <div class="my-modal">
+    <app-modal-header-home
+      title="Select Size"
+      (onClose)="show_options = !show_options"
+    />
+    <div class="actions">
+      <div
+        class="d-flex gap-2 flex-wrap p-3 mb-3 align-items-center justify-content-center"
+        *ngIf="count_sizes"
+      >
+        <!-- <button
+          class="btn btn-light shadow btn-light-picker"
+          [ngClass]="{ active: size === item }"
+          (click)="
+            size = item; selectSize.emit(item); show_options = !show_options
+          "
+          *ngFor="let item of product.Sizes"
+        >
+          {{ item }}
+        </button> -->
+      </div>
+      <h6 class="text-center mb-3" *ngIf="count_sizes">Or</h6>
+      <button
+        class="w-100 mb-2 btn btn-primary"
+        (click)="
+          show_measurement = !show_measurement; show_options = !show_measurement
+        "
+      >
+        Use Measurements
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="show_measurement && product">
+  <div class="my-modal cloud full-height">
+    <app-modal-header-home
+    [show_x]="false"
+      title="Enter Measurements"
+      (onClose)="show_measurement = !show_measurement; show_options = !show_measurement"
+    />
+    <div class="actions">
+      <app-product-measurements [product]="product" (onCaptured)="measurements_captured($event)" />
+      <h6 class="text-center mb-3" *ngIf="count_sizes">Or</h6>
+      <button
+        class="w-100 mb-2 btn btn-primary"
+        (click)="show_measurement_later = true; show_measurement = false"
+      >
+        Submit your measurements later
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="show_measurement_later && product">
+  <div class="my-modal">
+    <app-modal-header-home
+      title="Enter Measurements Later"
+      [show_x]="false"
+      (onClose)="show_measurement = !show_measurement"
+    />
+    <div class="actions">
+      <div class="mt-2" *ngIf="show_measurement_later">
+        <app-custom-product-note
+          notes="Please go ahead and place your order. We will contact you to get your measurements."
+        />
+      </div>
+      <button
+        class="w-100 mb-2 btn btn-primary"
+        (click)="confirm_later()"
+      >
+        Submit my measurements later
+      </button>
+    </div>
+  </div>
+</div>

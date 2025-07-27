@@ -1,0 +1,25 @@
+<div class="cards-carousel">
+  <div class="cards-carousel-container">
+    <a
+      *ngFor="let card of cards"
+      class="the-card"
+      (click)="onCardClick(card)"
+      [href]="'/product/' + card.Slug || card.Id"
+    >
+      <img [src]="card.FeaturedImageUrl" alt="Card image" />
+      <h3>{{ card.Name }}</h3>
+      <p class="d-flex gap-2">
+        <small [ngClass]="card.OldPrice ? 'text-danger' : 'text-muted'">
+          {{ card.RegularPrice | currency : "R" }}
+        </small>
+        <small class="text-muted" *ngIf="card.OldPrice">
+          <del>{{ card.OldPrice | currency : "R" }}</del>
+        </small>
+      </p>
+      <!-- <a 
+        [href]="card.buttonLink"
+        *ngIf="card.buttonLink && card.buttonText"
+        class="btn btn-dark">{{ card.buttonText }}</a> -->
+    </a>
+  </div>
+</div>

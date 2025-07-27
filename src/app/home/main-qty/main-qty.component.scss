@@ -1,0 +1,26 @@
+:host {
+  .qty-main {
+    background: white;
+    width: fit-content;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 0rem 0.4rem;
+    height: 2.7rem;
+
+    button,
+    input {
+      background: none !important;
+      outline: none !important;
+      border: none !important;
+    }
+    input {
+      padding: 0 !important;
+      width: 50px;
+      font-size: 0.7rem;
+      height: 1.2rem;
+    }
+    button {
+      padding: 0.4rem;
+    }
+  }
+}

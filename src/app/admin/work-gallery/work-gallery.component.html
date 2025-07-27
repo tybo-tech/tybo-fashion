@@ -1,0 +1,23 @@
+<app-list-bread currentPage="Work gallery" />
+
+<div class="categories mt-3" *ngIf="items">
+  <a
+    [routerLink]="['/store/admin/edit-work-gallery', category.Id]"
+    class="category"
+    *ngFor="let category of items"
+  >
+    <img [src]="category.ImageUrl" *ngIf="category.ImageUrl" alt="" />
+    <div *ngIf="!category.ImageUrl" class="placeholder-image"></div>
+    <div class="details">
+      <p class="text-muted h6">
+        {{ category.Name }}
+      </p>
+    </div>
+  </a>
+</div>
+<app-add-widget
+  title="Add Work Gallery"
+  placeholder="Enter project title..."
+  (add)="add($event)"
+/>
+<div class="loading" *ngIf="loading"></div>

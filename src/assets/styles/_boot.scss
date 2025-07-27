@@ -1,0 +1,135 @@
+.btn {
+  border-radius: 8px !important;
+  padding: 8px 16px !important;
+  transition: all 0.3s !important;
+  width: fit-content;
+  font-weight: 500;
+  &:hover {
+    border-radius: 0 0 18px 0 !important;
+  }
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+  }
+}
+.btn-primary {
+  background-color: var(--accent) !important;
+  border-color: var(--accent) !important;
+  color: var(--black) !important;
+}
+.btn-secondary {
+  background-color: var(--clou) !important;
+  border-color: var(--accent) !important;
+  color: black !important;
+}
+.btn-light {
+  box-shadow: 0 0 15px rgba(181, 181, 181, 0.25) !important;
+  background: #ffffff !important;
+  border: 1px solid #d2d2d2 !important;
+  color: #4b4a4a !important;
+}
+
+.btn-outline {
+  background-color: transparent !important;
+  border-color: var(--black) !important;
+  color: var(--black) !important;
+}
+
+.toast {
+  display: block !important;
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: orange;
+  z-index: 99000000000;
+  @media only screen and (max-width: 600px) {
+    width: 80%;
+  }
+}
+.form-floating,
+.form-control,
+.list-group-item,
+.list-group {
+  border-radius: 8px !important;
+}
+.form-floating,
+.form-control {
+  // background after autofill
+  background: #fff !important;
+}
+.form-check-input {
+  border: 2px solid rgb(163, 163, 163);
+}
+
+.form-check-input:checked {
+  background-color: orange;
+  border-color: orange;
+}
+.link-info {
+  color: rgb(34, 124, 184) !important;
+}
+.max-600 {
+  max-width: 600px !important;
+}
+.w-80 {
+  width: 80% !important;
+}
+.w-70 {
+  width: 70% !important;
+}
+.w-200px {
+  width: 200px !important;
+}
+.round-0 {
+  border-radius: 0 !important;
+}
+.shadow {
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
+}
+
+.btn-light-picker {
+  padding: 4px 8px !important;
+  font-size: 0.75rem !important;
+  border: 1px solid #ced4da !important;
+  font-weight: 600 !important;
+}
+
+.text-small {
+  font-size: 0.85rem !important;
+}
+.pointer {
+  cursor: pointer !important;
+}
+.text-primary {
+  color: var(--accent) !important;
+}
+.pc-only {
+  display: none;
+  @media only screen and (min-width: 600px) {
+    display: block;
+  }
+}
+
+.nav-section {
+  padding: 0 !important;
+  background: var(--white) !important;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  @media only screen and (max-width: 600px) {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 5;
+  }
+}
+.form-signin {
+  padding: 20px;
+}
+
+.w-fit {
+  width: fit-content !important;
+}
+
+.btn-sm{
+  padding: 4px 8px !important;
+  font-size: 0.75rem !important;
+}

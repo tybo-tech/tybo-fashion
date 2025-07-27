@@ -1,0 +1,13 @@
+:host
+.menu{
+    .items{
+        a{
+            color: var(--black);
+            display: block;
+            padding: 4px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+    }
+}

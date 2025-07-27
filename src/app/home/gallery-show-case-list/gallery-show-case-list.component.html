@@ -1,0 +1,18 @@
+<section class="nav-section">
+  <div class="box">
+    <app-tui-nav [company]="company" />
+    <app-mobile-back
+      [text]="'Our work'"
+      [customLink]="company?.Slug || 'zalou'"
+    />
+  </div>
+</section>
+<section>
+  <div class="box mt-5 p-3">
+    <ng-container *ngIf="company">
+      <app-gallery-show-case [company]="company" [showMore]="false" />
+    </ng-container>
+  </div>
+</section>
+
+<div class="loading" *ngIf="loading"></div>

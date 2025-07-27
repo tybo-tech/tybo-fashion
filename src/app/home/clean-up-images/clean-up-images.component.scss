@@ -1,0 +1,19 @@
+:host {
+  .images {
+    padding: 24px;
+    gap: 24px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    .image {
+      width: 100%;
+      min-height: 200px;
+      background: rgb(230, 230, 230);
+      padding: 8px;
+      border-radius: 8px;
+      img {
+        width: 100%;
+        border-radius: 8px;
+      }
+    }
+  }
+}

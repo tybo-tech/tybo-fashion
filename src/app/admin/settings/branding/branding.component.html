@@ -1,0 +1,72 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header
+      title="Company branding"
+      (onClose)="closed.emit()"
+    />
+
+    <div class="actions">
+      <!--HomePageTitle ,HomePageTitle, HomePageImage -->
+      <form>
+        <div class="form-group mb-3">
+          <app-admin-input
+            label="Home page title"
+            type="textarea"
+            [value]="company.Metadata.HomePageTitle"
+            placeholder="Enter title here"
+            (inputChanged)="company.Metadata.HomePageTitle = $event"
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <app-admin-input
+            label="Home page description"
+            type="textarea"
+            [value]="company.Metadata.HomePageDescription"
+            placeholder="Enter description here"
+            (inputChanged)="company.Metadata.HomePageDescription = $event"
+          />
+        </div>
+
+        <div class="form-group mb-3">
+          <label for=""> Invoice logo </label>
+
+          <app-image-widget
+            [image_url]="company.Dp || ''"
+            (imageChangedEvent)="company.Dp = $event"
+          ></app-image-widget>
+        </div>
+
+        
+        <div class="form-group mb-3">
+          <label for="">
+          Website logo  
+          </label>
+
+          <app-image-widget
+            [image_url]="company.Metadata.WebLogo || ''"
+            (imageChangedEvent)="company.Metadata.WebLogo = $event"
+          ></app-image-widget>
+        </div>
+
+
+
+        <div class="form-group mb-3">
+          <label for=""> Home page image </label>
+
+          <app-image-widget
+            [image_url]="company.Metadata.HomePageImage || ''"
+            (imageChangedEvent)="company.Metadata.HomePageImage = $event"
+          ></app-image-widget>
+        </div>
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+          Update
+        </button>
+      </form>
+    </div>
+  </div>
+</div>

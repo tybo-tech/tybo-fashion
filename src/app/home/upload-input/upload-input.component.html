@@ -1,0 +1,50 @@
+<div>
+  <input
+    type="file"
+    #file
+    (change)="onFileChange(file.files)"
+    accept="image/*"
+    style="display: none"
+  />
+
+  <button
+    *ngIf="!imageKey || !parentItem[imageKey]"
+    (click)="file.click()"
+    class="btn btn-light mt-3 "
+  >
+    {{label || 'Click here to upload'}}
+  </button>
+  <img
+    *ngIf="imageKey && parentItem[imageKey]"
+    [src]="parentItem[imageKey]"
+    [style.width.rem]="size"
+    alt="Uploaded Image"
+    class="uploaded-image pointer"
+    title="Click to upload"
+    (click)="file.click()"
+  />
+  <div *ngIf="hasFile" class="image-actions" style="width: 100%; display: flex">
+    <a (click)="view = !view"><i class="bi bi-eye"></i> View</a>
+  </div>
+  <div
+    (click)="closeModal($event)"
+    *ngIf="view && imageKey && parentItem[imageKey]"
+    class="image-view"
+  >
+   <div class="form">
+    <img
+    [src]="parentItem[imageKey]"
+    id="image-view"
+    alt="Uploaded Image"
+    class="uploaded-image pointer"
+    title="Click to upload"
+    (click)="file.click()"
+  />
+  <!-- <input
+    type="text"
+    class="form-control"
+    [(ngModel)]="parentItem[imageKey]"
+  /> -->
+</div>
+   </div>
+</div>

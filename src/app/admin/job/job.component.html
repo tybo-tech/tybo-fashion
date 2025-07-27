@@ -1,0 +1,145 @@
+<!-- product-update.component.html -->
+<div *ngIf="job && user" class="max-600">
+  <app-list-bread
+    [currentPage]="job.JobNo"
+    prevPage="Jobs"
+    [prevLink]="'/store/admin/' + backTo"
+  />
+
+  <div class="from-group">
+    <div class="mb-3">
+      <label for="Name" class="form-label">Customer</label>
+      <a class="form-control form-select" (click)="show_customer = true">
+        {{ job.Customer?.Name || "No Customer" }}
+      </a>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="mb-3">
+          <label for="DueDate" class="form-label">Due</label>
+          <input
+            type="date"
+            id="DueDate"
+            [(ngModel)]="job.DueDate"
+            class="form-control"
+            (change)="updateJob()"
+          />
+        </div>
+      </div>
+
+      <div class="col-md-4 col-6">
+        <div class="mb-3">
+          <select
+            id="ShowOnline"
+            [(ngModel)]="job.Status"
+            (change)="updateJob()"
+            class="form-select btn btn-light shadow btn-light-picker invoice-no"
+          >
+            <option [value]="item" *ngFor="let item of statuses">
+              {{ item }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-6">
+        <div class="mb-3">
+          <a
+            [href]="invoice"
+            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            target="_blank"
+          >
+            {{ job.Metadata.InvoiceNo || "No Invoice" }}
+          </a>
+        </div>
+      </div>
+      <div class="col-md-4 col-6">
+        <div class="mb-3">
+          <a
+            (click)="show_capture_payment = true"
+            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+          >
+            Patments
+          </a>
+        </div>
+      </div>
+
+      <div class="col-md-4 col-6" *ngIf="job.Metadata?.paymentProof">
+        <div class="mb-3">
+          <a
+            [href]="job.Metadata.paymentProof"
+            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            target="_blank"
+          >
+            Payment Proof
+          </a>
+        </div>
+      </div>
+      <div
+        class="col-md-4 col-6"
+        *ngIf="
+          (job.Metadata &&
+            job.Metadata.paidAmount &&
+            job.Metadata.paidAmount < job.TotalCost) ||
+          !job.Metadata.paidAmount
+        "
+      >
+        <div class="mb-3">
+          <a
+            (click)="show_capture_payment = true"
+            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+          >
+            Record Payment
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="from-group">
+    <h3 class="mb-4">Job items</h3>
+    <app-job-items [job]="job" [user]="user" />
+    <hr />
+    <app-admin-job-total
+      [job]="job"
+      (showShipping)="showShipping = true"
+      (showPayments)="show_capture_payment = true"
+    />
+    <hr />
+
+    <app-admin-comment
+      *ngIf="job.Metadata.Special_instructions"
+      [title]="'Special Instructions'"
+      [comments]="job.Metadata.Special_instructions"
+      (onEdit)="job.Metadata.Special_instructions = $event; updateJob()"
+    />
+
+    <app-select-job-shipping
+      *ngIf="showShipping"
+      [job]="job"
+      (jobUpdated)="job = $event; showShipping = false; updateJob()"
+      (onClose)="showShipping = false"
+    />
+    <app-job-payments
+      *ngIf="show_capture_payment"
+      [job]="job"
+      (jobUpdated)="job = $event; show_capture_payment = false; updateJob()"
+      (onClose)="show_capture_payment = false"
+    />
+
+    <div class="app-overlay" *ngIf="job && show_customer && job.Customer">
+      <div class="my-modal slide-from-bottom" style="animation-duration: 0.25s">
+        <div
+          class="d-flex align-items-center justify-content-between header w-100"
+        >
+          <h4 class="">Customer Info</h4>
+          <i class="bi bi-x-lg" (click)="show_customer = false"></i>
+        </div>
+        <div class="body">
+          <app-customer-form [customer]="job.Customer" />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

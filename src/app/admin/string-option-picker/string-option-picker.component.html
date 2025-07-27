@@ -1,0 +1,72 @@
+<div
+  class="form-control d-flex flex-wrap gap-2"
+  (click)="show_modal = !show_modal"
+>
+  <ng-container *ngIf="selectedSettings.length">
+    <button
+      class="btn btn-light shadow btn-light-picker"
+      *ngFor="let item of selectedSettings"
+    >
+      {{ item }}
+    </button>
+  </ng-container>
+  <ng-container *ngIf="!selectedSettings.length">
+    <span> Click here to {{ selectorTitle }} </span>
+  </ng-container>
+</div>
+
+<div class="app-overlay" *ngIf="show_modal && !show_add">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      [title]="selectorTitle"
+      (onClose)="show_modal = false"
+    />
+    <div class="actions">
+      <div class="p-1">
+        <div class="picker-group">
+          <label
+            *ngFor="let setting of settings; let i = index"
+            [attr.for]="'setting-' + i"
+          >
+            <input
+              type="checkbox"
+              [id]="'setting-' + i"
+              class="form-check-input me-2"
+              [(ngModel)]="setting.selected"
+            />
+            {{ setting.name }}
+          </label>
+        </div>
+        <hr />
+        <div class="d-flex justify-content-end gap-2">
+          <button class="btn btn-light" (click)="toogleAdd()">Add new</button>
+          <button class="btn btn-primary" (click)="onDone()">Done</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="app-overlay" *ngIf="!show_modal && show_add">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header [title]="selectorTitle" (onClose)="toogleAdd()" />
+    <div class="actions">
+      <div class="p-1">
+        <div class="form-group">
+          <input
+            type="text"
+            id="newSetting"
+            class="form-control w-100"
+            [(ngModel)]="newSetting"
+            placeholder="Enter value here...."
+            appAutofocus
+          />
+
+          <button class="btn btn-primary w-100" (click)="doneAdding()">
+            Done
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

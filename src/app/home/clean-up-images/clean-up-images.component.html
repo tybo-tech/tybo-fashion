@@ -1,0 +1,16 @@
+<div class="" *ngFor="let item of items">
+  <h5>
+    {{ item.ProductId }}
+  </h5>
+  <div class="images">
+    <div class="image" *ngFor="let img of item.Images">
+      <img [src]="img" alt="" class="mb-3" loading="lazy" />
+      <button
+      class="btn btn-danger w-100"
+        (click)="deleteImage(item, img)"
+      >
+        Delete
+      </button>
+    </div>
+  </div>
+</div>

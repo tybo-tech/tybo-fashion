@@ -1,0 +1,69 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header
+      title="Company contact info"
+      (onClose)="closed.emit()"
+    />
+
+    <div class="actions">
+      <div>
+        <div
+          *ngFor="
+            let testimonial of company.Metadata.Testimonials;
+            let i = index
+          "
+          class="mb-3"
+        >
+          <div class="form-group">
+            <label for="testimonialName{{ i }}">Title</label>
+            <input
+              [(ngModel)]="testimonial.Name"
+              type="text"
+              class="form-control"
+              id="testimonialName{{ i }}"
+            />
+          </div>
+          <div class="form-group">
+            <label for="testimonialImage{{ i }}">Image</label>
+            <!-- <app-upload-input [parentItem]="testimonial" imageKey="ImageUrl" /> -->
+            <app-image-widget
+              [image]="getImage(testimonial.ImageUrl)"
+              (imageChangedEvent)="testimonial.ImageUrl = $event"
+            />
+          </div>
+          <div class="form-group">
+            <label for="testimonialText{{ i }}">Testimonial</label>
+            <textarea
+              [(ngModel)]="testimonial.Testimonial"
+              class="form-control"
+              id="testimonialText{{ i }}"
+            ></textarea>
+          </div>
+          <button
+            type="button"
+            class="btn btn-danger"
+            (click)="removeTestimonial(i)"
+          >
+            Remove Testimonial
+          </button>
+        </div>
+        <button
+          type="button"
+          class="btn btn-primary"
+          (click)="addTestimonial()"
+        >
+          Add Testimonial
+        </button>
+        <br />
+        <br />
+        <button
+          type="submit"
+          class="w-100 btn btn-dark mb-2"
+          (click)="updated.emit(company)"
+        >
+          Update
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

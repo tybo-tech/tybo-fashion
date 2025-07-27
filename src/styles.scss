@@ -1,0 +1,165 @@
+/* You can add global styles to this file, and also import other style files */
+:root {
+  --primary: #081830;
+  --accent: #e6b505;
+  --white: #fff;
+  --primary-light: #b0d6ff;
+  --cloud: #ecf0f1;
+  --bs-list-group-active-bg: #e5efff;
+  --black: #2f3640;
+  // --heading-font: "Righteous", sans-serif;
+  --heading-font: "Young Serif", serif;
+  // --heading-font: "Poppins", serif;
+
+  // Gradients
+  --gradient-subtle: linear-gradient(
+    to right,
+    rgb(220, 220, 220),
+    rgb(255, 240, 210)
+  );
+  --gradient-warm: linear-gradient(
+    to bottom,
+    rgb(255, 248, 234),
+    rgb(255, 224, 204)
+  );
+  --gradient-complementary: linear-gradient(
+    to bottom,
+    rgb(255, 248, 234),
+    rgb(234, 248, 255)
+  );
+  --gradient-harmonious: linear-gradient(
+    to bottom,
+    rgb(255, 248, 234),
+    rgb(255, 255, 224)
+  );
+  --gradient-modern-contrast: linear-gradient(
+    to bottom,
+    rgb(255, 248, 234),
+    rgb(220, 200, 180)
+  );
+}
+@import "assets/styles/keyframes";
+@import "assets/styles/boot";
+@import "assets/styles/overlay";
+@import "assets/styles/utils";
+@import "assets/styles/layout";
+@import "assets/styles/scroller";
+* {
+  font-family: "Poppins", sans-serif;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--white);
+  color: var(--black);
+  font-size: 16px;
+  line-height: 1.5;
+  font-weight: 400;
+  font-style: normal;
+}
+
+h1,
+.h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--heading-font) !important;
+  font-weight: 600 !important;
+  font-style: normal !important;
+  // margin: 0 !important;
+}
+
+img {
+  max-width: 100%;
+  width: 100%;
+  height: auto;
+}
+a {
+  text-decoration: none;
+}
+
+a {
+  cursor: pointer;
+}
+
+.from-group {
+  margin-bottom: 24px;
+  background: white;
+  padding: 24px;
+}
+
+label {
+  font-size: 0.95rem;
+  color: #999999;
+  display: block;
+}
+
+.max-500 {
+  max-width: 500px;
+  margin: 0 auto;
+}
+.breadcrumb {
+  .breadcrumb-item {
+    font-size: 11px !important;
+  }
+}
+
+.type-stock {
+  font-size: 8px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.cloud {
+  background: var(--cloud) !important;
+}
+.white {
+  background: var(--white) !important;
+}
+.section {
+  padding: 24px 8px;
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 24px;
+  }
+}
+
+.product-card {
+  width: 100% !important;
+}
+
+.collections {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 20px;
+  padding: 20px;
+}
+
+.image-raised {
+  border: 1px solid rgb(248, 248, 248) !important;
+  filter: drop-shadow(2px 2px 4px rgba(188, 188, 188, 0.423)) !important;
+  border-radius: 6px !important;
+}
+.image-placeholder {
+  width: 100%;
+  height: 200px;
+  background-color: var(--cloud);
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  margin: 0;
+
+  p {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--black);
+    margin: 0;
+    padding: 0 1rem;
+  }
+}

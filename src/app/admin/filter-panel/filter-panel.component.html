@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-between gap-3 mb-4">
+  <input
+    type="search"
+    class="form-control"
+    placeholder="Search by name"
+    [(ngModel)]="search"
+    (input)="onSearch.emit(search)"
+  />
+  <div class="d-flex gap-2">
+    <button
+      *ngIf="addText"
+      class="btn btn-primary w-fit"
+      (click)="onAdd.emit()"
+    >
+      <i class="bi bi-plus"></i> {{ addText }}
+    </button>
+    <button class="btn btn-dark w-fit" (click)="showFilters = true">
+      <i class="bi bi-filter"></i>
+    </button>
+  </div>
+  <app-product-filters-admin
+    *ngIf="showFilters"
+    (onApply)="onApply.emit($event); showFilters = false"
+    (onClose)="showFilters = false"
+  />
+</div>

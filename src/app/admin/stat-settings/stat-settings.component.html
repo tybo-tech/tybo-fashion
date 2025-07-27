@@ -1,0 +1,79 @@
+<div class="app-overlay" *ngIf="company && company.Metadata">
+  <div class="my-modal my-modal cloud full-height">
+    <app-admin-modal-header title="Our Stats" (onClose)="closed.emit()" />
+    <div class="actions">
+      <div>
+        <div
+          *ngFor="let stat of company.Metadata.Stat; let i = index"
+          class="slide mb-4"
+        >
+          <div class="form-group">
+            <label for="statName{{ i }}">Name</label>
+            <input
+              [(ngModel)]="stat.Name"
+              type="text"
+              class="form-control"
+              id="statName{{ i }}"
+            />
+          </div>
+          <div class="row mt-3">
+            <div class="col-6">
+              <div class="form-group">
+                <label for="statCount{{ i }}">Count</label>
+                <input
+                  [(ngModel)]="stat.Count"
+                  type="text"
+                  class="form-control"
+                  id="statCount{{ i }}"
+                />
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="form-group">
+                <label for="statUnits{{ i }}">Units</label>
+                <input
+                  [(ngModel)]="stat.Units"
+                  type="text"
+                  class="form-control"
+                  id="statUnits{{ i }}"
+                />
+              </div>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            class="btn btn-danger mt-3"
+            (click)="removeStat(i)"
+          >
+            Remove Stat
+          </button>
+        </div>
+
+        <br />
+        <br />
+
+        <div class="row">
+          <div class="col-6">
+            <button
+              type="button"
+              class="btn w-100 btn-primary"
+              (click)="addStat()"
+            >
+              Add Stat
+            </button>
+          </div>
+          <div class="col-6">
+            <button
+              type="submit"
+              class="w-100 btn btn-dark mb-2"
+              (click)="updated.emit(company)"
+            >
+              Update
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

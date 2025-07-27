@@ -1,0 +1,35 @@
+<app-list-bread
+  *ngIf="category"
+  [currentPage]="category.Name.substring(0, 18) + '...'"
+  prevPage="Categories"
+  [prevLink]="'/store/admin/categories'"
+/>
+
+<app-list-bread
+  *ngIf="!category && products && products.length"
+  currentPage="Products"
+  [prevLink]="'/store/admin'"
+/>
+<app-hero-header
+  *ngIf="heroHeaderData && heroHeaderData.image"
+  [data]="heroHeaderData"
+></app-hero-header>
+<section>
+  <div class="d-flex align-items-end">
+    <a href="/store/admin/product/add" class="btn btn-primary">
+      Add product
+    </a>
+  </div>
+  <div class="box mt-5 p-3">
+    <div class="grid-4 p-2" *ngIf="products && products.length">
+      <app-product-card
+        (productPinned)="getProducts()"
+        class="w-100 d-block"
+        *ngFor="let product of products"
+        [companySlug]="product.CompanyId"
+        [product]="product"
+        [isAdminUser]="true"
+      />
+    </div>
+  </div>
+</section>

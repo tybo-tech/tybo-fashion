@@ -1,0 +1,20 @@
+img {
+  width: 4rem;
+}
+.line-row {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1rem auto;
+  gap: 1rem;
+}
+.selected-items {
+  position: fixed;
+  top: 0.4rem;
+  z-index: 10000000;
+  background: white;
+  width: 90%;
+  left: 5%;
+  padding: 0;
+  box-shadow: 5px 4px 8px rgba(21, 19, 19, 0.674);
+  border-radius: 20px;
+}

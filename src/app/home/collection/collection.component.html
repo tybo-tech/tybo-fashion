@@ -1,0 +1,30 @@
+<section class="nav-section">
+  <div class="box">
+    <app-tui-nav [company]="company" />
+    <app-mobile-back
+      [text]="collectionId"
+      [showShare]="true"
+      (onShare)="onShare()"
+      [customLink]="'/home/collections/zalou/' + type"
+    />
+  </div>
+</section>
+
+<section>
+  <div class="box mt-5 p-3">
+    <!-- <h1 class="text-center page-title">
+      {{collectionId}}
+    </h1>
+    <p class="text-center max-600 mb-4">
+      Explore more products from this collection. Find the perfect piece for any
+    </p> -->
+    <div class="grid-4 p-2" *ngIf="products && products.length">
+      <app-product-card
+        class="w-100 d-block"
+        *ngFor="let product of products"
+        [companySlug]="product.CompanyId"
+        [product]="product"
+      />
+    </div>
+  </div>
+</section>

@@ -1,0 +1,32 @@
+<div class="mt-1 p-3" *ngIf="product && product.Company">
+    <nav aria-label="breadcrumb ">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/', product.Company.Slug]">{{
+            product.Company.Name
+          }}</a>
+        </li>
+
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/', product.Company.Slug, 'collections']"
+            >Collections</a
+          >
+        </li>
+        <!-- <li class="breadcrumb-item" *ngIf="product.Categories.length">
+          <a
+            [routerLink]="[
+              '/',
+              product.Company.Slug,
+              'collections',
+              product.Categories[0]
+            ]"
+            >{{ product.Categories[0] }}</a
+          >
+        </li> -->
+        <li class="breadcrumb-item active" aria-current="page">
+          <small [innerHTML]="product.Name"> </small>
+        </li>
+      </ol>
+    </nav>
+    <hr />
+  </div>

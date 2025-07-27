@@ -1,0 +1,16 @@
+<h4 class="mt-3 p-2">What customers say about us.</h4>
+<div
+  class="testimonials d-flex"
+  *ngIf="company?.Metadata?.Testimonials?.length"
+>
+  <div
+    class="testimonial"
+    *ngFor="let testimonial of company?.Metadata?.Testimonials"
+  >
+    <img [src]="testimonial.ImageUrl" alt="" />
+    <h6 [innerHTML]="testimonial.Name"></h6>
+  </div>
+</div>
+<div class="p-2">
+  <a href="" class="btn btn-dark w-100 mb-2"> See more of our work</a>
+</div>

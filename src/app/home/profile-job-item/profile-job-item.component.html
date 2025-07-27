@@ -1,0 +1,26 @@
+<div class="cart-item" *ngIf="jobItem && job">
+    <img
+      (click)="editMode = true"
+      [src]="jobItem.FeaturedImageUrl"
+      *ngIf="jobItem.FeaturedImageUrl"
+      alt=""
+    />
+    <div
+      (click)="editMode = true"
+      class="image-place-holder"
+      *ngIf="!jobItem.FeaturedImageUrl"
+    ></div>
+    <div class="details p-0">
+      <a (click)="editMode = true" class="link-info mb-1 small">{{
+        jobItem.ItemName
+      }}</a>
+      <div class="m-0 d-flex mb-2 mt-2 align-items-center gap-2 text-muted">
+        <span class="small">Size: {{ jobItem.Size }} | Qty: {{
+          jobItem.Quantity
+        }} </span> 
+      </div>
+      <div class="price d-flex gap-3">
+        <span>{{ jobItem.UnitPrice * jobItem.Quantity | currency : "R" }}</span>
+      </div>
+    </div>
+  </div>

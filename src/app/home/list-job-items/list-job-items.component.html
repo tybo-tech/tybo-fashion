@@ -1,0 +1,17 @@
+<ng-container *ngIf="job">
+  <div class="cart-item" *ngFor="let jobItem of job.JobItems">
+    <img [src]="jobItem.FeaturedImageUrl" alt="" class="img-fluid" />
+    <div class="details p-3">
+      <h5 class="mb-1 h6">
+        {{ jobItem.Quantity }} x {{ jobItem.ItemName.substring(0, 30) }}...
+      </h5>
+      <div class="m-0 d-flex mb-2 mt-2 align-items-center gap-2 text-muted h6">
+        <span class="border-right pr-2">{{
+          jobItem.UnitPrice * jobItem.Quantity | currency : "R"
+        }}</span>
+        <span class="">Size: {{ jobItem.Size }}</span>
+        <!-- <span>Quantity: {{ jobItem.Quantity }}</span> -->
+      </div>
+    </div>
+  </div>
+</ng-container>

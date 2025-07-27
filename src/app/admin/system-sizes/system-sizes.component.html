@@ -1,0 +1,48 @@
+<div class="app-overlay" *ngIf="item_data">
+    <div class="my-modal cloud full-height">
+      <app-admin-modal-header
+        title="System Measurements"
+        (onClose)="closed.emit()"
+      />
+      <div class="actions">
+        <div class="p-1">
+          <div class="list-group">
+            <div class="list-group-item">
+              <div class="d-flex justify-content-end">
+                <button class="btn btn-primary" (click)="show_add = !show_add">Add new</button>
+              </div>
+            </div>
+            <div
+              *ngFor="let setting of item_data.ItemValue; let i = index"
+              class="list-group-item"
+            >
+              <label
+                class="form-check-label d-flex justify-content-between"
+                [for]="'setting-' + i"
+                >{{ setting }}
+                <i (click)="delete_item(i)" class="bi bi-trash link-danger"></i>
+              </label>
+            </div>
+          </div>
+         
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  <div class="app-overlay" *ngIf="show_add">
+      <div class="my-modal cloud full-height">
+        <app-admin-modal-header
+          title="Add System Measurement"
+          [show_x]="false"
+          (onClose)="show_add = false"
+        />
+        <div class="actions">
+            <!-- Input -->
+             <input type="text" placeholder="e.g. Waist" [(ngModel)]="name" class="form-control mb-3 p-2">
+             <button class="btn btn-primary w-100" (click)="add()">Save</button>
+  
+        </div>
+      </div>
+    </div>

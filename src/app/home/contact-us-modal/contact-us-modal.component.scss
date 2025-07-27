@@ -1,0 +1,28 @@
+:host {
+  .app-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+    .contact-modal {
+      background: white;
+      padding: 0;
+      width: 100%;
+      max-width: 600px;
+      min-height: 400px;
+      border-radius: 12px;
+      box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.1);
+      .modal-header {
+        padding: 1.5rem;
+        border-bottom: 1px solid #f0f0f0;
+        .close-btn {
+          position: absolute;
+          right: 1.5rem;
+          top: 1.5rem;
+          cursor: pointer;
+        }
+      }
+      .modal-body {
+        padding: 1.5rem;
+      }
+    }
+  }
+}

@@ -1,0 +1,137 @@
+<div *ngIf="customer">
+  <h6 class="mb-3">Contact details</h6>
+  <div class="mb-5">
+    <div class="form-group mb-3">
+      <div class="d-flex gap-2 align-items-center mb-2">
+        <i class="bi bi-person"></i>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="email"
+          class="form-control mb-0"
+          id="email"
+          [(ngModel)]="customer.Name"
+          required
+        />
+      </div>
+
+      <div class="d-flex gap-2 align-items-center mb-2">
+        <!-- Email -->
+        <i class="bi bi-envelope"></i>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="email"
+          class="form-control m-0"
+          id="email"
+          [(ngModel)]="customer.Email"
+          required
+        />
+      </div>
+
+      <!-- Phone       -->
+      <div class="d-flex gap-2 align-items-center">
+        <i class="bi bi-telephone"></i>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="email"
+          class="form-control m-0"
+          id="email"
+          [(ngModel)]="customer.PhoneNumber"
+          required
+        />
+      </div>
+    </div>
+  </div>
+  <h6 class="mb-3">Address Info</h6>
+
+  <div class="form-group mb-3">
+    <label for="email" class="form-label">Address Line 1</label>
+    <input
+      [ngModelOptions]="{ standalone: true }"
+      type="email"
+      class="form-control mb-3"
+      id="email"
+      [(ngModel)]="customer.AddressLineHome"
+      required
+    />
+  </div>
+
+  <div class="form-group mb-3">
+    <label for="email" class="form-label">Address Line 2</label>
+    <input
+      [ngModelOptions]="{ standalone: true }"
+      type="email"
+      class="form-control mb-3"
+      id="email"
+      [(ngModel)]="customer.AddressLine2"
+      required
+    />
+  </div>
+  <div class="row">
+    <div class="form-group mb-3 col-6">
+      <label for="email" class="form-label">City</label>
+      <input
+        [ngModelOptions]="{ standalone: true }"
+        type="email"
+        class="form-control mb-3"
+        id="email"
+        [(ngModel)]="customer.City"
+        required
+      />
+    </div>
+    <div class="form-group mb-3 col-6">
+      <label for="email" class="form-label">Postal Code</label>
+      <input
+        [ngModelOptions]="{ standalone: true }"
+        type="email"
+        class="form-control mb-3"
+        id="email"
+        [(ngModel)]="customer.PostalCode"
+        required
+      />
+    </div>
+  </div>
+  <h6 class="mb-3">Measurements</h6>
+  <table class="table mb-5">
+    <tbody>
+      <tr *ngFor="let item of customer.Measurements; let i = index">
+        <td>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control mb-3"
+            id="email"
+            [(ngModel)]="item.Name"
+            required
+          />
+        </td>
+        <td>
+          <div class="d-flex gap-1 align-items-center mb-3">
+            <input
+              [ngModelOptions]="{ standalone: true }"
+              type="number"
+              class="form-control"
+              id="email"
+              [(ngModel)]="item.Value"
+              required
+            />
+            <select [(ngModel)]="item.Units" name="" id="" class="form-select">
+              <option [value]="u" *ngFor="let u of ['','CM', 'INC']">
+                {{ u || 'Units' }}
+              </option>
+            </select>
+            <i class="bi bi-trash" (click)="delete(i)"></i>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" align="right" class="td">
+          <button class="btn btn-light" (click)="add_measurement()">Add Line</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <button type="submit" class="w-100 btn btn-dark mb-2" (click)="save()">
+    {{isNew ? 'Add customer' : 'Update customer'}}
+  </button>
+</div>

@@ -1,0 +1,13 @@
+<ng-container *ngIf="category">
+  <a [href]="itemUrl" class="testimonial link-dark">
+    <img [src]="category.ImageUrl" class="image-raised" [alt]="category.Name" />
+    <h6 [innerHTML]="category.Name"></h6>
+<!-- 
+    <small
+      *ngIf="category.CountProducts"
+      class="d-block text-success type-stock text-center"
+    >
+      {{ category.CountProducts }} products
+    </small> -->
+  </a>
+</ng-container>

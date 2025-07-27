@@ -1,0 +1,166 @@
+<div class="" *ngIf="product && product.Company">
+  <app-product-bread [product]="product" />
+  <!-- content -->
+  <section class="py-1">
+    <div class="container">
+      <div class="row gx-5">
+        <aside class="col-12">
+          <app-product-slider
+            *ngIf="product.Images"
+            [images]="product.Images"
+          />
+        </aside>
+        <main class="col-12">
+          <div class="ps-lg-3">
+            <h4 class="title text-dark mt-3">
+              {{ product.Name }}
+            </h4>
+            <div class="d-flex flex-row my-3">
+              <!-- <div class="text-warning mb-1 me-2">
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-fill"></i>
+                <i class="bi bi-star-half"></i>
+                <span class="ms-1"> 4.5 </span>
+              </div> -->
+              <span class="h5" *ngIf="!isCustom">
+                {{ product.RegularPrice | currency : "R" }}
+              </span>
+              <span class="h5" *ngIf="isCustom">
+                From {{ product.RegularPrice | currency : "R" }}
+              </span>
+              <span
+                *ngIf="!isCustom"
+                style="font-size: 11px; top: 3px; position: relative"
+                class="text-success ms-2"
+              >
+                {{ product.StockType }}
+              </span>
+              <span
+                *ngIf="isCustom"
+                style="font-size: 11px; top: 3px; position: relative"
+                class="text-success ms-2"
+              >
+                CUSTOM DESIGN
+              </span>
+            </div>
+
+            <p *ngIf="product.Description">
+              {{ product.Description }}
+            </p>
+
+            <div class="alert alert-warning" role="alert" *ngIf="!isCustom">
+              <i class="bi bi-exclamation-circle-fill"></i> This product is made
+              to order, please allow 7 days for delivery.
+            </div>
+
+            <!-- <div class="row">
+              <dt class="col-3">Type:</dt>
+              <dd class="col-9">Regular</dd>
+
+              <dt class="col-3">Color</dt>
+              <dd class="col-9">Brown</dd>
+
+              <dt class="col-3">Material</dt>
+              <dd class="col-9">Cotton, Jeans</dd>
+
+              <dt class="col-3">Brand</dt>
+              <dd class="col-9">
+                <a [routerLink]="['/', product.Company.Slug]">{{
+                  product.Company.Name
+                }}</a>
+              </dd>
+            </div> -->
+
+            <hr />
+
+            <div class="row mb-4">
+              <!-- <div class="col-md-4 col-6" *ngIf="product.Sizes.length">
+                <label class="mb-2 d-block">Size</label>
+                <app-select-size
+                  [product]="product"
+                  [size]="size"
+                  (selectSize)="size = $event"
+                  (on_measurements_captured)="measurements = $event"
+                />
+              </div> -->
+              <div class="col-md-4 col-6 mb-3" *ngIf="!isCustom">
+                <label class="mb-2 d-block">Quantity</label>
+                <app-main-qty
+                  [qty]="quantity"
+                  (qtyChange)="quantity = $event"
+                />
+              </div>
+              <app-input-error [errors]="errors" key="size" />
+            </div>
+            <button
+              (click)="addToCart(product)"
+              *ngIf="!isCustom"
+              class="btn btn-primary shadow-0 p-3 w-100 mb-2"
+            >
+              <i class="me-1 bi bi-bag"></i> Add to cart
+            </button>
+            <app-custom-product-note *ngIf="isCustom" />
+
+            <a
+              [href]="whatsappLink"
+              *ngIf="isCustom && whatsappLink"
+              class="btn btn-primary shadow-0 p-3 w-100 mb-2"
+            >
+              <i class="me-1 bi bi-whatsapp"></i> Contact Designer
+            </a>
+            <a
+              *ngIf="!liked"
+              (click)="on_like()"
+              class="btn btn-light border border-secondary p-3 w-100 mb-2 icon-hover px-3"
+            >
+              <i class="me-1 bi bi-heart"></i> Save
+            </a>
+            <a
+             (click)="on_like()"
+              *ngIf="liked"
+              class="btn btn-light border border-secondary p-3 w-100 mb-2 icon-hover px-3"
+            >
+              <i class="me-1 bi bi-heart-fill text-danger"></i> Saved
+            </a>
+          </div>
+        </main>
+      </div>
+      <div class="mt-4"></div>
+
+      <app-product-related
+        [product]="product"
+        [products]="product.RelatedProducts"
+        *ngIf="product.RelatedProducts && product.RelatedProducts.length"
+      />
+    </div>
+  </section>
+  <!-- content -->
+
+  <!-- <app-product-description /> -->
+</div>
+
+<div
+  class="toast slide-from-top"
+  *ngIf="errors && errors.size"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+>
+  <div class="toast-header">
+    <strong class="me-auto">
+      <i class="bi bi-info-fill"></i> Please fix the following
+    </strong>
+    <button
+      (click)="clearToast()"
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="toast"
+      aria-label="Close"
+    ></button>
+  </div>
+  <div class="toast-body">
+    {{ errors.size }}
+  </div>
+</div>

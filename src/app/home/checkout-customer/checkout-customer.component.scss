@@ -1,0 +1,25 @@
+
+  label {
+    font-size: .8rem;
+    color: #999999;
+    margin: 0 !important;
+
+  }
+  .pl-3 {
+    padding-left: 24px !important;
+  }
+ 
+:host{
+  .form-control{
+    // padding: 4px !important;
+    font-size: .8rem !important;
+  }
+
+  .btn{
+    width: fit-content !important;
+  }
+  .btn-light{
+    border: 1px solid #e0e0e0;
+    background: white;
+  }
+}

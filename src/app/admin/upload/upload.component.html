@@ -1,0 +1,45 @@
+<div class="app-overlay">
+    <div class="my-modal cloud">
+      <app-admin-modal-header
+        title="Upload Images"
+        [show_x]="false"
+        (onClose)="closed.emit()"
+      ></app-admin-modal-header>
+      <div class="actions">
+        <div class="container">
+          <div class="card">
+            <div class="card-header">
+              <h2>Upload Images</h2>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label for="fileInput" class="form-label">Select Images</label>
+                <input
+                  id="fileInput"
+                  type="file"
+                  class="form-control"
+                  (change)="onFileSelected($event)"
+                  multiple
+                />
+              </div>
+
+              <button id="uploadButton" class="btn btn-primary mt-3" (click)="onUpload()">Upload</button>
+
+              <!-- <button class="btn btn-primary mt-3" (click)="onUpload()">Upload</button> -->
+              <div *ngIf="uploadProgress > 0" class="progress mt-3">
+                <div
+                  class="progress-bar progress-bar-striped progress-bar-animated"
+                  role="progressbar"
+                  [style.width.%]="uploadProgress"
+                  [attr.aria-valuenow]="uploadProgress"
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                >{{ uploadProgress }}%</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  

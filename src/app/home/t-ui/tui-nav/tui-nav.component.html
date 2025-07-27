@@ -1,0 +1,189 @@
+<div
+  class="container-fluid bg-white py-2 px-3 px-md-4 px-lg-5 sticky-top shadow-sm"
+>
+  <div class="container py-3">
+    <div class="d-flex justify-content-between align-items-center">
+      <!-- Logo Section -->
+      <div class="d-flex align-items-center">
+        <a [href]="'/' + slug" *ngIf="companyLogo" class="text-decoration-none">
+          <img
+            [src]="companyLogo"
+            [alt]="company?.Name"
+            class="img-fluid"
+            style="max-height: 50px"
+          />
+        </a>
+        <a href="/" class="text-decoration-none" *ngIf="!companyLogo">
+          <img
+            src="assets/images/logo.svg"
+            alt="Tybo Fashion Logo"
+            class="img-fluid"
+            style="max-height: 30px"
+          />
+        </a>
+      </div>
+
+      <!-- Desktop Menu Items -->
+      <div class="d-none d-md-flex align-items-center gap-4">
+        <ng-container *ngIf="company && slug">
+          <a [href]="'/' + slug" class="text-dark text-decoration-none">{{
+            company.Name
+          }}</a>
+          <a
+            [href]="'/home/collections/' + slug"
+            class="text-dark text-decoration-none"
+            >Collections</a
+          >
+        </ng-container>
+
+        <a
+          *ngFor="let collection of collections"
+          [routerLink]="
+            '/home/collection/' + collection.Name + '/' + (company?.Slug || '')
+          "
+          class="text-dark text-decoration-none"
+        >
+          {{ collection.Name }}
+        </a>
+
+        <ng-container *ngIf="!user">
+          <a href="/home/sign-in" class="text-dark text-decoration-none"
+            >Login</a
+          >
+          <a href="/home/sign-up" class="text-dark text-decoration-none"
+            >Sign up</a
+          >
+        </ng-container>
+
+        <div class="position-relative" *ngIf="user">
+          <div
+            class="d-flex align-items-center gap-2"
+            (click)="toggleProfileNav($event)"
+          >
+            <i
+              class="bi bi-heart-fill text-danger cursor-pointer"
+              (click)="showFavourite()"
+              *ngIf="showShare"
+            ></i>
+            <div class="d-flex align-items-center gap-1 cursor-pointer">
+              <i id="user-icon" class="bi bi-person-fill text-primary"></i>
+              <span id="user-name" class="d-none d-lg-inline">
+                {{ user.Name.toLowerCase() | titlecase }}
+              </span>
+            </div>
+          </div>
+
+          <div class="position-absolute end-0 mt-2" *ngIf="showProfileNav">
+            <div class="bg-white rounded shadow p-3" style="min-width: 200px">
+              <app-profile-nav [user]="user" (signOut)="logout()" />
+            </div>
+          </div>
+        </div>
+
+        <i
+          class="bi bi-share cursor-pointer"
+          (click)="onShare.emit()"
+          *ngIf="showShare"
+        ></i>
+
+        <app-cart-icon />
+      </div>
+
+      <!-- Mobile Menu Toggle -->
+      <div class="d-flex d-md-none align-items-center gap-3">
+        <i
+          class="bi bi-share fs-5"
+          (click)="onShare.emit()"
+          *ngIf="showShare"
+        ></i>
+        <app-cart-icon />
+        <i class="bi bi-list fs-3 cursor-pointer" (click)="toggleMenu()"></i>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Menu -->
+  <div
+    class="offcanvas offcanvas-end"
+    [class.show]="menuOpen"
+    tabindex="-1"
+    id="mobileMenu"
+    aria-labelledby="mobileMenuLabel"
+  >
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title" id="mobileMenuLabel">
+        <a class="text-dark text-decoration-none" [routerLink]="''"
+          >Tybo Fashion</a
+        >
+      </h5>
+      <button
+        type="button"
+        class="btn-close"
+        (click)="toggleMenu()"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body d-flex flex-column gap-3">
+      <ng-container *ngIf="company && slug">
+        <a
+          [href]="'/' + slug"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >{{ company.Name }}</a
+        >
+        <a
+          [href]="'/home/collections/' + slug"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >Collections</a
+        >
+      </ng-container>
+
+      <a
+        *ngFor="let collection of collections"
+        [routerLink]="
+          '/home/collection/' + collection.Name + '/' + (company?.Slug || '')
+        "
+        class="text-dark text-decoration-none"
+        (click)="toggleMenu()"
+      >
+        {{ collection.Name }}
+      </a>
+
+      <ng-container *ngIf="!user">
+        <a
+          href="/home/sign-in"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >Login</a
+        >
+        <a
+          href="/home/sign-up"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >Sign up</a
+        >
+      </ng-container>
+
+      <ng-container *ngIf="user">
+        <div class="d-flex align-items-center gap-2">
+          <i
+            class="bi bi-heart-fill text-danger"
+            (click)="showFavourite(); toggleMenu()"
+            *ngIf="showShare"
+          ></i>
+          <div class="d-flex align-items-center gap-1">
+            <i class="bi bi-person-fill text-primary"></i>
+            <span>{{ user.Name.toLowerCase() | titlecase}}</span>
+          </div>
+        </div>
+        <app-profile-nav [user]="user" (signOut)="logout()" />
+      </ng-container>
+    </div>
+  </div>
+  <div
+    class="offcanvas-backdrop fade show"
+    *ngIf="menuOpen"
+    (click)="toggleMenu()"
+  ></div>
+</div>

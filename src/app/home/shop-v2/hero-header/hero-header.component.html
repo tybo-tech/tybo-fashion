@@ -1,0 +1,19 @@
+<div class="hero fade-in" [ngStyle]="{ 'background-image': 'url(' + data.image + ')' }">
+  <div class="overlay"></div>
+  <div class="content">
+    <h1>{{ data.title }}</h1>
+    <p [innerHTML]="data.description"></p>
+    <div class="buttons" *ngIf="data.slug">
+      <a
+        class="btn btn-light slide-from-left delay-0-2"
+        [routerLink]="'/home/collections/' + data.slug "
+        >Explore Collections <i class="bi bi-arrow-up-right-circle-fill"></i
+      ></a>
+      <a
+        class="btn btn-primary slide-from-left delay-0-3"
+        (click)="showBookConsultation.emit(true)"
+        >Chat on whatsapp<i class="bi bi-whatsapp"></i
+      ></a>
+    </div>
+  </div>
+</div>

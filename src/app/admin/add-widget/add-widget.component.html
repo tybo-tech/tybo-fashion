@@ -1,0 +1,27 @@
+<div class="app-overlay" *ngIf="show">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header
+      [title]="title"
+      [show_x]="false"
+      (onClose)="show = false"
+    />
+    <div class="actions">
+      <!-- Input -->
+      <input
+        type="text"
+        [placeholder]="placeholder"
+        [(ngModel)]="name"
+        class="form-control mb-3 p-2"
+      />
+      <button class="btn btn-primary w-100"
+      [disabled]="!name"
+      (click)="add.emit(name); show = false">
+        {{saveText}}
+      </button>
+    </div>
+   
+  </div>
+</div>
+<a (click)="show = !show" class="show-btn">
+    <i class="bi bi-plus-circle"></i>
+</a>

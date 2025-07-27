@@ -1,0 +1,16 @@
+:host {
+  .item-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    padding: 10px;
+    p {
+      font-size: 0.8rem;
+      padding: 8px 0;
+      .icon{
+        margin-right: 10px;
+        color: #065fbf;
+      }
+    }
+  }
+}

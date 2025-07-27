@@ -1,0 +1,19 @@
+.breadcrumb {
+  @media only screen and (max-width: 600px) {
+    display: none !important;
+  }
+}
+
+.phone-bread {
+  display: none;
+  padding: 8px 0 !important;
+  margin-bottom: 24px !important;
+  justify-content: space-between;
+  border-bottom: 1px solid #e0e0e0;
+  .bi{
+    font-size: 1.5rem;
+  }
+  @media only screen and (max-width: 600px) {
+    display: flex !important;
+  }
+}

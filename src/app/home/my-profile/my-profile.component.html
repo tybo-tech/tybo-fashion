@@ -1,0 +1,43 @@
+<div class="app-overlay" *ngIf="user">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="My Profile"
+      (onClose)="uxService.show_modal('')"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <div class="p-2">
+        <p class="text-center h1">
+          <i class="bi bi-person user-icon"></i>
+        </p>
+        <h4 class="text-center">
+          {{ user.Name }}
+        </h4>
+        <p class="text-center small">
+          {{ user.Email }}
+        </p>
+      </div>
+      <ul class="list-group max-600 mb-3">
+        <li
+          (click)="item.link && uxService.show_modal(item.link)"
+          *ngFor="let item of menuItems"
+          class="link-dark list-group-item p-3 text-center lh-condensed"
+        >
+          <div>
+            <h6 class="my-0">
+              {{ item.name }}
+            </h6>
+          </div>
+          <span class="text-muted" *ngIf="item.count"> {{ item.count }}</span>
+        </li>
+        <li class="link-dark list-group-item p-3 text-center lh-condensed" (click)="logout()">
+          <div>
+            <h6 class="my-0">
+              Logout
+            </h6>
+          </div>
+      </ul>
+    </div>
+  </div>
+</div>
+

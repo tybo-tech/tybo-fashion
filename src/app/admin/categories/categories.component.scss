@@ -1,0 +1,87 @@
+.categories-container {
+  .category-card {
+    transition: all 0.3s ease;
+    border: 1px solid #dee2e6;
+    
+    &:hover {
+      border-color: #007bff;
+      box-shadow: 0 4px 8px rgba(0, 123, 255, 0.15);
+    }
+  }
+
+  .search-bar {
+    .input-group-text {
+      background-color: #f8f9fa;
+      border-color: #dee2e6;
+    }
+  }
+
+  .btn-group {
+    .btn {
+      border-radius: 0.25rem;
+      
+      &:first-child {
+        margin-right: 0.25rem;
+      }
+    }
+  }
+
+  .empty-state {
+    padding: 3rem 1rem;
+    
+    .fa-3x {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+  }
+}
+
+// Modal styles
+.modal {
+  &.show {
+    animation: fadeIn 0.3s ease;
+  }
+  
+  .modal-dialog {
+    animation: slideIn 0.3s ease;
+  }
+}
+
+// Loading states
+.loading-spinner {
+  .spinner-border {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+// Animations
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideIn {
+  from { 
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to { 
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .categories-container {
+    .btn-group {
+      flex-direction: column;
+      
+      .btn {
+        margin-bottom: 0.25rem;
+        margin-right: 0;
+      }
+    }
+  }
+}

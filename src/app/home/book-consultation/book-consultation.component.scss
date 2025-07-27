@@ -1,0 +1,51 @@
+:host{
+    .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      
+        h6 {
+          font-size: 1.25rem;
+          font-weight: bold;
+        }
+      
+        p {
+          font-size: 1rem;
+          color: #555;
+        }
+      
+        .custom-textarea {
+          width: 100%;
+          padding: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+          font-size: 1rem;
+          resize: none;
+          outline: none;
+          transition: border-color 0.3s ease-in-out;
+      
+          &:focus {
+            border-color: #25d366;
+            box-shadow: 0 0 5px rgba(37, 211, 102, 0.5);
+          }
+        }
+      
+        .btn-primary {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background-color: #25d366;
+          border: none;
+          color: white;
+          font-size: 1rem;
+          padding: 10px;
+          border-radius: 5px;
+          transition: background-color 0.3s ease-in-out;
+      
+          &:hover {
+            background-color: #1ebe57;
+          }
+        }
+      }
+      
+}

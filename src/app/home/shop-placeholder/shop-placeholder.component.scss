@@ -1,0 +1,28 @@
+$size: 100px;
+:host {
+  .shop {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    .img {
+      width: $size;
+      height: $size;
+      object-fit: cover;
+      cursor: pointer;
+      border-radius: 50%;
+      border: 2px solid #68b02a;
+      color:  #68b02a;
+      background: lightblue;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 2rem;
+      scale: .8;
+      transition: all .3s;
+      &:hover {
+        scale: 1;
+      }
+    }
+  }
+}

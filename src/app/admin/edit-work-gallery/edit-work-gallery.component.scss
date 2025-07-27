@@ -1,0 +1,37 @@
+.header {
+    display: grid;
+    grid-template-columns: 40px auto;
+    gap: 12px;
+    border: 2px solid #f1f1f1;
+    border-radius: 8px;
+      padding: 12px;
+    img {
+      border-radius: 4px;
+    }
+    h5,
+    p {
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+  }
+  
+  
+  .products{
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 12px;
+      .product {
+          border: 2px solid #f1f1f1;
+          border-radius: 8px;
+          padding: 12px;
+          img {
+          width: 100%;
+          border-radius: 4px;
+          }
+          h5,
+          p {
+          margin: 0 !important;
+          padding: 0 !important;
+          }
+      }
+  }

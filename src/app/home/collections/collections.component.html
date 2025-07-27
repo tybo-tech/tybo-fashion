@@ -1,0 +1,41 @@
+<ng-container *ngIf="category && !loading">
+  <main class="main p-0" *ngIf="company && company.Metadata">
+    <section class="nav-section">
+      <div class="box">
+        <app-tui-nav [company]="company" [showShare]="true" />
+      </div>
+    </section>
+
+    <app-mobile-back *ngIf="heroHeaderData" [text]="heroHeaderData.title" />
+
+    <app-hero-header
+      *ngIf="heroHeaderData && heroHeaderData.image"
+      [data]="heroHeaderData"
+    ></app-hero-header>
+
+    <section class="category-section fade-in mt-5 mb-5">
+      <div class="container">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="section-title">{{ category.Name }}</h6>
+        </div>
+
+        <div class="row">
+          <div
+            class="col-md-3 col-6 mb-3"
+            *ngFor="let child of category.Children"
+          >
+            <app-category-card
+              [category]="child"
+              [slug]="category.Company?.Slug || ''"
+            ></app-category-card>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <app-store-footer [company]="company" />
+  </main>
+</ng-container>
+
+<!-- Loading -->
+<div class="loading" *ngIf="loading"></div>

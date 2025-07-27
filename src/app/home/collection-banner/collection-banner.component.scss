@@ -1,0 +1,25 @@
+.categories {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  .category {
+    position: relative;
+    overflow: hidden;
+    img {
+      width: 100px;
+      height: 100px;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+    p {
+        font-size: 0.75rem;
+        color: white;
+        position: relative;
+        bottom: -10px;
+        text-align: center;
+        font-weight: 200 !important;
+      }
+  }
+}

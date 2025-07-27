@@ -1,0 +1,61 @@
+<div class="app-overlay" *ngIf="user">
+  <div class="my-modal">
+    <div class="d-flex align-items-center justify-content-between header w-100">
+      <h4>Shipping info</h4>
+      <i class="bi bi-x-lg" (click)="close()"></i>
+    </div>
+
+    <div class="p-3">
+      <app-view-user-contact *ngIf="user" [user]="user" />
+    </div>
+
+    <div class="hr"></div>
+    <div class="actions">
+      <h5 class="mb-2 mt-4">Shipping details</h5>
+      <div class="form-group">
+        <label for="address">Address Line 1</label>
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          placeholder="Address"
+          [(ngModel)]="user.AddressLineHome"
+        />
+        <label for="address">Address Line 2</label>
+        <input
+          type="text"
+          class="form-control"
+          id="address"
+          placeholder="Address"
+          [(ngModel)]="user.AddressLine2"
+        />
+
+        <div class="row">
+          <div class="col-6">
+            <label for="city">City</label>
+            <input
+              type="text"
+              class="form-control"
+              id="city"
+              placeholder="City"
+              [(ngModel)]="user.City"
+            />
+          </div>
+          <div class="col-6">
+            <label for="postal_code">Postal code</label>
+            <input
+              type="number"
+              class="form-control"
+              id="postal_code"
+              placeholder="Postal code"
+              [(ngModel)]="user.PostalCode"
+            />
+          </div>
+        </div>
+        <button class="w-100 mb-2 btn btn-dark" (click)="save()">
+          Save & Continue
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

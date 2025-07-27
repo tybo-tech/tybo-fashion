@@ -1,0 +1,38 @@
+<div class="max-500" *ngIf="company">
+  <div class="mt-1 p-3">
+    <nav aria-label="breadcrumb ">
+      <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/', company.Slug]">{{ company.Name }}</a>
+        </li>
+        <li class="breadcrumb-item">
+          <a [routerLink]="['/', company.Slug, 'collections']">Collections</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">
+          <small [innerHTML]="category"> </small>
+        </li>
+      </ol>
+    </nav>
+  </div>
+
+  <h4 class="mt-0 p-3" [innerHTML]="category"></h4>
+
+  <div
+    class="collections"
+    *ngIf="company && company.Products && company.Products.length"
+  >
+    <app-product-card
+      *ngFor="let product of company.Products"
+      [product]="product"
+      [companySlug]="company.Slug"
+      class="product-card"
+    />
+  </div>
+
+  <div
+    class="p-4"
+    *ngIf="company && (!company.Products || company.Products.length)"
+  >
+    <div class="alert alert-info">No products found in this category</div>
+  </div>
+</div>

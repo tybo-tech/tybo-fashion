@@ -1,0 +1,12 @@
+:host {
+    $size: 2.5rem;
+    .list-icon {
+      width: $size;
+      height: $size;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+  }
+  

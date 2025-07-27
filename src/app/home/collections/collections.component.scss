@@ -1,0 +1,16 @@
+:host {
+  .grid-4 {
+    max-width: 800px;
+    margin: 0 auto;
+    @media only screen and (max-width: 600px) {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  .page-title {
+    margin-top: 2rem;
+    @media only screen and (max-width: 600px) {
+      margin-top: 3rem;
+    }
+  }
+}

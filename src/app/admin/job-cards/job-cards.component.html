@@ -1,0 +1,47 @@
+<app-list-bread currentPage="Job Cards" />
+<div class="list-group max-600 w-auto" *ngIf="jobCards">
+  <app-filter-panel (onSearch)="query = $event; filter()" />
+  <div
+    *ngFor="let job of jobCards"
+    (click)="jobItemId = job.JobItemId; jobCard = job"
+    class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3"
+  >
+    <i class="bi bi-breafcase"></i>
+    <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
+      <div>
+        <h6 class="mb-0">
+          <b> {{ job.JobNo }}</b> <br />
+          {{ job.ItemName }} <br />
+          <small class="text-muted" *ngIf="job.CustomerName">
+            <i class="bi bi-person-fill"></i> {{ job.CustomerName }}
+            <br />
+          </small>
+
+          <small class="text-muted">
+            <i class="bi bi-briefcase-fill"></i>
+            {{ job.AssignedToName || "Unassigned" }}
+            <br />
+          </small>
+        </h6>
+        <!-- <app-tags [product]="product" /> -->
+      </div>
+      <small class="opacity-80 text-nowrap">
+        <b>
+          <span class="text-success">{{ job.JobStatus }}</span>
+          <span *ngIf="job.DueDate" class="text-danger">
+            <br />
+            <i class="bi bi-calendar-check-fill"></i>
+            {{ job.DueDate | date }}</span
+          >
+        </b>
+      </small>
+    </div>
+  </div>
+</div>
+
+<app-job-card
+  *ngIf="jobItemId && jobCard"
+  [jobItemId]="jobItemId"
+  [jobCard]="jobCard"
+  (onClose)="jobItemId = ''; get()"
+/>

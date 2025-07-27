@@ -1,0 +1,35 @@
+<div class="app-overlay" *ngIf="user">
+  <div class="my-modal full-height">
+    <app-modal-header-home
+      title="My orders"
+      (onClose)="uxService.show_modal(UX_MODALS.profile)"
+      [show_x]="false"
+    />
+    <div class="actions">
+      <ul *ngIf="jobs" class="list-group max-600 mb-3">
+        <li
+          *ngFor="let order of jobs"
+          class="link-dark list-group-item p-3 lh-condensed"
+          (click)="uxService.show_modal(UX_MODALS.profile_order,order.JobId)"
+        >
+          <div class="d-flex justify-content-between">
+            <div>
+              <h6 class="mb-0">{{ order.Metadata.InvoiceNo }}</h6>
+              <small class="d-block text-muted">{{
+                order.CreateDate | date
+              }}</small>
+            </div>
+            <app-order-list-images
+              *ngIf="order.JobItems"
+              [imageUrls]="order.images || []"
+            />
+          </div>
+
+          <small *ngIf="order.deliveryDate" class="d-block text-success mt-2">
+            Estimated delivery: {{ order.deliveryDate | date }}
+          </small>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

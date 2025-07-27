@@ -1,0 +1,66 @@
+<!-- {{productName}}
+<pre>
+    {{user | json }}
+</pre> -->
+<!-- {{amount}}
+<pre>
+    {{job | json }}
+</pre> -->
+<form class="fade-in"
+  ngNoForm
+  [action]="payfast.payUrl"
+  method="POST"
+  *ngIf="
+    job &&
+    user &&
+    productName &&
+    amount &&
+    user.Metadata.DraftOrder &&
+    user.Metadata.DraftOrderId
+  "
+>
+
+  <span *ngIf="payfast.shopingSuccesfulUrl">
+    <input type="hidden" name="merchant_id" [value]="payfast.merchantId" />
+    <input type="hidden" name="merchant_key" [value]="payfast.merchantKey" />
+    <input
+      type="hidden"
+      name="return_url"
+      [value]="payfast.shopingSuccesfulUrl"
+    />
+    <input
+      type="hidden"
+      name="cancel_url"
+      [value]="payfast.paymentCancelledUrl"
+    />
+    <input
+      type="hidden"
+      name="notify_url"
+      [value]="payfast.paymentCallbackUrl"
+    />
+
+    <input type="hidden" name="name_first" [value]="user.Name" />
+    <input type="hidden" name="name_last" [value]="" />
+    <input type="hidden" name="email_address" [value]="user.Email" />
+    <input
+      type="hidden"
+      name="cell_number"
+      [value]="user.PhoneNumber || '0842529472'"
+    />
+
+    <input type="hidden" name="amount" [value]="amount" />
+    <input type="hidden" name="item_name" [value]="productName" />
+    <input type="hidden" name="item_description" [value]="productName" />
+
+    <input type="hidden" name="email_confirmation" value="1" />
+    <input
+      type="hidden"
+      name="confirmation_address"
+      value="payments@tybo.co.za"
+    />
+  </span>
+
+  <button id="payfast-link" type="submit" class="btn btn-primary w-100">
+    Proceed to payfast <i class="bi bi-lock-fill"></i>
+  </button> 
+</form>

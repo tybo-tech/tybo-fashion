@@ -1,0 +1,10 @@
+<div class="p-4 categories" *ngIf="top4">
+  <a
+    class="category"
+    *ngFor="let item of top4"
+    [routerLink]="'/home/collections'"
+  >
+    <img [src]="item.ImageUrl" alt="" />
+    <p>{{ item.Name }}</p>
+  </a>
+</div>

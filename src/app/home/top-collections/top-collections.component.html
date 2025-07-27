@@ -1,0 +1,11 @@
+<div class="grid-4" *ngIf="top4">
+  <app-collection-card
+    class="category"
+    *ngFor="let item of top4"
+    [category]="item"
+    [url]="'/collections/' + item.Id"
+    [type]="type"
+    [companyId]="slug"
+  />
+</div>
+<app-see-more [url]="'/home/collections/' + slug + '/' + type"></app-see-more>

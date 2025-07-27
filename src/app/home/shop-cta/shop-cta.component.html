@@ -1,0 +1,16 @@
+<div class="mt-2 mb-2 row p-2" *ngIf="company">
+  <div class="col-12">
+    <a
+      [routerLink]="['/', company.Slug, 'collections']"
+      class="btn btn-dark w-100 mb-2"
+    >
+      Shop available designs
+    </a>
+  </div>
+  <div class="col-12">
+    <a [href]="company.whatsappLink"
+    *ngIf="company.whatsappLink" class="btn btn-dark w-100 mb-2">
+      Book a consultation for your own design
+    </a>
+  </div>
+</div>

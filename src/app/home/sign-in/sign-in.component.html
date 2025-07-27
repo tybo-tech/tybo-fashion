@@ -1,0 +1,60 @@
+<section class="nav-section bg-white box-shadow">
+  <div class="box">
+    <app-tui-nav />
+  </div>
+</section>
+<main class="form-signin w-100 m-auto">
+  <form [formGroup]="signInForm" (ngSubmit)="login()">
+    <h1 class="h4">Login to your account</h1>
+    <p>Enter your email address and password to login to your account.</p>
+    <div class="form-floating mb-4">
+      <input
+        type="text"
+        class="form-control"
+        id="name"
+        placeholder="Email address"
+        formControlName="email"
+        required
+      />
+      <label for="name">Email address</label>
+    </div>
+
+    <div class="form-floating mb-1">
+      <i
+        class="bi see-pass"
+        (click)="seePass = !seePass"
+        [ngClass]="{ 'bi-eye': !seePass, 'bi-eye-slash': seePass }"
+      ></i>
+      <input
+        [type]="seePass ? 'text' : 'password'"
+        class="form-control"
+        id="password"
+        placeholder="Password"
+        formControlName="password"
+        required
+      />
+      <label for="password">Password </label>
+    </div>
+    <div class="d-flex justify-content-end mb-4">
+      <small>
+        <a [routerLink]="['/home/forgot-password', returnTo]">
+          Forgot password?
+        </a>
+      </small>
+    </div>
+    <button
+      type="submit"
+      class="btn btn-primary w-100"
+      [disabled]="signInForm.invalid"
+    >
+      Login
+    </button>
+    <a
+      [routerLink]="['/home/sign-up', returnTo]"
+      class="d-block mt-4 link-info"
+    >
+      Don't have an account? Register
+    </a>
+  </form>
+</main>
+<app-footer></app-footer>

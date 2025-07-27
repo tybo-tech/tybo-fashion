@@ -1,0 +1,66 @@
+<nav class="navbar navbar-expand-lg navbar-light">
+  <div class="container">
+    <!-- Brand Logo -->
+    <a class="navbar-brand" href="#">
+      <img src="assets/images/logo.svg" alt="Brand Logo" class="logo">
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button class="navbar-toggler" type="button" (click)="toggleMenu()" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Content -->
+    <div class="collapse navbar-collapse" [class.show]="!isCollapsed" id="navbarContent">
+      <!-- Main Navigation -->
+      <ul class="navbar-nav me-auto">
+        <ng-container *ngFor="let item of navItems">
+          <li class="nav-item" *ngIf="!item.children; else dropdown" [ngClass]="{'dropdown': item.children}">
+            <a class="nav-link" [href]="item.path">{{item.title}}</a>
+          </li>
+
+          <ng-template #dropdown>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="{{item.title}}Dropdown" role="button" data-bs-toggle="dropdown">
+                {{item.title}}
+              </a>
+              <ul class="dropdown-menu">
+                <ng-container *ngFor="let child of item.children">
+                  <li *ngIf="child.title !== 'divider'; else divider">
+                    <a class="dropdown-item" [href]="child.path">{{child.title}}</a>
+                  </li>
+                  <ng-template #divider>
+                    <li><hr class="dropdown-divider"></li>
+                  </ng-template>
+                </ng-container>
+              </ul>
+            </li>
+          </ng-template>
+        </ng-container>
+      </ul>
+
+      <!-- Search Box -->
+      <div class="search-box">
+        <i class="bi bi-search search-icon"></i>
+        <input class="form-control search-input" type="search" placeholder="Search for products...">
+      </div>
+
+      <!-- Icons (Account, Wishlist, Cart) -->
+      <div class="nav-icons-container d-flex ms-3">
+        <a href="#" class="nav-icon" title="Account">
+          <i class="bi bi-person"></i>
+        </a>
+
+        <a href="#" class="nav-icon" title="Wishlist">
+          <i class="bi bi-heart"></i>
+          <span class="wishlist-count">{{wishlistItemsCount}}</span>
+        </a>
+
+        <a href="#" class="nav-icon" title="Cart">
+          <i class="bi bi-bag"></i>
+          <span class="cart-count">{{cartItemsCount}}</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,15 @@
+:host {
+  .show-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000000000000000000;
+    font-size: 2rem;
+    color: green;
+    cursor: pointer;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.2);
+    padding: 10px;
+    border-radius: 10px;
+    background-color: white;
+  }
+}

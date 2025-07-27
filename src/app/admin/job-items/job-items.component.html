@@ -1,0 +1,14 @@
+<ng-container *ngIf="job && job.JobItems">
+  <div *ngFor="let item of job.JobItems">
+    <app-job-item [jobItem]="item" [user]="user"  [job]="job"/>
+  </div>
+
+  <app-job-item-form
+    *ngIf="addMode"
+    [user]="user"
+    [jobItem]="jobItem"
+    (onClose)="addMode = !addMode"
+    (jobItemUpdated)="onJobItemUpdated($event)"
+  />
+  <button class="btn btn-primary" (click)="addMode = true">Add item</button>
+</ng-container>

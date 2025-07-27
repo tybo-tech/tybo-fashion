@@ -1,0 +1,10 @@
+:host {
+  section {
+    padding: 3rem 1rem;
+    background-color: #ececec;
+    @media screen and (max-width: 600px) {
+      padding: .5rem 1rem;
+      
+    }
+  }
+}

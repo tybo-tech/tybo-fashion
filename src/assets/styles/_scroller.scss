@@ -1,0 +1,33 @@
+$border-radius: 0px;
+/* Scrollbar Width */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px; /* For horizontal scrollbars */
+  }
+  
+  /* Scrollbar Track */
+  ::-webkit-scrollbar-track {
+    background-color: #b8b8b8; /* Subtle light grey for a cleaner look */
+    border-radius: $border-radius;
+    box-shadow: inset 0 0 2px rgba(0, 0, 0, 0.1); /* Adds a soft inner shadow */
+  }
+  
+  /* Scrollbar Handle */
+  ::-webkit-scrollbar-thumb {
+    background-color: #000000; /* Neutral grey for the thumb */
+    border-radius: $border-radius;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  /* Scrollbar Handle on Hover */
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: var(--accent); /* Slightly darker grey on hover */
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2); /* Adds a subtle outer shadow for depth */
+    cursor: pointer;
+  }
+  
+  /* Scrollbar Corner (when both vertical and horizontal scrollbars appear) */
+  ::-webkit-scrollbar-corner {
+    background-color: #f8f9fa;
+  }
+  

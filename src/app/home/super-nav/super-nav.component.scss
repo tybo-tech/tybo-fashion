@@ -1,0 +1,55 @@
+:host {
+  .menu-items {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 20px;
+    background-color: #000000;
+    border-bottom: 1px solid #e0e0e0;
+    gap: 20px;
+    .menu-item {
+      display: flex;
+      align-items: center;
+      font-size: 0.7rem;
+      color: #ffffff;
+      gap: 4px;
+      a {
+        color: #ffffff;
+        text-decoration: none;
+        position: relative;
+        .sub-menu {
+          display: none;
+          position: absolute;
+          left: 50%;
+          top: 110%;
+          transform: translateX(-50%);
+          background-color: #000000;
+          border-radius: 5px;
+          padding: 18px;
+          gap: 10px;
+          min-width: 200px;
+          transition: all 0.7s;
+          a {
+            color: #ffffff;
+            text-decoration: none;
+          }
+        }
+        &:hover .sub-menu {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 100%;
+          left: 0;
+          z-index: 100;
+        }
+      }
+      .menu-item-icon {
+        font-size: 20px;
+        margin-right: 10px;
+      }
+      .menu-item-text {
+        font-size: 16px;
+      }
+    }
+  }
+}
