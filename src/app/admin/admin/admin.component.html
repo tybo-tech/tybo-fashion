@@ -1,138 +1,169 @@
-<ng-container *ngIf="user && user.Company">
-  <header
-    class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow"
-  >
-    <a
-      class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6"
-      href="/store/admin"
-    >
-      {{ user.Company.Name }}</a
-    >
-    <button
-      class="navbar-toggler position-absolute d-md-none collapsed"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#sidebarMenu"
-      aria-controls="sidebarMenu"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
-    >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <!-- <input
-      class="form-control form-control-dark w-100 rounded-0 border-0"
-      type="text"
-      placeholder="Search"
-      aria-label="Search"
-    /> -->
+<ng-container *ngIf="user && user.Company" class="modern-admin-shell">
+  <!-- Modern Header -->
+  <header class="admin-header">
+    <div class="header-container">
+      <!-- Brand Section -->
+      <div class="brand-section">
+        <a class="brand-link" href="/store/admin">
+          <div class="brand-icon">
+            <i class="bi bi-shop"></i>
+          </div>
+          <div class="brand-info">
+            <h1 class="brand-name">{{ user.Company.Name }}</h1>
+            <span class="brand-subtitle">Admin Dashboard</span>
+          </div>
+        </a>
+      </div>
+
+      <!-- Header Actions -->
+      <div class="header-actions">
+        <button class="search-toggle" type="button">
+          <i class="bi bi-search"></i>
+        </button>
+        <button class="notifications-btn" type="button">
+          <i class="bi bi-bell"></i>
+          <span class="notification-badge">3</span>
+        </button>
+        <div class="user-menu">
+          <button class="user-toggle" type="button">
+            <div class="user-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+          </button>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button
+          class="mobile-menu-toggle d-lg-none"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#sidebarMenu"
+          aria-controls="sidebarMenu"
+          aria-expanded="false"
+          aria-label="Toggle navigation"
+        >
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+          <span class="hamburger-line"></span>
+        </button>
+      </div>
+    </div>
   </header>
 
-  <div class="container-fluid">
-    <div class="row">
-      <nav
-        id="sidebarMenu"
-        class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse p-4 mt-4"
-      >
-      <div class="mt-4"></div>
-        <div *ngFor="let group of menu" class="item-group">
-          <h6 class="text-info">
-            {{ group.name }}
-          </h6>
-          <div
-            *ngFor="let item of group.items"
-            class="d-flex justify-content-between align-items-center item"
-          >
-            <a class="my-0 nav-link" [href]="item.url" [ngClass]="{ active: item.url === current_url }">
-              <span class="icon">
-                <i [ngClass]="item.icon"></i>
-              </span>
-              {{ item.name }}
-            </a>
+  <!-- Main Layout -->
+  <div class="admin-layout">
+    <!-- Modern Sidebar -->
+    <nav id="sidebarMenu" class="sidebar collapse d-lg-block">
+      <div class="sidebar-content">
+        <!-- Sidebar Header -->
+        <div class="sidebar-header">
+          <h6 class="sidebar-title">Navigation</h6>
+          <button class="sidebar-close d-lg-none" data-bs-toggle="collapse" data-bs-target="#sidebarMenu">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <!-- Navigation Menu -->
+        <div class="navigation-menu">
+          <div *ngFor="let group of menu" class="menu-group">
+            <div class="group-header">
+              <h6 class="group-title">{{ group.name }}</h6>
+            </div>
+
+            <div class="group-items">
+              <a
+                *ngFor="let item of group.items"
+                class="nav-item"
+                [href]="item.url"
+                [ngClass]="{ active: item.url === current_url }"
+              >
+                <div class="nav-icon">
+                  <i [ngClass]="item.icon"></i>
+                </div>
+                <span class="nav-label">{{ item.name }}</span>
+                <div class="nav-indicator"></div>
+              </a>
+            </div>
+          </div>
+
+          <!-- Logout Section -->
+          <div class="menu-group logout-section">
+            <div class="group-items">
+              <button class="nav-item logout-btn" (click)="logout()">
+                <div class="nav-icon">
+                  <i class="bi bi-box-arrow-right"></i>
+                </div>
+                <span class="nav-label">Logout</span>
+              </button>
+            </div>
           </div>
         </div>
+      </div>
+    </nav>
 
-        <!-- <div class="position-sticky pt-3 sidebar-sticky">
-          <ul class="nav flex-column">
-            <li class="nav-item" *ngFor="let item of menu">
-              <a
-                class="nav-link"
-                [ngClass]="{ active: item.url === current_url }"
-                aria-current="page"
-                [href]="item.url"
-              >
-                <i [ngClass]="item.icon"></i> {{ item.name }}
-              </a>
-            </li>
-            <li class="nav-item">
-              <a
-                class="nav-link"
-                (click)="logout()"
-                aria-current="page"
-                href="javascript:void(0)"
-              >
-                <i class="bi bi-box-arrow-right"></i> Logout
-              </a>
-            </li>
-          </ul>
-        </div> -->
-      </nav>
-
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 white">
-        <div class="mt-4">
-          <router-outlet></router-outlet>
-        </div>
-      </main>
-    </div>
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <div class="content-container">
+        <router-outlet></router-outlet>
+      </div>
+    </main>
   </div>
 </ng-container>
 
+<!-- Modern Toast Notifications -->
 <div
-  class="toast slide-from-top"
+  class="modern-toast"
   *ngIf="ux && ux.Toast && ux.Toast.Message"
   role="alert"
   [ngClass]="ux.Toast.Classes"
   aria-live="assertive"
   aria-atomic="true"
 >
-  <div class="toast-header">
-    <strong class="me-auto">
-      <i class="bi bi-info-fill"></i> {{ ux.Toast.Title }}
-    </strong>
-    <button
-      (click)="clearToast()"
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="toast"
-      aria-label="Close"
-    ></button>
-  </div>
-  <div class="toast-body">
-    {{ ux.Toast.Message }}
+  <div class="toast-content">
+    <div class="toast-icon">
+      <i class="bi bi-check-circle-fill" *ngIf="ux.Toast.Classes?.includes('success')"></i>
+      <i class="bi bi-exclamation-triangle-fill" *ngIf="ux.Toast.Classes?.includes('warning')"></i>
+      <i class="bi bi-x-circle-fill" *ngIf="ux.Toast.Classes?.includes('error')"></i>
+      <i class="bi bi-info-circle-fill" *ngIf="!ux.Toast.Classes || ux.Toast.Classes?.includes('info')"></i>
+    </div>
+    <div class="toast-text">
+      <div class="toast-title">{{ ux.Toast.Title }}</div>
+      <div class="toast-message">{{ ux.Toast.Message }}</div>
+    </div>
+    <button class="toast-close" (click)="clearToast()" type="button" aria-label="Close">
+      <i class="bi bi-x"></i>
+    </button>
   </div>
 </div>
 
+<!-- Modern Confirmation Modal -->
 <div
   *ngIf="ux && ux.Confirm && ux.Confirm.Show"
-  class="app-overlay d-flex d-flex gap-2 align-items-center justify-content-center"
+  class="modern-modal-overlay"
 >
-  <div class="card fade-in" style="width: 80%; max-width: 300px">
-    <div class="card-header">
-      <h5 class="card-title">
+  <div class="modal-backdrop" (click)="uxService.onConfirm(false)"></div>
+  <div class="modern-modal">
+    <div class="modal-header">
+      <div class="modal-icon">
+        <i class="bi bi-question-circle-fill"></i>
+      </div>
+      <h3 class="modal-title">
         {{ (ux && ux.Confirm && ux.Confirm.Title) || "Please confirm" }}
-      </h5>
+      </h3>
     </div>
-    <div class="card-body">
-      <p class="card-text">
+    <div class="modal-body">
+      <p class="modal-message">
         {{ (ux && ux.Confirm && ux.Confirm.Message) || defaultConfirm }}
       </p>
-      <button
-        (click)="uxService.onConfirm(true)"
-        class="btn btn-primary mb-1 w-100"
-      >
-        Yes
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-confirm" (click)="uxService.onConfirm(true)">
+        <i class="bi bi-check-lg me-2"></i>
+        Yes, Confirm
       </button>
-      <button (click)="uxService.onConfirm(false)" class="btn btn-light w-100">
-        No
+      <button class="btn btn-cancel" (click)="uxService.onConfirm(false)">
+        <i class="bi bi-x-lg me-2"></i>
+        Cancel
       </button>
     </div>
   </div>
