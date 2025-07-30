@@ -181,7 +181,7 @@
           <label class="form-label">Payment Proof</label>
           <a
             [href]="getPaymentProof()"
-            class="form-control modern-button proof-btn btn-dark"
+            class="form-control modern-button proof-btn"
             target="_blank"
           >
             <i class="bi bi-file-earmark-check me-2"></i>
@@ -216,6 +216,10 @@
 
   <!-- Job Totals Section -->
   <div class="admin-form-section">
+    <div class="section-title">
+      <i class="bi bi-calculator me-2"></i>
+      Order Summary & Totals
+    </div>
     <app-admin-job-total
       [job]="job"
       (showShipping)="showShipping = true"
@@ -234,31 +238,32 @@
       [comments]="getSpecialInstructions()"
       (onEdit)="updateSpecialInstructions($event)"
     />
+  </div>
 
-    <app-select-job-shipping
-      *ngIf="showShipping"
-      [job]="job"
-      (jobUpdated)="job = $event; showShipping = false; updateJob()"
-      (onClose)="showShipping = false"
-    />
-    <app-job-payments
-      *ngIf="show_capture_payment"
-      [job]="job"
-      (jobUpdated)="job = $event; show_capture_payment = false; updateJob()"
-      (onClose)="show_capture_payment = false"
-    />
+  <!-- Modal Components -->
+  <app-select-job-shipping
+    *ngIf="showShipping"
+    [job]="job"
+    (jobUpdated)="job = $event; showShipping = false; updateJob()"
+    (onClose)="showShipping = false"
+  />
+  <app-job-payments
+    *ngIf="show_capture_payment"
+    [job]="job"
+    (jobUpdated)="job = $event; show_capture_payment = false; updateJob()"
+    (onClose)="show_capture_payment = false"
+  />
 
-    <div class="app-overlay" *ngIf="job && show_customer && job.Customer">
-      <div class="my-modal slide-from-bottom" style="animation-duration: 0.25s">
-        <div
-          class="d-flex align-items-center justify-content-between header w-100"
-        >
-          <h4 class="">Customer Info</h4>
-          <i class="bi bi-x-lg" (click)="show_customer = false"></i>
-        </div>
-        <div class="body">
-          <app-customer-form [customer]="job.Customer" />
-        </div>
+  <div class="app-overlay" *ngIf="job && show_customer && job.Customer">
+    <div class="my-modal slide-from-bottom" style="animation-duration: 0.25s">
+      <div
+        class="d-flex align-items-center justify-content-between header w-100"
+      >
+        <h4 class="">Customer Info</h4>
+        <i class="bi bi-x-lg" (click)="show_customer = false"></i>
+      </div>
+      <div class="body">
+        <app-customer-form [customer]="job.Customer" />
       </div>
     </div>
   </div>

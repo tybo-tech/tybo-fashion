@@ -1,3 +1,194 @@
+// Modern Job Totals Styling
+.modern-job-totals {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(226, 232, 240, 0.3);
+    transition: all 0.3s ease;
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .total-label {
+      font-size: 0.95rem;
+      color: #64748b;
+      font-weight: 500;
+    }
+
+    .total-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #1e293b;
+      display: flex;
+      align-items: center;
+    }
+
+    // Specific row styles
+    &.subtotal-row {
+      .total-label {
+        color: #475569;
+      }
+    }
+
+    &.shipping-row {
+      .shipping-value {
+        cursor: pointer;
+        transition: all 0.3s ease;
+
+        &:hover {
+          color: #667eea;
+        }
+      }
+
+      .set-shipping-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+
+        &:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+      }
+    }
+
+    &.clickable {
+      cursor: pointer;
+      border-radius: 8px;
+      margin: 0 -0.5rem;
+      padding: 0.75rem 0.5rem;
+
+      &:hover {
+        background: rgba(102, 126, 234, 0.05);
+        transform: translateX(2px);
+      }
+    }
+
+    &.payment-row {
+      .paid-amount {
+        color: #22c55e;
+
+        i {
+          color: #16a34a;
+        }
+      }
+    }
+
+    &.due-row {
+      .due-amount {
+        color: #ef4444;
+
+        i {
+          color: #dc2626;
+        }
+      }
+    }
+
+    &.final-total-row {
+      border-top: 2px solid rgba(102, 126, 234, 0.2);
+      border-bottom: none;
+      padding-top: 1rem;
+      margin-top: 0.5rem;
+
+      .total-label {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+      }
+
+      .final-total {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #059669;
+        background: rgba(5, 150, 105, 0.1);
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+      }
+    }
+
+    &.deposit-row {
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 8px;
+      margin: 0.5rem -0.5rem 0;
+      padding: 0.75rem 0.5rem;
+      border-bottom: none;
+
+      .total-label {
+        color: #d97706;
+        font-weight: 600;
+      }
+
+      .deposit-amount {
+        color: #f59e0b;
+        font-weight: 700;
+        background: rgba(245, 158, 11, 0.2);
+        padding: 0.375rem 0.75rem;
+        border-radius: 6px;
+      }
+    }
+  }
+
+  .payment-section {
+    background: rgba(248, 250, 252, 0.5);
+    border-radius: 12px;
+    margin: 0.5rem -0.5rem;
+    padding: 0.5rem;
+
+    .total-row {
+      border-bottom: 1px solid rgba(226, 232, 240, 0.4);
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .modern-job-totals {
+    padding: 1rem;
+
+    .total-row {
+      padding: 0.625rem 0;
+
+      .total-label,
+      .total-value {
+        font-size: 0.875rem;
+      }
+
+      &.final-total-row {
+        .total-label {
+          font-size: 1rem;
+        }
+
+        .final-total {
+          font-size: 1.125rem;
+        }
+      }
+    }
+  }
+}
+
+// Legacy styles for backward compatibility
 .font-weight-bold{
     font-weight: 600;
     font-size: 14px !important;
