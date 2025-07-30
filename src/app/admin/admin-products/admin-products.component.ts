@@ -131,6 +131,17 @@ export class AdminProductsComponent {
   navigateToProduct(productId: string): void {
     this.router.navigate(['/store/admin/product', productId]);
   }
+
+  // Duplicate product
+  duplicateProduct(product: Product): void {
+    if (confirm(`Are you sure you want to duplicate "${product.Name}"?`)) {
+      // For now, just navigate to add page with product data
+      // You could implement actual duplication logic here
+      this.router.navigate(['/store/admin/product/add'], {
+        state: { duplicateFrom: product }
+      });
+    }
+  }
   getByCategory() {
     this.productService.getByCategory(this.categoryId).subscribe((data) => {
       if (data && data.CategoryId) {

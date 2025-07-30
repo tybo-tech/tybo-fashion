@@ -16,182 +16,208 @@
   [data]="heroHeaderData"
 ></app-hero-header>
 
-<section class="container-fluid">
+<section class="modern-admin-container">
   <!-- Header Section -->
-  <div class="row mb-4">
-    <div class="col-12">
-      <div class="d-flex justify-content-between align-items-center">
-        <div>
-          <h2 class="mb-1">Products Management</h2>
-          <p class="text-muted mb-0">Manage your product catalog</p>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-outline-secondary">
-            <i class="bi bi-funnel"></i> Filter
-          </button>
-          <a href="/store/admin/product/add" class="btn btn-primary">
-            <i class="bi bi-plus-lg"></i> Add Product
-          </a>
-        </div>
+  <div class="admin-header">
+    <div class="header-content">
+      <div class="header-info">
+        <h1 class="header-title">
+          <i class="bi bi-box-seam me-3"></i>
+          Products Management
+        </h1>
+        <p class="header-subtitle">Manage your product catalog with ease</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn btn-filter">
+          <i class="bi bi-funnel me-2"></i>
+          Filter
+        </button>
+        <a href="/store/admin/product/add" class="btn btn-add-product">
+          <i class="bi bi-plus-lg me-2"></i>
+          Add Product
+        </a>
       </div>
     </div>
   </div>
 
-  <!-- Products List -->
-  <div class="row">
-    <div class="col-12">
-      <div class="card shadow-sm">
-        <div class="card-header bg-white">
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Products (Page {{ currentPage }})</h5>
-            <div class="d-flex align-items-center gap-3">
-              <span class="text-muted">{{ pageSize }} items per page</span>
-              <div class="spinner-border spinner-border-sm" *ngIf="isLoading"></div>
-            </div>
-          </div>
+  <!-- Products Card -->
+  <div class="products-card">
+    <!-- Card Header -->
+    <div class="card-header-modern">
+      <div class="card-header-content">
+        <div class="card-title-section">
+          <h5 class="card-title">
+            <i class="bi bi-grid-3x3-gap me-2"></i>
+            Products
+            <span class="page-indicator">Page {{ currentPage }}</span>
+          </h5>
+          <span class="items-count">{{ pageSize }} items per page</span>
         </div>
+        <div class="header-status" *ngIf="isLoading">
+          <div class="loading-spinner"></div>
+          <span class="loading-text">Loading...</span>
+        </div>
+      </div>
+    </div>
 
-        <div class="card-body p-0">
-          <!-- Loading State -->
-          <div *ngIf="isLoading" class="text-center py-5">
-            <div class="spinner-border text-primary" role="status">
-              <span class="visually-hidden">Loading...</span>
+    <!-- Card Body -->
+    <div class="card-body-modern">
+      <!-- Loading State -->
+      <div *ngIf="isLoading" class="loading-state">
+        <div class="loading-animation">
+          <div class="loading-spinner-large"></div>
+          <h6 class="loading-title">Loading Products...</h6>
+          <p class="loading-description">Please wait while we fetch your products</p>
+        </div>
+      </div>
+
+      <!-- Products List -->
+      <div *ngIf="!isLoading && products && products.length" class="products-list">
+        <div
+          *ngFor="let product of products; let i = index"
+          class="product-item"
+          (click)="navigateToProduct(product.ProductId)"
+        >
+          <div class="product-content">
+            <!-- Product Image -->
+            <div class="product-image-container">
+              <img
+                [src]="product.FeaturedImageUrl || 'assets/images/placeholder.svg'"
+                [alt]="product.Name"
+                (error)="onImageError($event)"
+                class="product-image"
+              />
+              <div class="image-overlay">
+                <i class="bi bi-eye-fill"></i>
+              </div>
             </div>
-            <p class="mt-3 text-muted">Loading products...</p>
-          </div>
 
-          <!-- Products List -->
-          <div *ngIf="!isLoading && products && products.length" class="list-group list-group-flush">
-            <div
-              *ngFor="let product of products; let i = index"
-              class="list-group-item border-0 py-3 product-row"
-              style="cursor: pointer;"
-              (click)="navigateToProduct(product.ProductId)"
-            >
-              <div class="row align-items-center">
-                <!-- Product Image -->
-                <div class="col-md-2">
-                  <img
-                    [src]="product.FeaturedImageUrl || 'assets/images/placeholder.svg'"
-                    [alt]="product.Name"
-                    (error)="onImageError($event)"
-                    class="img-fluid rounded"
-                    style="height: 80px; width: 80px; object-fit: cover;"
-                  />
-                </div>
-
-                <!-- Product Info -->
-                <div class="col-md-4">
-                  <h6 class="mb-1 fw-bold">{{ product.Name }}</h6>
-                  <p class="mb-1 text-muted small">{{ product.Slug }}</p>
-                  <span
-                    class="badge"
-                    [class.bg-success]="product.ShowOnline === '1'"
-                    [class.bg-secondary]="product.ShowOnline !== '1'"
-                  >
+            <!-- Product Details -->
+            <div class="product-details">
+              <div class="product-main-info">
+                <h6 class="product-name">{{ product.Name }}</h6>
+                <p class="product-slug">{{ product.Slug }}</p>
+                <div class="product-badges">
+                  <span class="status-badge" [class.online]="product.ShowOnline === '1'" [class.offline]="product.ShowOnline !== '1'">
+                    <i class="bi" [class.bi-globe]="product.ShowOnline === '1'" [class.bi-eye-slash]="product.ShowOnline !== '1'"></i>
                     {{ product.ShowOnline === '1' ? 'Online' : 'Offline' }}
                   </span>
-                </div>
-
-                <!-- Price -->
-                <div class="col-md-2">
-                  <h6 class="mb-0 text-success">
-                    {{ product.RegularPrice | currency:'ZAR':'symbol':'1.2-2' }}
-                  </h6>
-                </div>
-
-                <!-- Featured Status -->
-                <div class="col-md-2">
-                  <span
-                    class="badge"
-                    [class.bg-warning]="product.IsFeatured === 'Yes'"
-                    [class.bg-light]="product.IsFeatured !== 'Yes'"
-                    [class.text-dark]="product.IsFeatured !== 'Yes'"
-                  >
+                  <span class="featured-badge" [class.featured]="product.IsFeatured === 'Yes'">
+                    <i class="bi" [class.bi-star-fill]="product.IsFeatured === 'Yes'" [class.bi-star]="product.IsFeatured !== 'Yes'"></i>
                     {{ product.IsFeatured === 'Yes' ? 'Featured' : 'Regular' }}
                   </span>
                 </div>
+              </div>
 
-                <!-- Actions -->
-                <div class="col-md-2" (click)="$event.stopPropagation()">
-                  <div class="dropdown">
-                    <button
-                      class="btn btn-outline-secondary btn-sm dropdown-toggle"
-                      type="button"
-                      [id]="'dropdown-' + product.Id"
-                      data-bs-toggle="dropdown"
-                      aria-expanded="false"
-                    >
-                      Actions
-                    </button>
-                    <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdown-' + product.Id">
-                      <li>
-                        <a class="dropdown-item" [href]="'/store/admin/product/' + product.ProductId">
-                          <i class="bi bi-pencil me-2"></i>Edit
-                        </a>
-                      </li>
-                      <li>
-                        <a class="dropdown-item" [href]="'/store/product/' + product.Slug" target="_blank">
-                          <i class="bi bi-eye me-2"></i>View
-                        </a>
-                      </li>
-                      <li><hr class="dropdown-divider"></li>
-                      <li>
-                        <button class="dropdown-item text-danger" (click)="deleteProduct(product)">
-                          <i class="bi bi-trash me-2"></i>Delete
-                        </button>
-                      </li>
-                    </ul>
-                  </div>
+              <!-- Product Stats -->
+              <div class="product-stats">
+                <div class="price-container">
+                  <span class="price-label">Price</span>
+                  <span class="price-value">{{ product.RegularPrice | currency:'ZAR':'symbol':'1.2-2' }}</span>
+                </div>
+                <div class="date-container">
+                  <span class="date-label">Created</span>
+                  <span class="date-value">{{ product.CreateDate | date:'MMM dd, yyyy' }}</span>
                 </div>
               </div>
             </div>
-          </div>
 
-          <!-- Empty State -->
-          <div *ngIf="!isLoading && (!products || products.length === 0)" class="text-center py-5">
-            <i class="bi bi-box-seam display-1 text-muted"></i>
-            <h5 class="mt-3">No products found</h5>
-            <p class="text-muted">Start by adding your first product to the catalog.</p>
-            <a href="/store/admin/product/add" class="btn btn-primary">
-              <i class="bi bi-plus-lg"></i> Add Product
-            </a>
-          </div>
-        </div>
-
-        <!-- Pagination Footer -->
-        <div class="card-footer bg-white" *ngIf="!isLoading && products && products.length">
-          <div class="d-flex justify-content-between align-items-center">
-            <div class="text-muted">
-              Showing {{ (currentPage - 1) * pageSize + 1 }} to {{ (currentPage - 1) * pageSize + products.length }} items
-            </div>
-
-            <nav aria-label="Products pagination">
-              <ul class="pagination mb-0">
-                <li class="page-item" [class.disabled]="!hasPreviousPage">
-                  <button class="page-link" (click)="loadPreviousPage()" [disabled]="!hasPreviousPage">
-                    <i class="bi bi-chevron-left"></i>
-                  </button>
-                </li>
-
-                <li
-                  *ngFor="let page of getPageNumbers()"
-                  class="page-item"
-                  [class.active]="page === currentPage"
+            <!-- Quick Actions -->
+            <div class="product-actions" (click)="$event.stopPropagation()">
+              <div class="actions-dropdown">
+                <button
+                  class="actions-trigger"
+                  [id]="'dropdown-' + product.Id"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
                 >
-                  <button class="page-link" (click)="goToPage(page)">{{ page }}</button>
-                </li>
-
-                <li class="page-item" [class.disabled]="!hasNextPage">
-                  <button class="page-link" (click)="loadNextPage()" [disabled]="!hasNextPage">
-                    <i class="bi bi-chevron-right"></i>
-                  </button>
-                </li>
-              </ul>
-            </nav>
+                  <i class="bi bi-three-dots-vertical"></i>
+                </button>
+                <ul class="dropdown-menu modern-dropdown" [attr.aria-labelledby]="'dropdown-' + product.Id">
+                  <li>
+                    <a class="dropdown-item" [href]="'/store/admin/product/' + product.ProductId">
+                      <i class="bi bi-pencil"></i>
+                      <span>Edit Product</span>
+                    </a>
+                  </li>
+                  <li>
+                    <a class="dropdown-item" [href]="'/store/product/' + product.Slug" target="_blank">
+                      <i class="bi bi-eye"></i>
+                      <span>View Live</span>
+                    </a>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" (click)="duplicateProduct(product)">
+                      <i class="bi bi-files"></i>
+                      <span>Duplicate</span>
+                    </button>
+                  </li>
+                  <li><hr class="dropdown-divider"></li>
+                  <li>
+                    <button class="dropdown-item delete-item" (click)="deleteProduct(product)">
+                      <i class="bi bi-trash"></i>
+                      <span>Delete</span>
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- Empty State -->
+      <div *ngIf="!isLoading && (!products || products.length === 0)" class="empty-state">
+        <div class="empty-content">
+          <div class="empty-icon">
+            <i class="bi bi-box-seam"></i>
+          </div>
+          <h5 class="empty-title">No Products Found</h5>
+          <p class="empty-description">
+            Your product catalog is empty. Start building your inventory by adding your first product.
+          </p>
+          <a href="/store/admin/product/add" class="btn btn-add-first">
+            <i class="bi bi-plus-lg me-2"></i>
+            Add Your First Product
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modern Pagination -->
+    <div class="pagination-container" *ngIf="!isLoading && products && products.length">
+      <div class="pagination-info">
+        <span class="pagination-text">
+          Showing <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> to
+          <strong>{{ (currentPage - 1) * pageSize + products.length }}</strong> of products
+        </span>
+      </div>
+
+      <nav class="pagination-nav" aria-label="Products pagination">
+        <ul class="pagination-modern">
+          <li class="page-item-modern" [class.disabled]="!hasPreviousPage">
+            <button class="page-link-modern" (click)="loadPreviousPage()" [disabled]="!hasPreviousPage">
+              <i class="bi bi-chevron-left"></i>
+              <span>Previous</span>
+            </button>
+          </li>
+
+          <li
+            *ngFor="let page of getPageNumbers()"
+            class="page-item-modern"
+            [class.active]="page === currentPage"
+          >
+            <button class="page-link-modern" (click)="goToPage(page)">{{ page }}</button>
+          </li>
+
+          <li class="page-item-modern" [class.disabled]="!hasNextPage">
+            <button class="page-link-modern" (click)="loadNextPage()" [disabled]="!hasNextPage">
+              <span>Next</span>
+              <i class="bi bi-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </section>
