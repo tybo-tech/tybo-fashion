@@ -1,3 +1,322 @@
+:host {
+  // Modern Job Details Styling
+  .admin-info-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 1.5rem;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: white;
+      flex-shrink: 0;
+
+      &.status-icon {
+        &.completed {
+          background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        }
+        &.overdue {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+        &.in-progress {
+          background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        }
+      }
+
+      &.cost-icon {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+
+      &.payment-icon {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      }
+
+      &.due-icon {
+        background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+
+        &.overdue {
+          background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        }
+      }
+    }
+
+    .card-content {
+      flex: 1;
+
+      .card-label {
+        font-size: 0.8rem;
+        color: #64748b;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.25rem;
+      }
+
+      .card-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e293b;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .progress-mini {
+        width: 100%;
+        height: 4px;
+        background: rgba(226, 232, 240, 0.6);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 0.5rem;
+
+        .progress-mini-fill {
+          height: 100%;
+          background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+          border-radius: 2px;
+          transition: width 0.3s ease;
+        }
+      }
+    }
+  }
+
+  .financial-summary-card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+
+    h5 {
+      color: #1e293b;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+
+      i {
+        color: #667eea;
+      }
+    }
+
+    .financial-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 0;
+      border-bottom: 1px solid rgba(226, 232, 240, 0.6);
+
+      &:last-child {
+        border-bottom: none;
+      }
+
+      .financial-label {
+        font-size: 0.9rem;
+        color: #64748b;
+        font-weight: 600;
+      }
+
+      .financial-value {
+        font-size: 1.1rem;
+        font-weight: 700;
+
+        &.total {
+          color: #1e293b;
+        }
+
+        &.paid {
+          color: #16a34a;
+        }
+
+        &.due {
+          color: #dc2626;
+        }
+      }
+    }
+  }
+
+  // Enhanced existing styles
+  .invoice-no {
+    padding: 6px 8px !important;
+    font-weight: 600;
+    border-radius: 8px !important;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  // Enhanced Form Section
+  .admin-form-section {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+    padding: 2rem;
+    margin-bottom: 2rem;
+
+    .section-title {
+      color: #1e293b;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+
+      i {
+        color: #667eea;
+      }
+    }
+
+    .form-label {
+      font-size: 0.85rem;
+      color: #64748b;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .modern-input,
+    .modern-select {
+      border: 2px solid rgba(226, 232, 240, 0.6);
+      border-radius: 12px;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+
+      &:focus {
+        outline: none;
+        border-color: #667eea;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      }
+
+      &.modern-select {
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: #1e293b;
+
+        &:hover {
+          border-color: #667eea;
+          background: rgba(102, 126, 234, 0.05);
+        }
+      }
+    }
+
+    .modern-button {
+      border: 2px solid rgba(226, 232, 240, 0.6);
+      border-radius: 12px;
+      padding: 0.875rem 1rem;
+      font-size: 1rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.8);
+      color: #1e293b;
+
+      &:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        text-decoration: none;
+        color: #1e293b;
+      }
+
+      &.invoice-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-color: transparent;
+
+        &:hover {
+          color: white;
+          box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+        }
+      }
+
+      &.payments-btn {
+        background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+        color: white;
+        border-color: transparent;
+
+        &:hover {
+          color: white;
+          box-shadow: 0 8px 25px rgba(245, 158, 11, 0.4);
+        }
+      }
+
+      &.proof-btn {
+        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+        color: white;
+        border-color: transparent;
+
+        &:hover {
+          color: white;
+          box-shadow: 0 8px 25px rgba(34, 197, 94, 0.4);
+        }
+      }
+
+      &.record-btn {
+        background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+        color: white;
+        border-color: transparent;
+
+        &:hover {
+          color: white;
+          box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+      }
+    }
+  }
+
+  // Responsive adjustments
+  @media (max-width: 768px) {
+    .admin-info-card {
+      padding: 1rem;
+
+      .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+      }
+
+      .card-content {
+        .card-value {
+          font-size: 1rem;
+        }
+      }
+    }
+
+    .financial-summary-card {
+      padding: 1.5rem;
+    }
+  }
+}
+
 .invoice-no {
   padding: 6px 8px !important;
   font-weight: 600;
@@ -21,4 +340,42 @@
 .actions {
   margin: 0 12px !important;
   border-bottom: 1px solid #e0e0e0;
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .admin-info-grid {
+    display: block;
+
+    .admin-info-card {
+      margin-bottom: 1.5rem;
+    }
+  }
+
+  .financial-grid {
+    display: block;
+
+    .financial-card {
+      margin-bottom: 1rem;
+    }
+  }
+
+  .admin-form-section {
+    padding: 1.5rem 1rem;
+
+    .modern-button {
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+  }
+}
+
+@media (min-width: 1200px) {
+  .admin-info-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .financial-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }

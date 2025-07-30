@@ -74,7 +74,7 @@ export class JobService {
   //get-discount-code
   // $company_id =  $_GET['CompanyId'];
   // $code =  $_GET['Code'];
- 
+
   error = '';
   fetchDiscountCode(code: string) {
     this.error = '';
@@ -363,7 +363,7 @@ export class JobService {
   // Make sure we onpy apply discount to cart items not delivery fees
   applyDiscount(job: Job, itemsSubTotal: number): number {
     let total = itemsSubTotal;
-    const discount: Discount | undefined = job.Metadata.discount;
+    const discount: Discount | undefined = job.Metadata?.discount;
     // Make sure discount is not applied twice
     // if (!discount || job.Metadata.hasDiscount) return total;
     if (!discount) return total;

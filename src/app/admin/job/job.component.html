@@ -1,40 +1,143 @@
-<!-- product-update.component.html -->
-<div *ngIf="job && user" class="max-600">
+<!-- Modern Job Details Interface -->
+<div *ngIf="job && user" class="p-4">
   <app-list-bread
     [currentPage]="job.JobNo"
     prevPage="Jobs"
     [prevLink]="'/store/admin/' + backTo"
   />
 
-  <div class="from-group">
-    <div class="mb-3">
-      <label for="Name" class="form-label">Customer</label>
-      <a class="form-control form-select" (click)="show_customer = true">
+  <!-- Job Summary Cards -->
+  <div class="row mb-4">
+    <!-- Job Status Card -->
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="admin-info-card">
+        <div class="card-icon status-icon" [ngClass]="isCompleted() ? 'completed' : (isOverdue() ? 'overdue' : 'in-progress')">
+          <i class="bi" [ngClass]="isCompleted() ? 'bi-check-circle-fill' : (isOverdue() ? 'bi-exclamation-triangle-fill' : 'bi-clock-fill')"></i>
+        </div>
+        <div class="card-content">
+          <h6 class="card-label">Status</h6>
+          <p class="card-value">{{ job.Status }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Total Cost Card -->
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="admin-info-card">
+        <div class="card-icon cost-icon">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+        <div class="card-content">
+          <h6 class="card-label">Total Cost</h6>
+          <p class="card-value">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Payment Progress Card -->
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="admin-info-card">
+        <div class="card-icon payment-icon">
+          <i class="bi bi-credit-card"></i>
+        </div>
+        <div class="card-content">
+          <h6 class="card-label">Payment Progress</h6>
+          <p class="card-value">{{ getPaymentPercentage() }}% Paid</p>
+          <div class="progress-mini">
+            <div class="progress-mini-fill" [style.width.%]="getPaymentPercentage()"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Due Date Card -->
+    <div class="col-md-6 col-lg-3 mb-3">
+      <div class="admin-info-card">
+        <div class="card-icon due-icon" [ngClass]="isOverdue() ? 'overdue' : ''">
+          <i class="bi bi-calendar-event"></i>
+        </div>
+        <div class="card-content">
+          <h6 class="card-label">Due Date</h6>
+          <p class="card-value" [ngClass]="isOverdue() ? 'text-danger' : ''">
+            {{ job.DueDate | date:'mediumDate' }}
+            <small *ngIf="getDaysUntilDue() !== null" class="d-block">
+              {{ getDaysUntilDue()! > 0 ? (getDaysUntilDue() + ' days left') : (Math.abs(getDaysUntilDue()!) + ' days overdue') }}
+            </small>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Financial Summary -->
+  <div class="row mb-4" *ngIf="getPaidAmount() > 0 || getDueAmount() > 0">
+    <div class="col-12">
+      <div class="financial-summary-card">
+        <h5 class="mb-3">
+          <i class="bi bi-graph-up me-2"></i>
+          Financial Summary
+        </h5>
+        <div class="row">
+          <div class="col-md-4">
+            <div class="financial-item">
+              <span class="financial-label">Total Amount</span>
+              <span class="financial-value total">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="getPaidAmount() > 0">
+            <div class="financial-item">
+              <span class="financial-label">Amount Paid</span>
+              <span class="financial-value paid">{{ getPaidAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+          <div class="col-md-4" *ngIf="getDueAmount() > 0">
+            <div class="financial-item">
+              <span class="financial-label">Amount Due</span>
+              <span class="financial-value due">{{ getDueAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Job Management Form -->
+  <div class="admin-form-section">
+    <h5 class="section-title">
+      <i class="bi bi-gear me-2"></i>
+      Job Management
+    </h5>
+
+    <div class="form-group mb-3">
+      <label for="customer" class="form-label">Customer</label>
+      <a class="form-control form-select modern-select" (click)="show_customer = true">
+        <i class="bi bi-person me-2"></i>
         {{ job.Customer?.Name || "No Customer" }}
       </a>
     </div>
 
     <div class="row">
       <div class="col-md-4">
-        <div class="mb-3">
-          <label for="DueDate" class="form-label">Due</label>
+        <div class="form-group mb-3">
+          <label for="DueDate" class="form-label">Due Date</label>
           <input
             type="date"
             id="DueDate"
             [(ngModel)]="job.DueDate"
-            class="form-control"
+            class="form-control modern-input"
             (change)="updateJob()"
           />
         </div>
       </div>
 
-      <div class="col-md-4 col-6">
-        <div class="mb-3">
+      <div class="col-md-4">
+        <div class="form-group mb-3">
+          <label for="status" class="form-label">Status</label>
           <select
-            id="ShowOnline"
+            id="status"
             [(ngModel)]="job.Status"
             (change)="updateJob()"
-            class="form-select btn btn-light shadow btn-light-picker invoice-no"
+            class="form-select modern-select"
           >
             <option [value]="item" *ngFor="let item of statuses">
               {{ item }}
@@ -43,53 +146,58 @@
         </div>
       </div>
 
-      <div class="col-md-4 col-6">
-        <div class="mb-3">
+      <div class="col-md-4">
+        <div class="form-group mb-3">
+          <label class="form-label">Invoice</label>
           <a
             [href]="invoice"
-            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            class="form-control modern-button invoice-btn"
             target="_blank"
           >
-            {{ job.Metadata.InvoiceNo || "No Invoice" }}
+            <i class="bi bi-file-earmark-text me-2"></i>
+            {{ getInvoiceNo() }}
           </a>
         </div>
       </div>
-      <div class="col-md-4 col-6">
-        <div class="mb-3">
+    </div>
+
+    <!-- Action Buttons Row -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="form-group mb-3">
+          <label class="form-label">Payments</label>
           <a
             (click)="show_capture_payment = true"
-            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            class="form-control modern-button payments-btn"
           >
-            Patments
+            <i class="bi bi-credit-card me-2"></i>
+            Manage Payments
           </a>
         </div>
       </div>
 
-      <div class="col-md-4 col-6" *ngIf="job.Metadata?.paymentProof">
-        <div class="mb-3">
+      <div class="col-md-4" *ngIf="hasPaymentProof()">
+        <div class="form-group mb-3">
+          <label class="form-label">Payment Proof</label>
           <a
-            [href]="job.Metadata.paymentProof"
-            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            [href]="getPaymentProof()"
+            class="form-control modern-button proof-btn"
             target="_blank"
           >
-            Payment Proof
+            <i class="bi bi-file-earmark-check me-2"></i>
+            View Proof
           </a>
         </div>
       </div>
-      <div
-        class="col-md-4 col-6"
-        *ngIf="
-          (job.Metadata &&
-            job.Metadata.paidAmount &&
-            job.Metadata.paidAmount < job.TotalCost) ||
-          !job.Metadata.paidAmount
-        "
-      >
-        <div class="mb-3">
+
+      <div class="col-md-4" *ngIf="hasUnpaidAmount()">
+        <div class="form-group mb-3">
+          <label class="form-label">Quick Action</label>
           <a
             (click)="show_capture_payment = true"
-            class="form-control btn btn-light shadow btn-light-picker invoice-no"
+            class="form-control modern-button record-btn"
           >
+            <i class="bi bi-plus-circle me-2"></i>
             Record Payment
           </a>
         </div>
@@ -109,10 +217,10 @@
     <hr />
 
     <app-admin-comment
-      *ngIf="job.Metadata.Special_instructions"
+      *ngIf="hasSpecialInstructions()"
       [title]="'Special Instructions'"
-      [comments]="job.Metadata.Special_instructions"
-      (onEdit)="job.Metadata.Special_instructions = $event; updateJob()"
+      [comments]="getSpecialInstructions()"
+      (onEdit)="updateSpecialInstructions($event)"
     />
 
     <app-select-job-shipping

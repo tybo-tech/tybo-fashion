@@ -20,7 +20,7 @@
   </div>
 
   <!-- Statistics Cards -->
-  <div class="stats-section" *ngIf="jobs">
+  <div class="stats-section" *ngIf="jobs && jobs.length > 0">
     <div class="stats-grid">
       <div class="stat-card stat-total">
         <div class="stat-icon">
@@ -59,6 +59,24 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Loading State -->
+  <div class="empty-state" *ngIf="loading">
+    <div class="empty-icon">
+      <i class="bi bi-hourglass-split"></i>
+    </div>
+    <h3 class="empty-title">Loading Jobs...</h3>
+    <p class="empty-message">Please wait while we fetch your jobs.</p>
+  </div>
+
+  <!-- Error State -->
+  <div class="empty-state" *ngIf="error && !loading">
+    <div class="empty-icon" style="background: rgba(239, 68, 68, 0.1); color: #dc2626;">
+      <i class="bi bi-exclamation-triangle"></i>
+    </div>
+    <h3 class="empty-title">Error Loading Jobs</h3>
+    <p class="empty-message">{{ error }}</p>
   </div>
 
   <!-- Filters and Search -->
@@ -104,7 +122,7 @@
   </div>
 
   <!-- Jobs Grid -->
-  <div class="jobs-section" *ngIf="jobs">
+  <div class="jobs-section" *ngIf="!loading && !error && jobs">
     <div class="jobs-grid" *ngIf="jobs.length > 0">
       <div
         *ngFor="let job of jobs"
@@ -155,14 +173,14 @@
             <div class="financial-label">Total Cost</div>
             <div class="financial-value">{{ job.FormattedCost || (job.TotalCost | currency:'ZAR':'symbol':'1.2-2') }}</div>
           </div>
-          <div class="financial-item paid-amount" *ngIf="job.Metadata?.paidAmount">
+                    <div class="financial-item paid-amount" *ngIf="hasPaidAmount(job)">
             <div class="financial-label">Paid</div>
-            <div class="financial-value paid">{{ job.Metadata.paidAmount | currency:'ZAR':'symbol':'1.2-2' }}</div>
+            <div class="financial-value paid">{{ getPaidAmount(job) | currency:'ZAR':'symbol':'1.2-2' }}</div>
           </div>
-          <div class="financial-item due-amount" *ngIf="job.Metadata.dueAmount">
+          <div class="financial-item due-amount" *ngIf="hasDueAmount(job)">
             <div class="financial-label">Due</div>
-            <div class="financial-value" [class.overdue-amount]="(job.Metadata.dueAmount || 0) > 0">
-              {{ (job.Metadata.dueAmount || 0) | currency:'ZAR':'symbol':'1.2-2' }}
+            <div class="financial-value" [class.overdue-amount]="getDueAmount(job) > 0">
+              {{ getDueAmount(job) | currency:'ZAR':'symbol':'1.2-2' }}
             </div>
           </div>
         </div>
@@ -182,8 +200,8 @@
               <span class="timeline-label">Due Date</span>
               <span class="timeline-date" [class.overdue-text]="job.IsOverdue">
                 {{ job.DueDate | date:'mediumDate' }}
-                <span *ngIf="job.DaysRemaining !== null && job.DaysRemaining !== undefined" class="days-remaining">
-                  ({{ (job.DaysRemaining || 0) > 0 ? (job.DaysRemaining || 0) + ' days left' : Math.abs(job.DaysRemaining || 0) + ' days overdue' }})
+                <span *ngIf="hasDaysRemaining(job)" class="days-remaining">
+                  ({{ getDaysRemainingText(job) }})
                 </span>
               </span>
             </div>
@@ -191,7 +209,7 @@
         </div>
 
         <!-- Payment Progress -->
-        <div class="payment-progress" *ngIf="job.Metadata?.paidAmount !== undefined && job.TotalCost > 0">
+        <div class="payment-progress" *ngIf="hasPaymentProgress(job)">
           <div class="progress-header">
             <span class="progress-label">Payment Progress</span>
             <span class="progress-percentage">{{ getPaymentPercentage(job) }}%</span>
@@ -214,11 +232,11 @@
           >
             <i class="bi bi-pencil"></i>
           </button>
-          <button
+                    <button
             class="action-btn payment-btn"
             (click)="recordPayment($event, job)"
             title="Record Payment"
-            *ngIf="job.Metadata.dueAmount && (job.Metadata.dueAmount || 0) > 0"
+            *ngIf="hasDueAmount(job)"
           >
             <i class="bi bi-credit-card"></i>
           </button>
@@ -239,7 +257,7 @@
         </div>
 
         <!-- Overdue Warning -->
-        <div class="overdue-warning" *ngIf="job.IsOverdue">
+        <div class="overdue-warning" *ngIf="job.IsOverdue && hasDaysRemaining(job)">
           <i class="bi bi-exclamation-triangle-fill"></i>
           <span>{{ Math.abs(job.DaysRemaining || 0) }} days overdue</span>
         </div>
@@ -247,7 +265,7 @@
     </div>
 
     <!-- Empty State -->
-    <div class="empty-state" *ngIf="jobs.length === 0">
+    <div class="empty-state" *ngIf="!loading && !error && jobs && jobs.length === 0">
       <div class="empty-icon">
         <i class="bi bi-briefcase"></i>
       </div>
