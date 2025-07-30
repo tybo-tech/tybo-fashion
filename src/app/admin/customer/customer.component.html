@@ -1,8 +1,313 @@
-<div *ngIf="customer" class="max-600">
+<!-- Customer Detail Page -->
+<div *ngIf="customer" class="customer-detail-container">
   <app-list-bread
     [currentPage]="customer.Name"
     prevPage="Customers"
     [prevLink]="'/store/admin/customers'"
   />
-  <app-customer-form [customer]="customer" />
+
+  <!-- Customer Header Section -->
+  <div class="customer-header-card">
+    <div class="customer-header-info">
+      <div class="customer-avatar-large">
+        <img *ngIf="customer.Dp" [src]="customer.Dp" [alt]="customer.Name" class="avatar-img-large">
+        <div *ngIf="!customer.Dp" class="avatar-placeholder-large">
+          {{ getInitials(customer.FullName || customer.Name) }}
+        </div>
+      </div>
+
+      <div class="customer-basic-info">
+        <h2 class="customer-title">{{ customer.FullName || customer.Name }}</h2>
+        <div class="customer-meta-info">
+          <span class="customer-status-large" [ngClass]="'status-' + (customer.CustomerStatus || 'new').toLowerCase().replace(' ', '-')">
+            {{ customer.CustomerStatus || 'New Customer' }}
+          </span>
+          <span class="customer-priority-large" [ngClass]="'priority-' + (customer.CustomerPriority || 'low').toLowerCase()">
+            {{ customer.CustomerPriority || 'Low' }} Priority
+          </span>
+        </div>
+
+        <div class="customer-contact-quick">
+          <div class="contact-item" *ngIf="customer.PhoneNumber">
+            <i class="bi bi-telephone"></i>
+            <span>{{ customer.PhoneNumber }}</span>
+          </div>
+          <div class="contact-item" *ngIf="customer.Email && customer.Email !== 'Na'">
+            <i class="bi bi-envelope"></i>
+            <span>{{ customer.Email }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="customer-actions-bar">
+      <button class="action-btn primary" (click)="createJob()">
+        <i class="bi bi-plus-circle"></i>
+        Create Job
+      </button>
+      <button class="action-btn secondary" (click)="editCustomer()">
+        <i class="bi bi-pencil"></i>
+        Edit Customer
+      </button>
+      <button
+        *ngIf="customer.PhoneNumber"
+        class="action-btn"
+        (click)="callCustomer()">
+        <i class="bi bi-telephone"></i>
+        Call
+      </button>
+      <button
+        *ngIf="customer.Email && customer.Email !== 'Na'"
+        class="action-btn"
+        (click)="emailCustomer()">
+        <i class="bi bi-envelope"></i>
+        Email
+      </button>
+    </div>
+  </div>
+
+  <!-- Customer Analytics Dashboard -->
+  <div class="analytics-grid">
+    <!-- Financial Overview -->
+    <div class="analytics-card financial">
+      <div class="card-header">
+        <h4><i class="bi bi-currency-dollar"></i> Financial Overview</h4>
+      </div>
+      <div class="analytics-content">
+        <div class="metric-large">
+          <span class="value">{{ customer.CustomerLifetimeValue | currency:'ZAR':'symbol':'1.0-0' }}</span>
+          <span class="label">Lifetime Value</span>
+        </div>
+        <div class="metrics-row">
+          <div class="metric">
+            <span class="value" [ngClass]="{'outstanding': customer.OutstandingBalance && customer.OutstandingBalance > 0}">
+              {{ customer.OutstandingBalance | currency:'ZAR':'symbol':'1.0-0' }}
+            </span>
+            <span class="label">Outstanding</span>
+          </div>
+          <div class="metric">
+            <span class="value paid">{{ customer.PaymentCompletionRate || 0 }}%</span>
+            <span class="label">Payment Rate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Job Statistics -->
+    <div class="analytics-card jobs">
+      <div class="card-header">
+        <h4><i class="bi bi-briefcase"></i> Job Statistics</h4>
+      </div>
+      <div class="analytics-content">
+        <div class="metric-large">
+          <span class="value">{{ customer.TotalJobs || 0 }}</span>
+          <span class="label">Total Jobs</span>
+        </div>
+        <div class="metrics-row">
+          <div class="metric">
+            <span class="value active">{{ customer.ActiveJobs || 0 }}</span>
+            <span class="label">Active</span>
+          </div>
+          <div class="metric">
+            <span class="value completed">{{ customer.CompletedJobs || 0 }}</span>
+            <span class="label">Completed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Customer Insights -->
+    <div class="analytics-card insights">
+      <div class="card-header">
+        <h4><i class="bi bi-person-check"></i> Customer Insights</h4>
+      </div>
+      <div class="analytics-content">
+        <div class="insight-item">
+          <span class="insight-label">Profile Completeness</span>
+          <div class="progress-container">
+            <div class="progress-bar">
+              <div
+                class="progress-fill"
+                [style.width.%]="customer.ProfileCompleteness || 0"
+                [ngClass]="{
+                  'high': (customer.ProfileCompleteness || 0) >= 80,
+                  'medium': (customer.ProfileCompleteness || 0) >= 50 && (customer.ProfileCompleteness || 0) < 80,
+                  'low': (customer.ProfileCompleteness || 0) < 50
+                }">
+              </div>
+            </div>
+            <span class="progress-value">{{ customer.ProfileCompleteness || 0 }}%</span>
+          </div>
+        </div>
+
+        <div class="insight-item">
+          <span class="insight-label">Last Activity</span>
+          <span class="insight-value">{{ customer.LastActivityFormatted || 'No recent activity' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Verification -->
+    <div class="analytics-card contact">
+      <div class="card-header">
+        <h4><i class="bi bi-shield-check"></i> Contact Verification</h4>
+      </div>
+      <div class="analytics-content">
+        <div class="verification-grid">
+          <div class="verification-item" [ngClass]="{'verified': customer.HasPhone === 'Yes', 'unverified': customer.HasPhone !== 'Yes'}">
+            <i class="bi" [ngClass]="customer.HasPhone === 'Yes' ? 'bi-telephone-fill' : 'bi-telephone'"></i>
+            <span>Phone {{ customer.HasPhone === 'Yes' ? 'Verified' : 'Missing' }}</span>
+          </div>
+          <div class="verification-item" [ngClass]="{'verified': customer.HasEmail === 'Yes', 'unverified': customer.HasEmail !== 'Yes'}">
+            <i class="bi" [ngClass]="customer.HasEmail === 'Yes' ? 'bi-envelope-fill' : 'bi-envelope'"></i>
+            <span>Email {{ customer.HasEmail === 'Yes' ? 'Verified' : 'Missing' }}</span>
+          </div>
+          <div class="verification-item" [ngClass]="{'verified': customer.HasAddress === 'Yes', 'unverified': customer.HasAddress !== 'Yes'}">
+            <i class="bi" [ngClass]="customer.HasAddress === 'Yes' ? 'bi-geo-alt-fill' : 'bi-geo-alt'"></i>
+            <span>Address {{ customer.HasAddress === 'Yes' ? 'Complete' : 'Incomplete' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detailed Information Tabs -->
+  <div class="detail-tabs-container">
+    <div class="tab-headers">
+      <button
+        class="tab-header"
+        [class.active]="activeTab === 'overview'"
+        (click)="activeTab = 'overview'">
+        <i class="bi bi-person-circle"></i> Overview
+      </button>
+      <button
+        class="tab-header"
+        [class.active]="activeTab === 'jobs'"
+        (click)="activeTab = 'jobs'">
+        <i class="bi bi-briefcase"></i> Jobs
+      </button>
+      <button
+        class="tab-header"
+        [class.active]="activeTab === 'measurements'"
+        (click)="activeTab = 'measurements'">
+        <i class="bi bi-rulers"></i> Measurements
+      </button>
+      <button
+        class="tab-header"
+        [class.active]="activeTab === 'activity'"
+        (click)="activeTab = 'activity'">
+        <i class="bi bi-clock-history"></i> Activity
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === 'overview'" class="tab-panel">
+        <div class="overview-grid">
+          <div class="info-section">
+            <h5><i class="bi bi-person"></i> Personal Information</h5>
+            <div class="info-grid">
+              <div class="info-item">
+                <span class="label">Full Name</span>
+                <span class="value">{{ customer.FullName || customer.Name || 'Not provided' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Email</span>
+                <span class="value">{{ customer.Email || 'Not provided' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Phone</span>
+                <span class="value">{{ customer.PhoneNumber || 'Not provided' }}</span>
+              </div>
+              <div class="info-item">
+                <span class="label">Customer Since</span>
+                <span class="value">{{ customer.CreateDate | date:'mediumDate' }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="info-section" *ngIf="customer.AddressLineHome">
+            <h5><i class="bi bi-geo-alt"></i> Address Information</h5>
+            <div class="address-block">
+              <p>{{ customer.AddressLineHome }}</p>
+              <p *ngIf="customer.AddressLine2">{{ customer.AddressLine2 }}</p>
+              <p>{{ customer.City }}, {{ customer.PostalCode }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Jobs Tab -->
+      <div *ngIf="activeTab === 'jobs'" class="tab-panel">
+        <div class="jobs-section">
+          <div class="section-header">
+            <h5><i class="bi bi-briefcase"></i> Customer Jobs</h5>
+            <button class="btn btn-primary" (click)="createJob()">
+              <i class="bi bi-plus"></i> New Job
+            </button>
+          </div>
+          <div class="jobs-placeholder">
+            <i class="bi bi-briefcase"></i>
+            <h6>Jobs will be displayed here</h6>
+            <p>Job history and details for this customer</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Measurements Tab -->
+      <div *ngIf="activeTab === 'measurements'" class="tab-panel">
+        <div class="measurements-section">
+          <div class="section-header">
+            <h5><i class="bi bi-rulers"></i> Customer Measurements</h5>
+            <button class="btn btn-primary" (click)="editMeasurements()">
+              <i class="bi bi-pencil"></i> Edit Measurements
+            </button>
+          </div>
+          <div class="measurements-grid" *ngIf="customer.Measurements && customer.Measurements.length > 0">
+            <div class="measurement-card" *ngFor="let measurement of customer.Measurements">
+              <span class="measurement-name">{{ measurement.Name }}</span>
+              <span class="measurement-value">{{ measurement.Value }} {{ measurement.Units }}</span>
+            </div>
+          </div>
+          <div class="measurements-placeholder" *ngIf="!customer.Measurements || customer.Measurements.length === 0">
+            <i class="bi bi-rulers"></i>
+            <h6>No measurements recorded</h6>
+            <p>Add measurements to provide better service to this customer</p>
+            <button class="btn btn-primary" (click)="editMeasurements()">
+              <i class="bi bi-plus"></i> Add Measurements
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity Tab -->
+      <div *ngIf="activeTab === 'activity'" class="tab-panel">
+        <div class="activity-section">
+          <h5><i class="bi bi-clock-history"></i> Activity Timeline</h5>
+          <div class="activity-placeholder">
+            <i class="bi bi-clock-history"></i>
+            <h6>Activity timeline will be displayed here</h6>
+            <p>Customer interaction history and important events</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Customer Modal -->
+<div class="app-overlay" *ngIf="showEditForm && customer">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header (onClose)="showEditForm = false" title="Edit Customer" />
+    <div class="actions">
+      <div class="p-1">
+        <app-customer-form
+          (onSave)="onCustomerUpdate($event)"
+          [customer]="customer"
+        />
+      </div>
+    </div>
+  </div>
 </div>

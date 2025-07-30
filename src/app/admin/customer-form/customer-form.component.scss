@@ -1,0 +1,467 @@
+/* Modern Customer Form Styles */
+.modern-customer-form {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+/* Form Sections */
+.form-section {
+  background: white;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e5e7eb;
+  transition: all 0.3s ease;
+
+  &:hover {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+  }
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid #f1f5f9;
+
+  .section-icon {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.25rem;
+  }
+
+  .section-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #1f2937;
+    flex: 1;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Form Groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+
+  &.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    i {
+      color: #667eea;
+      font-size: 1rem;
+    }
+
+    .optional {
+      font-weight: 400;
+      color: #6b7280;
+      font-size: 0.75rem;
+    }
+  }
+
+  .form-control {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    background: #fafbfc;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    &::placeholder {
+      color: #9ca3af;
+    }
+
+    &:hover:not(:focus) {
+      border-color: #d1d5db;
+      background: white;
+    }
+  }
+
+  .form-select {
+    padding: 0.875rem 1rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 0.875rem;
+    background: #fafbfc;
+    transition: all 0.3s ease;
+
+    &:focus {
+      outline: none;
+      border-color: #667eea;
+      background: white;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+  }
+}
+
+/* Measurements Section */
+.measurements-container {
+  .measurements-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .measurement-item {
+    background: #f8fafc;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: #cbd5e1;
+      background: white;
+    }
+
+    .measurement-inputs {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1.5rem;
+      align-items: end;
+
+      @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .measurement-name {
+      .form-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+      }
+
+      .form-control {
+        border: 1px solid #d1d5db;
+        background: white;
+        padding: 0.75rem;
+      }
+    }
+
+    .measurement-value {
+      .form-label {
+        font-size: 0.8rem;
+        font-weight: 500;
+        color: #6b7280;
+        margin-bottom: 0.5rem;
+      }
+
+      .value-input-group {
+        display: flex;
+        gap: 0.75rem;
+        align-items: center;
+
+        .form-control {
+          flex: 1;
+          border: 1px solid #d1d5db;
+          background: white;
+          padding: 0.75rem;
+        }
+
+        .units-select {
+          min-width: 80px;
+          border: 1px solid #d1d5db;
+          background: white;
+          padding: 0.75rem;
+        }
+
+        .delete-btn {
+          width: 40px;
+          height: 40px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border-radius: 8px;
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #fee2e2;
+            border-color: #fecaca;
+            color: #dc2626;
+          }
+
+          i {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+/* Empty State */
+.measurements-empty {
+  .empty-state {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6b7280;
+
+    i {
+      font-size: 3rem;
+      color: #d1d5db;
+      margin-bottom: 1rem;
+    }
+
+    h6 {
+      color: #374151;
+      margin-bottom: 0.5rem;
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+
+    p {
+      margin-bottom: 2rem;
+      font-size: 0.875rem;
+    }
+
+    .btn {
+      padding: 0.875rem 2rem;
+      border-radius: 12px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+  }
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+
+  .btn-save {
+    padding: 1rem 3rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    i {
+      font-size: 1.125rem;
+    }
+  }
+}
+
+/* Button Styles */
+.btn {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+
+  &.btn-outline-primary {
+    border: 2px solid #667eea;
+    color: #667eea;
+    background: transparent;
+
+    &:hover {
+      background: #667eea;
+      color: white;
+      transform: translateY(-1px);
+    }
+  }
+
+  &.btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    color: white;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    }
+  }
+
+  &.btn-outline-danger {
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    background: transparent;
+
+    &:hover {
+      background: #ef4444;
+      color: white;
+    }
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .modern-customer-form {
+    padding: 0;
+  }
+
+  .form-section {
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      font-size: 1.125rem;
+    }
+
+    .section-title {
+      font-size: 1.125rem;
+    }
+  }
+
+  .form-grid {
+    gap: 1rem;
+  }
+
+  .measurement-item {
+    padding: 1rem;
+
+    .measurement-inputs {
+      gap: 1rem;
+    }
+
+    .measurement-value .value-input-group {
+      flex-direction: column;
+      align-items: stretch;
+
+      .delete-btn {
+        width: 100%;
+        height: 40px;
+      }
+    }
+  }
+
+  .form-actions .btn-save {
+    width: 100%;
+    padding: 1rem;
+  }
+}
+
+/* Form Validation States */
+.form-control {
+  &.ng-invalid.ng-touched {
+    border-color: #ef4444;
+    background: #fef2f2;
+
+    &:focus {
+      border-color: #ef4444;
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
+    }
+  }
+
+  &.ng-valid.ng-touched {
+    border-color: #10b981;
+
+    &:focus {
+      border-color: #10b981;
+      box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+  }
+}
+
+/* Loading State */
+.btn-save {
+  &.loading {
+    opacity: 0.8;
+    cursor: not-allowed;
+
+    &::after {
+      content: '';
+      width: 16px;
+      height: 16px;
+      border: 2px solid transparent;
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin-left: 0.5rem;
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Focus Management */
+.form-control:focus,
+.form-select:focus {
+  z-index: 2;
+  position: relative;
+}
+
+/* Smooth Transitions */
+* {
+  transition: all 0.3s ease;
+}

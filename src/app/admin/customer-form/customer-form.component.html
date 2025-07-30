@@ -1,137 +1,205 @@
-<div *ngIf="customer">
-  <h6 class="mb-3">Contact details</h6>
-  <div class="mb-5">
-    <div class="form-group mb-3">
-      <div class="d-flex gap-2 align-items-center mb-2">
-        <i class="bi bi-person"></i>
+<div *ngIf="customer" class="modern-customer-form">
+  <!-- Contact Details Section -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="bi bi-person-circle"></i>
+      </div>
+      <h5 class="section-title">Contact Details</h5>
+    </div>
+
+    <div class="form-grid">
+      <!-- Full Name -->
+      <div class="form-group full-width">
+        <label for="customerName" class="form-label">
+          <i class="bi bi-person"></i>
+          Full Name
+        </label>
         <input
           [ngModelOptions]="{ standalone: true }"
-          type="email"
-          class="form-control mb-0"
-          id="email"
+          type="text"
+          class="form-control"
+          id="customerName"
+          placeholder="Enter customer's full name"
           [(ngModel)]="customer.Name"
           required
         />
       </div>
 
-      <div class="d-flex gap-2 align-items-center mb-2">
-        <!-- Email -->
-        <i class="bi bi-envelope"></i>
+      <!-- Email -->
+      <div class="form-group">
+        <label for="customerEmail" class="form-label">
+          <i class="bi bi-envelope"></i>
+          Email Address
+        </label>
         <input
           [ngModelOptions]="{ standalone: true }"
           type="email"
-          class="form-control m-0"
-          id="email"
+          class="form-control"
+          id="customerEmail"
+          placeholder="customer@example.com"
           [(ngModel)]="customer.Email"
           required
         />
       </div>
 
-      <!-- Phone       -->
-      <div class="d-flex gap-2 align-items-center">
-        <i class="bi bi-telephone"></i>
+      <!-- Phone -->
+      <div class="form-group">
+        <label for="customerPhone" class="form-label">
+          <i class="bi bi-telephone"></i>
+          Phone Number
+        </label>
         <input
           [ngModelOptions]="{ standalone: true }"
-          type="email"
-          class="form-control m-0"
-          id="email"
+          type="tel"
+          class="form-control"
+          id="customerPhone"
+          placeholder="+27 12 345 6789"
           [(ngModel)]="customer.PhoneNumber"
           required
         />
       </div>
     </div>
   </div>
-  <h6 class="mb-3">Address Info</h6>
 
-  <div class="form-group mb-3">
-    <label for="email" class="form-label">Address Line 1</label>
-    <input
-      [ngModelOptions]="{ standalone: true }"
-      type="email"
-      class="form-control mb-3"
-      id="email"
-      [(ngModel)]="customer.AddressLineHome"
-      required
-    />
+  <!-- Address Information Section -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="bi bi-geo-alt"></i>
+      </div>
+      <h5 class="section-title">Address Information</h5>
+    </div>
+
+    <div class="form-grid">
+      <!-- Address Line 1 -->
+      <div class="form-group full-width">
+        <label for="addressLine1" class="form-label">Address Line 1</label>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="addressLine1"
+          placeholder="Street number and name"
+          [(ngModel)]="customer.AddressLineHome"
+        />
+      </div>
+
+      <!-- Address Line 2 -->
+      <div class="form-group full-width">
+        <label for="addressLine2" class="form-label">Address Line 2 <span class="optional">(Optional)</span></label>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="addressLine2"
+          placeholder="Apartment, suite, building, etc."
+          [(ngModel)]="customer.AddressLine2"
+        />
+      </div>
+
+      <!-- City -->
+      <div class="form-group">
+        <label for="customerCity" class="form-label">City</label>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="customerCity"
+          placeholder="Enter city"
+          [(ngModel)]="customer.City"
+        />
+      </div>
+
+      <!-- Postal Code -->
+      <div class="form-group">
+        <label for="postalCode" class="form-label">Postal Code</label>
+        <input
+          [ngModelOptions]="{ standalone: true }"
+          type="text"
+          class="form-control"
+          id="postalCode"
+          placeholder="Enter postal code"
+          [(ngModel)]="customer.PostalCode"
+        />
+      </div>
+    </div>
   </div>
 
-  <div class="form-group mb-3">
-    <label for="email" class="form-label">Address Line 2</label>
-    <input
-      [ngModelOptions]="{ standalone: true }"
-      type="email"
-      class="form-control mb-3"
-      id="email"
-      [(ngModel)]="customer.AddressLine2"
-      required
-    />
-  </div>
-  <div class="row">
-    <div class="form-group mb-3 col-6">
-      <label for="email" class="form-label">City</label>
-      <input
-        [ngModelOptions]="{ standalone: true }"
-        type="email"
-        class="form-control mb-3"
-        id="email"
-        [(ngModel)]="customer.City"
-        required
-      />
+  <!-- Measurements Section -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon">
+        <i class="bi bi-rulers"></i>
+      </div>
+      <h5 class="section-title">Customer Measurements</h5>
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="add_measurement()">
+        <i class="bi bi-plus"></i>
+        Add Measurement
+      </button>
     </div>
-    <div class="form-group mb-3 col-6">
-      <label for="email" class="form-label">Postal Code</label>
-      <input
-        [ngModelOptions]="{ standalone: true }"
-        type="email"
-        class="form-control mb-3"
-        id="email"
-        [(ngModel)]="customer.PostalCode"
-        required
-      />
-    </div>
-  </div>
-  <h6 class="mb-3">Measurements</h6>
-  <table class="table mb-5">
-    <tbody>
-      <tr *ngFor="let item of customer.Measurements; let i = index">
-        <td>
-          <input
-            [ngModelOptions]="{ standalone: true }"
-            type="text"
-            class="form-control mb-3"
-            id="email"
-            [(ngModel)]="item.Name"
-            required
-          />
-        </td>
-        <td>
-          <div class="d-flex gap-1 align-items-center mb-3">
-            <input
-              [ngModelOptions]="{ standalone: true }"
-              type="number"
-              class="form-control"
-              id="email"
-              [(ngModel)]="item.Value"
-              required
-            />
-            <select [(ngModel)]="item.Units" name="" id="" class="form-select">
-              <option [value]="u" *ngFor="let u of ['','CM', 'INC']">
-                {{ u || 'Units' }}
-              </option>
-            </select>
-            <i class="bi bi-trash" (click)="delete(i)"></i>
+
+    <div class="measurements-container" *ngIf="customer.Measurements && customer.Measurements.length > 0">
+      <div class="measurements-grid">
+        <div class="measurement-item" *ngFor="let item of customer.Measurements; let i = index">
+          <div class="measurement-inputs">
+            <div class="measurement-name">
+              <label class="form-label">Measurement Name</label>
+              <input
+                [ngModelOptions]="{ standalone: true }"
+                type="text"
+                class="form-control"
+                placeholder="e.g., Waist, Chest, Hip"
+                [(ngModel)]="item.Name"
+                required
+              />
+            </div>
+
+            <div class="measurement-value">
+              <label class="form-label">Value</label>
+              <div class="value-input-group">
+                <input
+                  [ngModelOptions]="{ standalone: true }"
+                  type="number"
+                  class="form-control"
+                  placeholder="0"
+                  [(ngModel)]="item.Value"
+                  min="0"
+                  step="0.1"
+                />
+                <select [(ngModel)]="item.Units" class="form-select units-select">
+                  <option value="">Units</option>
+                  <option value="CM">CM</option>
+                  <option value="INC">IN</option>
+                </select>
+                <button type="button" class="btn btn-outline-danger btn-sm delete-btn" (click)="delete(i)">
+                  <i class="bi bi-trash"></i>
+                </button>
+              </div>
+            </div>
           </div>
-        </td>
-      </tr>
-      <tr>
-        <td colspan="2" align="right" class="td">
-          <button class="btn btn-light" (click)="add_measurement()">Add Line</button>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+        </div>
+      </div>
+    </div>
 
-  <button type="submit" class="w-100 btn btn-dark mb-2" (click)="save()">
-    {{isNew ? 'Add customer' : 'Update customer'}}
-  </button>
+    <div class="measurements-empty" *ngIf="!customer.Measurements || customer.Measurements.length === 0">
+      <div class="empty-state">
+        <i class="bi bi-rulers"></i>
+        <h6>No measurements added yet</h6>
+        <p>Add customer measurements to provide better fitting recommendations</p>
+        <button type="button" class="btn btn-primary" (click)="add_measurement()">
+          <i class="bi bi-plus-circle"></i>
+          Add First Measurement
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="form-actions">
+    <button type="submit" class="btn btn-primary btn-save" (click)="save()">
+      <i class="bi" [ngClass]="isNew ? 'bi-plus-circle' : 'bi-check-circle'"></i>
+      {{ isNew ? 'Create Customer' : 'Update Customer' }}
+    </button>
+  </div>
 </div>
