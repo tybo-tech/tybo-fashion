@@ -66,4 +66,12 @@ export interface Job {
 
   deliveryDate?: Date;
   images?: string[];
+
+  // Enhanced fields from backend
+  IsOverdue?: boolean;
+  DaysRemaining?: number;
+  FormattedCost?: string;
+  StatusDisplay?: string;
+  PaymentStatus?: string;
+  PercentagePaid?: number;
 }

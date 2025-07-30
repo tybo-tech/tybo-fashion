@@ -40,7 +40,7 @@ class Job
             StatusId,
             Metadata,
             DueDate
-        ) 
+        )
         VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ";
         try {
@@ -131,7 +131,7 @@ class Job
     public function Update($model)
     {
 
-        $query = "UPDATE job SET        
+        $query = "UPDATE job SET
             CompanyId = ? ,
             CustomerId = ? ,
             CustomerName = ? ,
@@ -152,7 +152,7 @@ class Job
             StatusId = ? ,
             Metadata = ? ,
             ModifyDate = now()
-            WHERE JobId = ?      
+            WHERE JobId = ?
         ";
         try {
             //code...
@@ -193,7 +193,7 @@ class Job
 
     public function loadOrders(string $idList)
     {
-        $query = "SELECT 
+        $query = "SELECT
         OrderNo,
         JobId,
         OrdersId,
@@ -216,7 +216,7 @@ class Job
     public function loadCustomers()
     {
         $CustomerType = 'Customer';
-        $query = "SELECT 
+        $query = "SELECT
         CustomerId,
         Name
         FROM customer WHERE  CompanyId=? AND CustomerType = ? ORDER BY ModifyDate DESC";
@@ -247,7 +247,7 @@ class Job
         foreach ($this->orders as $order) {
             if ($order['JobId'] == $JobId) {
                 $paid = (($order["Paid"] / $order["Total"]) * 100);
-                //round to 2 decimal places 
+                //round to 2 decimal places
                 $paid = round($paid, 2);
                 $order["PercentagePaid"] = $paid;
                 return $order;
@@ -259,27 +259,67 @@ class Job
 
     public function GetJobsByCompanyId($CompanyId, $StatusId)
     {
-
         $this->companyId = $CompanyId;
         $this->loadCustomers();
-        $query = "SELECT 
-        CustomerId,
-        JobNo,
-        JobId,
-        Status,
-        DueDate
-         FROM job WHERE CompanyId = ? AND StatusId = ? order by CreateDate desc";
+
+        // Enhanced query with all fields needed for admin UI
+        $query = "SELECT
+            JobId,
+            CompanyId,
+            CustomerId,
+            CustomerName,
+            JobNo,
+            Tittle,
+            JobType,
+            Description,
+            TotalCost,
+            TotalDays,
+            Shipping,
+            ShippingPrice,
+            Status,
+            Class,
+            CreateUserId,
+            ModifyUserId,
+            StatusId,
+            Metadata,
+            DueDate,
+            CreateDate,
+            ModifyDate
+        FROM job
+        WHERE CompanyId = ? AND StatusId = ?
+        ORDER BY CreateDate DESC";
 
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute(array($CompanyId, $StatusId));
             $jobs = array();
+
             if ($stmt->rowCount()) {
                 $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
                 $this->getOrderRange($items);
+
                 foreach ($items as $item) {
+                    // Parse metadata JSON
+                    $item['Metadata'] = json_decode($item['Metadata'], true);
+
+                    // Add customer details
                     $item['Customer'] = $this->getCustomerById($item['CustomerId']);
+
+                    // Add order details
                     $item['Order'] = $this->getOrderByJobId($item['JobId']);
+
+                    // Calculate derived fields for admin UI
+                    $item['IsOverdue'] = $this->isJobOverdue($item['DueDate']);
+                    $item['DaysRemaining'] = $this->calculateDaysRemaining($item['DueDate']);
+                    $item['FormattedCost'] = number_format($item['TotalCost'], 2);
+                    $item['StatusDisplay'] = $this->getStatusDisplay($item['Status'], $item['StatusId']);
+
+                    // Add progress information
+                    if ($item['Order']) {
+                        $item['PaymentStatus'] = $item['Order']['PaymentStatus'] ?? 'Pending';
+                        $item['PercentagePaid'] = $item['Order']['PercentagePaid'] ?? 0;
+                    }
+
                     array_push($jobs, $item);
                 }
             }
@@ -289,10 +329,37 @@ class Job
         }
     }
 
+    // Helper method to check if job is overdue
+    private function isJobOverdue($dueDate) {
+        if (empty($dueDate)) return false;
+        return strtotime($dueDate) < strtotime('today');
+    }
+
+    // Helper method to calculate days remaining
+    private function calculateDaysRemaining($dueDate) {
+        if (empty($dueDate)) return null;
+        $today = new DateTime();
+        $due = new DateTime($dueDate);
+        $diff = $today->diff($due);
+        return $due < $today ? -$diff->days : $diff->days;
+    }
+
+    // Helper method to get formatted status display
+    private function getStatusDisplay($status, $statusId) {
+        $statusMap = [
+            1 => 'Not Started',
+            2 => 'In Progress',
+            3 => 'Stuck',
+            4 => 'Complete',
+            5 => 'Cancelled'
+        ];
+        return $statusMap[$statusId] ?? $status;
+    }
+
     public function GetJobsByCreateUserId($CreateUserId)
     {
         $query = "
-            SELECT 
+            SELECT
                 CustomerId,
                 JobNo,
                 JobId,
@@ -300,58 +367,58 @@ class Job
                 DueDate,
                 CreateDate,
                 Metadata
-            FROM job 
+            FROM job
             WHERE CreateUserId = ?
             ORDER BY CreateDate DESC
         ";
-    
+
         $all_items = $this->get_all_items($CreateUserId);
         $jobs = [];
-    
+
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute([$CreateUserId]);
-    
+
             $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
             foreach ($items as $item) {
                 $item['Metadata'] = json_decode($item['Metadata'], true);
                 $item['JobItems'] = array_values(array_filter($all_items, function ($i) use ($item) {
                     return $i['JobId'] == $item['JobId'];
                 })) ?? [];
-    
+
                 $jobs[] = $item;
             }
         } catch (Exception $e) {
             return ["ERROR" => $e->getMessage()];
         }
-    
+
         return $jobs;
     }
-    
+
     public function get_all_items($CreateUserId)
     {
         $query = "
-            SELECT 
+            SELECT
                 JobId,
                 FeaturedImageUrl
-            FROM jobitem 
-            WHERE 
-                CreateUserId = ?  
-                AND FeaturedImageUrl IS NOT NULL 
+            FROM jobitem
+            WHERE
+                CreateUserId = ?
+                AND FeaturedImageUrl IS NOT NULL
                 AND FeaturedImageUrl != ''
         ";
-    
+
         try {
             $stmt = $this->conn->prepare($query);
             $stmt->execute([$CreateUserId]);
-    
+
             return $stmt->fetchAll(PDO::FETCH_ASSOC);
         } catch (Exception $e) {
             return ["ERROR" => $e->getMessage()];
         }
     }
-    
+
     private function getOrderRange(array $jobs)
     {
         $idList = '(';

@@ -1,125 +1,264 @@
-<app-list-bread currentPage="Jobs" />
-
-<div class="container-fluid py-4">
-  <!-- Header and Filter Section -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <div>
-      <h2 class="fw-bold mb-1">Jobs Management</h2>
-      <p class="text-muted mb-0">View and manage all jobs in your system</p>
-    </div>
-    <div>
-      <button class="btn btn-primary" (click)="show_add = true">
-        <i class="bi bi-plus-lg me-2"></i>Add New Job
-      </button>
+<!-- Modern Jobs Management Interface -->
+<div class="modern-jobs-container">
+  <!-- Header Section -->
+  <div class="page-header">
+    <div class="header-content">
+      <div class="header-text">
+        <h1 class="page-title">
+          <i class="bi bi-briefcase title-icon"></i>
+          Jobs Management
+        </h1>
+        <p class="page-subtitle">Monitor, track, and manage all customer orders and projects</p>
+      </div>
+      <div class="header-actions">
+        <button class="btn-primary-modern" (click)="show_add = true">
+          <i class="bi bi-plus-circle"></i>
+          <span>New Job</span>
+        </button>
+      </div>
     </div>
   </div>
 
-  <!-- Search and Filter Panel -->
-  <div class="card mb-4">
-    <div class="card-body">
-      <div class="row g-3 align-items-center">
-        <div class="col-md-6">
-          <div class="input-group">
-            <span class="input-group-text bg-transparent">
-              <i class="bi bi-search"></i>
-            </span>
+  <!-- Statistics Cards -->
+  <div class="stats-section" *ngIf="jobs">
+    <div class="stats-grid">
+      <div class="stat-card stat-total">
+        <div class="stat-icon">
+          <i class="bi bi-briefcase-fill"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ jobs.length }}</h3>
+          <p class="stat-label">Total Jobs</p>
+        </div>
+      </div>
+      <div class="stat-card stat-revenue">
+        <div class="stat-icon">
+          <i class="bi bi-currency-dollar"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ getTotalRevenue() | currency:'ZAR':'symbol':'1.0-0' }}</h3>
+          <p class="stat-label">Total Revenue</p>
+        </div>
+      </div>
+      <div class="stat-card stat-overdue">
+        <div class="stat-icon">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ getOverdueCount() }}</h3>
+          <p class="stat-label">Overdue Jobs</p>
+        </div>
+      </div>
+      <div class="stat-card stat-pending">
+        <div class="stat-icon">
+          <i class="bi bi-hourglass-split"></i>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value">{{ getPendingPayments() | currency:'ZAR':'symbol':'1.0-0' }}</h3>
+          <p class="stat-label">Pending Payments</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters and Search -->
+  <div class="filters-section">
+    <div class="filters-card">
+      <div class="filters-content">
+        <div class="search-section">
+          <div class="search-input-group">
+            <i class="bi bi-search search-icon"></i>
             <input
               type="text"
-              class="form-control"
-              placeholder="Search by job number, customer name or phone..."
+              class="search-input"
+              placeholder="Search by job number, customer name, or invoice..."
               [(ngModel)]="query"
               (input)="filter()"
             />
-            <button class="btn btn-outline-secondary" type="button" (click)="filter()">
-              Search
+            <button class="search-clear" *ngIf="query" (click)="clearSearch()">
+              <i class="bi bi-x"></i>
             </button>
           </div>
         </div>
-        <div class="col-md-6 d-flex justify-content-end">
-          <div class="btn-group" role="group">
-            <button type="button" class="btn btn-outline-secondary">
-              <i class="bi bi-funnel me-2"></i>Filters
-            </button>
-            <button type="button" class="btn btn-outline-secondary">
-              <i class="bi bi-sort-down me-2"></i>Sort
-            </button>
+        <div class="filter-actions">
+          <div class="status-filter">
+            <select class="form-select" [(ngModel)]="selectedStatus" (change)="filterByStatus()">
+              <option value="">All Status</option>
+              <option value="Not Started">Not Started</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+              <option value="Terminated">Terminated</option>
+            </select>
           </div>
+          <button class="filter-btn" (click)="toggleAdvancedFilters()">
+            <i class="bi bi-funnel"></i>
+            <span>Filters</span>
+          </button>
+          <button class="export-btn">
+            <i class="bi bi-download"></i>
+            <span>Export</span>
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Jobs List -->
-  <div class="card" *ngIf="jobs">
-    <div class="card-body p-0">
-      <div class="table-responsive">
-        <table class="table table-hover align-middle mb-0">
-          <thead class="table-light">
-            <tr>
-              <th>Job #</th>
-              <th>Customer</th>
-              <th>Status</th>
-              <th>Due Date</th>
-              <th class="text-end">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let job of jobs" [routerLink]="['/store/admin/job', job.JobId, 'jobs']" class="cursor-pointer">
-              <td class="fw-bold">{{ job.JobNo }}</td>
-              <td>{{ job.Customer?.Name }}</td>
-              <td>
-                <span class="badge" [ngClass]="{
-                  'bg-warning': job.Status === 'Not Started',
-                  'bg-info': job.Status === 'In Progress',
-                  'bg-danger': job.Status === 'Stuck',
-                  'bg-success': job.Status === 'Complete'
-                }">
-                  {{ job.Status }}
+  <!-- Jobs Grid -->
+  <div class="jobs-section" *ngIf="jobs">
+    <div class="jobs-grid" *ngIf="jobs.length > 0">
+      <div
+        *ngFor="let job of jobs"
+        class="job-card"
+        [class.overdue]="job.IsOverdue"
+        [routerLink]="['/store/admin/job', job.JobId, 'jobs']"
+      >
+        <!-- Job Header -->
+        <div class="job-header">
+          <div class="job-main-info">
+            <div class="job-number">
+              <i class="bi bi-hash"></i>
+              <span class="job-no">{{ job.JobNo }}</span>
+            </div>
+            <div class="job-title" *ngIf="job.Tittle">{{ job.Tittle }}</div>
+            <div class="job-type">
+              <i class="bi bi-tag"></i>
+              <span>{{ job.JobType }}</span>
+            </div>
+          </div>
+          <div class="job-status">
+            <span class="status-badge" [ngClass]="getStatusClass(job.Status)">
+              <i [ngClass]="getStatusIcon(job.Status)"></i>
+              {{ job.StatusDisplay || job.Status }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Customer Information -->
+        <div class="job-customer" *ngIf="job.Customer">
+          <div class="customer-info">
+            <div class="customer-avatar">
+              <i class="bi bi-person-circle"></i>
+            </div>
+            <div class="customer-details">
+              <h4 class="customer-name">{{ job.Customer.Name }}</h4>
+              <p class="customer-contact" *ngIf="job.Customer.PhoneNumber">
+                <i class="bi bi-telephone"></i>
+                {{ job.Customer.PhoneNumber }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Financial Summary -->
+        <div class="job-financials">
+          <div class="financial-item total-cost">
+            <div class="financial-label">Total Cost</div>
+            <div class="financial-value">{{ job.FormattedCost || (job.TotalCost | currency:'ZAR':'symbol':'1.2-2') }}</div>
+          </div>
+          <div class="financial-item paid-amount" *ngIf="job.Metadata?.paidAmount">
+            <div class="financial-label">Paid</div>
+            <div class="financial-value paid">{{ job.Metadata.paidAmount | currency:'ZAR':'symbol':'1.2-2' }}</div>
+          </div>
+          <div class="financial-item due-amount" *ngIf="job.Metadata.dueAmount">
+            <div class="financial-label">Due</div>
+            <div class="financial-value" [class.overdue-amount]="(job.Metadata.dueAmount || 0) > 0">
+              {{ (job.Metadata.dueAmount || 0) | currency:'ZAR':'symbol':'1.2-2' }}
+            </div>
+          </div>
+        </div>
+
+        <!-- Timeline Information -->
+        <div class="job-timeline">
+          <div class="timeline-item created">
+            <i class="bi bi-plus-circle"></i>
+            <div class="timeline-content">
+              <span class="timeline-label">Created</span>
+              <span class="timeline-date">{{ job.CreateDate | date:'mediumDate' }}</span>
+            </div>
+          </div>
+          <div class="timeline-item due" *ngIf="job.DueDate">
+            <i class="bi bi-calendar-event" [class.overdue-icon]="job.IsOverdue"></i>
+            <div class="timeline-content">
+              <span class="timeline-label">Due Date</span>
+              <span class="timeline-date" [class.overdue-text]="job.IsOverdue">
+                {{ job.DueDate | date:'mediumDate' }}
+                <span *ngIf="job.DaysRemaining !== null && job.DaysRemaining !== undefined" class="days-remaining">
+                  ({{ (job.DaysRemaining || 0) > 0 ? (job.DaysRemaining || 0) + ' days left' : Math.abs(job.DaysRemaining || 0) + ' days overdue' }})
                 </span>
-              </td>
-              <td>
-                <span *ngIf="job.DueDate" [ngClass]="{'text-danger': isPastDue(job.DueDate)}">
-                  <i class="bi bi-calendar-check me-2"></i>
-                  {{ job.DueDate | date:'mediumDate' }}
-                </span>
-                <span *ngIf="!job.DueDate" class="text-muted">Not set</span>
-              </td>
-              <td class="text-end">
-                <div class="btn-group btn-group-sm">
-                  <button class="btn btn-outline-primary" (click)="$event.stopPropagation()">
-                    <i class="bi bi-pencil"></i>
-                  </button>
-                  <button class="btn btn-outline-danger" (click)="$event.stopPropagation()">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </td>
-            </tr>
-            <tr *ngIf="jobs.length === 0">
-              <td colspan="5" class="text-center py-4 text-muted">
-                No jobs found. <a href="javascript:void(0)" (click)="show_add = true">Create your first job</a>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment Progress -->
+        <div class="payment-progress" *ngIf="job.Metadata?.paidAmount !== undefined && job.TotalCost > 0">
+          <div class="progress-header">
+            <span class="progress-label">Payment Progress</span>
+            <span class="progress-percentage">{{ getPaymentPercentage(job) }}%</span>
+          </div>
+          <div class="progress-bar">
+            <div
+              class="progress-fill"
+              [style.width.%]="getPaymentPercentage(job)"
+              [class.complete]="getPaymentPercentage(job) >= 100"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="job-actions">
+          <button
+            class="action-btn edit-btn"
+            (click)="editJob($event, job)"
+            title="Edit Job"
+          >
+            <i class="bi bi-pencil"></i>
+          </button>
+          <button
+            class="action-btn payment-btn"
+            (click)="recordPayment($event, job)"
+            title="Record Payment"
+            *ngIf="job.Metadata.dueAmount && (job.Metadata.dueAmount || 0) > 0"
+          >
+            <i class="bi bi-credit-card"></i>
+          </button>
+          <button
+            class="action-btn view-btn"
+            (click)="viewJob($event, job)"
+            title="View Details"
+          >
+            <i class="bi bi-eye"></i>
+          </button>
+          <button
+            class="action-btn more-btn"
+            (click)="showMoreActions($event, job)"
+            title="More Actions"
+          >
+            <i class="bi bi-three-dots"></i>
+          </button>
+        </div>
+
+        <!-- Overdue Warning -->
+        <div class="overdue-warning" *ngIf="job.IsOverdue">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+          <span>{{ Math.abs(job.DaysRemaining || 0) }} days overdue</span>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- Pagination (Placeholder for future implementation) -->
-  <nav class="mt-4" *ngIf="jobs && jobs.length > 0">
-    <ul class="pagination justify-content-center">
-      <li class="page-item disabled">
-        <a class="page-link" href="#" tabindex="-1">Previous</a>
-      </li>
-      <li class="page-item active"><a class="page-link" href="#">1</a></li>
-      <li class="page-item"><a class="page-link" href="#">2</a></li>
-      <li class="page-item"><a class="page-link" href="#">3</a></li>
-      <li class="page-item">
-        <a class="page-link" href="#">Next</a>
-      </li>
-    </ul>
-  </nav>
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="jobs.length === 0">
+      <div class="empty-icon">
+        <i class="bi bi-briefcase"></i>
+      </div>
+      <h3 class="empty-title">No Jobs Found</h3>
+      <p class="empty-message">
+        <span *ngIf="query">No jobs match your search criteria. </span>
+        <span *ngIf="!query">You haven't created any jobs yet. </span>
+        <a href="javascript:void(0)" (click)="show_add = true" class="create-link">Create your first job</a>
+      </p>
+    </div>
+  </div>
 </div>
 
 <app-add-job *ngIf="show_add" (onClose)="show_add = false" />
