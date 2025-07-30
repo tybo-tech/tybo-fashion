@@ -1,14 +1,72 @@
-<ng-container *ngIf="job && job.JobItems">
-  <div *ngFor="let item of job.JobItems">
-    <app-job-item [jobItem]="item" [user]="user"  [job]="job"/>
+<!-- Modern Job Items Section -->
+<div class="job-items-container" *ngIf="job">
+  <!-- Section Header -->
+  <div class="section-header">
+    <div class="header-info">
+      <h5 class="section-title">
+        <i class="bi bi-bag-check"></i>
+        Job Items
+      </h5>
+      <div class="items-summary" *ngIf="hasItems">
+        <span class="item-count">{{ totalItems }} item{{ totalItems !== 1 ? 's' : '' }}</span>
+        <span class="quantity-count">{{ totalQuantity }} total qty</span>
+      </div>
+    </div>
+    <button
+      class="add-item-btn"
+      [class.loading]="isLoading"
+      [disabled]="isLoading"
+      (click)="toggleAddMode()"
+      *ngIf="!addMode"
+    >
+      <i class="bi bi-plus-circle"></i>
+      Add Item
+    </button>
   </div>
 
-  <app-job-item-form
-    *ngIf="addMode"
-    [user]="user"
-    [jobItem]="jobItem"
-    (onClose)="addMode = !addMode"
-    (jobItemUpdated)="onJobItemUpdated($event)"
-  />
-  <button class="btn btn-primary" (click)="addMode = true">Add item</button>
-</ng-container>
+  <!-- Items List -->
+  <div class="items-list" *ngIf="hasItems">
+    <div *ngFor="let item of jobItems; let i = index" class="item-wrapper">
+      <app-job-item
+        [jobItem]="item"
+        [user]="user"
+        [job]="job"
+      />
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="!hasItems && !addMode">
+    <div class="empty-icon">
+      <i class="bi bi-bag"></i>
+    </div>
+    <h6>No items in this job</h6>
+    <p>Start by adding items to this job order</p>
+    <button
+      class="add-first-item-btn"
+      [disabled]="isLoading"
+      (click)="toggleAddMode()"
+    >
+      <i class="bi bi-plus-circle"></i>
+      Add First Item
+    </button>
+  </div>
+
+  <!-- Add Item Form -->
+  <div class="add-item-section" *ngIf="addMode">
+    <app-job-item-form
+      [user]="user"
+      [jobItem]="jobItem"
+      (onClose)="addMode = false"
+      (jobItemUpdated)="onJobItemUpdated($event)"
+    />
+  </div>
+
+  <!-- Loading State -->
+  <div class="loading-overlay" *ngIf="isLoading">
+    <div class="loading-spinner">
+      <i class="bi bi-arrow-clockwise"></i>
+    </div>
+    <p>Processing...</p>
+  </div>
+</div>

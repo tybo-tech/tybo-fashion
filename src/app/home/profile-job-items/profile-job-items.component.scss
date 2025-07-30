@@ -1,0 +1,13 @@
+// Modern Profile Job Items Container Styling
+.profile-job-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+// Responsive design for smaller screens
+@media (max-width: 768px) {
+  .profile-job-items-container {
+    gap: 0.75rem;
+  }
+}

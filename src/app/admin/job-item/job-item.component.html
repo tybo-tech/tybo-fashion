@@ -1,42 +1,66 @@
-<div class="cart-item" *ngIf="jobItem && job">
-  <img
-    (click)="editMode = true"
-    [src]="jobItem.FeaturedImageUrl"
-    *ngIf="jobItem.FeaturedImageUrl"
-    alt=""
-  />
-  <div
-    (click)="editMode = true"
-    class="image-place-holder"
-    *ngIf="!jobItem.FeaturedImageUrl"
-  ></div>
-  <div class="details p-0">
-    <a (click)="editMode = true" class="link-info mb-1 small">{{
-      jobItem.ItemName
-    }}</a>
-    <small class="d-block" *ngIf="jobItem.Metadata && jobItem.Metadata.AssignedTo">
-      <i class="bi bi-person-square"></i> {{ jobItem.Metadata.AssignedTo | userPipe }}
-    </small>
-    <div class="m-0 d-flex mb-2 mt-2 align-items-center gap-2 text-muted">
-      <span class="small">Size: {{ jobItem.Size }}</span>
+<!-- Modern Job Item Card -->
+<div class="modern-job-item" *ngIf="jobItem && job">
+  <!-- Item Image -->
+  <div class="item-image-container" (click)="toggleEditMode()">
+    <img
+      [src]="featuredImageUrl"
+      [alt]="itemName"
+      *ngIf="featuredImageUrl"
+      class="item-image"
+    />
+    <div class="image-placeholder" *ngIf="!featuredImageUrl">
+      <i class="bi bi-image"></i>
     </div>
-    <div class="price d-flex gap-3">
-      <span>{{ jobItem.UnitPrice * jobItem.Quantity | currency : "R" }}</span>
-      <app-admin-qty
-        [qty]="jobItem.Quantity"
-        (qtyChange)="update_qty($event, jobItem)"
-      />
-      <span (click)="delete_from_cart(jobItem)" class="small delete link-danger">
-        <i class="bi bi-trash"></i>
+    <div class="edit-overlay">
+      <i class="bi bi-pencil-square"></i>
+    </div>
+  </div>
+
+  <!-- Item Details -->
+  <div class="item-details">
+    <!-- Item Header -->
+    <div class="item-header">
+      <h6 class="item-name" (click)="toggleEditMode()">{{ itemName }}</h6>
+      <div class="item-total">{{ itemTotal | currency : "ZAR" : "symbol" : "1.2-2" }}</div>
+    </div>
+
+    <!-- Assignment Info -->
+    <div class="item-assignment" *ngIf="assignedTo">
+      <i class="bi bi-person-circle"></i>
+      <span>{{ assignedTo | userPipe }}</span>
+    </div>
+
+    <!-- Item Meta -->
+    <div class="item-meta">
+      <span class="size-info">
+        <i class="bi bi-rulers"></i>
+        {{ itemSize }}
       </span>
+    </div>
+
+    <!-- Item Actions -->
+    <div class="item-actions">
+      <app-admin-qty
+        [qty]="itemQuantity"
+        (qtyChange)="update_qty($event, jobItem)"
+        class="quantity-control"
+      />
+      <button
+        (click)="delete_from_cart(jobItem)"
+        class="delete-btn"
+        title="Remove item"
+      >
+        <i class="bi bi-trash3"></i>
+      </button>
     </div>
   </div>
 </div>
 
+<!-- Job Item Form Modal -->
 <app-job-item-form
   *ngIf="editMode && jobItem"
   [jobItem]="jobItem"
   [user]="user"
-  (onClose)="editMode = !editMode"
+  (onClose)="editMode = false"
   (jobItemUpdated)="onJobItemUpdated($event)"
 />

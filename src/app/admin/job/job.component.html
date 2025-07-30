@@ -181,7 +181,7 @@
           <label class="form-label">Payment Proof</label>
           <a
             [href]="getPaymentProof()"
-            class="form-control modern-button proof-btn"
+            class="form-control modern-button proof-btn btn-dark"
             target="_blank"
           >
             <i class="bi bi-file-earmark-check me-2"></i>
@@ -205,19 +205,31 @@
     </div>
   </div>
 
-  <div class="from-group">
-    <h3 class="mb-4">Job items</h3>
+  <!-- Job Items Section -->
+  <div class="admin-form-section">
+    <div class="section-title">
+      <i class="bi bi-bag-check me-2"></i>
+      Job Items Management
+    </div>
     <app-job-items [job]="job" [user]="user" />
-    <hr />
+  </div>
+
+  <!-- Job Totals Section -->
+  <div class="admin-form-section">
     <app-admin-job-total
       [job]="job"
       (showShipping)="showShipping = true"
       (showPayments)="show_capture_payment = true"
     />
-    <hr />
+  </div>
 
+  <!-- Special Instructions Section -->
+  <div class="admin-form-section" *ngIf="hasSpecialInstructions()">
+    <div class="section-title">
+      <i class="bi bi-chat-left-text me-2"></i>
+      Special Instructions
+    </div>
     <app-admin-comment
-      *ngIf="hasSpecialInstructions()"
       [title]="'Special Instructions'"
       [comments]="getSpecialInstructions()"
       (onEdit)="updateSpecialInstructions($event)"

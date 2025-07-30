@@ -1,6 +1,6 @@
-<ng-container *ngIf="job && job.JobItems">
-    <div *ngFor="let item of job.JobItems">
-      <app-profile-job-item [jobItem]="item"  [job]="job"/>
-    </div>
-  </ng-container>
-  
+<!-- Modern Profile Job Items Container -->
+<div class="profile-job-items-container" *ngIf="job && job.JobItems">
+  <div *ngFor="let item of job.JobItems">
+    <app-profile-job-item [jobItem]="item" [job]="job"/>
+  </div>
+</div>

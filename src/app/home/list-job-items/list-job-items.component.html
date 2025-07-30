@@ -1,17 +1,19 @@
-<ng-container *ngIf="job">
-  <div class="cart-item" *ngFor="let jobItem of job.JobItems">
-    <img [src]="jobItem.FeaturedImageUrl" alt="" class="img-fluid" />
-    <div class="details p-3">
-      <h5 class="mb-1 h6">
-        {{ jobItem.Quantity }} x {{ jobItem.ItemName.substring(0, 30) }}...
-      </h5>
-      <div class="m-0 d-flex mb-2 mt-2 align-items-center gap-2 text-muted h6">
-        <span class="border-right pr-2">{{
-          jobItem.UnitPrice * jobItem.Quantity | currency : "R"
-        }}</span>
-        <span class="">Size: {{ jobItem.Size }}</span>
-        <!-- <span>Quantity: {{ jobItem.Quantity }}</span> -->
+<!-- Modern Customer Job Items List -->
+<div class="customer-job-items" *ngIf="job">
+  <div class="items-list">
+    <div *ngFor="let jobItem of job.JobItems" class="customer-job-item">
+      <div class="item-image">
+        <img [src]="jobItem.FeaturedImageUrl" [alt]="jobItem.ItemName" class="img-fluid" />
+      </div>
+      <div class="item-details">
+        <h6 class="item-name">
+          {{ jobItem.Quantity }} x {{ jobItem.ItemName.substring(0, 30) }}{{ jobItem.ItemName.length > 30 ? '...' : '' }}
+        </h6>
+        <div class="item-meta">
+          <span class="item-price">{{ jobItem.UnitPrice * jobItem.Quantity | currency : "ZAR" : "symbol" : "1.2-2" }}</span>
+          <span class="item-size">Size: {{ jobItem.Size }}</span>
+        </div>
       </div>
     </div>
   </div>
-</ng-container>
+</div>

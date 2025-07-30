@@ -1,6 +1,35 @@
-<div class="qty d-flex align-items-center gap-2 btn btn-light shadow">
-    <i class="bi bi-dash" (click)="decrement()"></i>
-    <span>{{ qty }}</span>
-    <i class="bi bi-plus" (click)="increment()"></i>
-  </div>
-  
+<!-- Modern Quantity Control -->
+<div class="modern-qty-control" [class]="'size-' + size" [class.disabled]="disabled">
+  <button
+    type="button"
+    class="qty-btn qty-decrement"
+    [disabled]="!canDecrement"
+    (click)="decrement()"
+    title="Decrease quantity"
+  >
+    <i class="bi bi-dash"></i>
+  </button>
+
+  <input
+    type="number"
+    class="qty-input"
+    [value]="qty"
+    [min]="min"
+    [max]="max"
+    [step]="step"
+    [disabled]="disabled"
+    (input)="onInputChange($event)"
+    (blur)="onInputBlur($event)"
+    title="Quantity"
+  />
+
+  <button
+    type="button"
+    class="qty-btn qty-increment"
+    [disabled]="!canIncrement"
+    (click)="increment()"
+    title="Increase quantity"
+  >
+    <i class="bi bi-plus"></i>
+  </button>
+</div>

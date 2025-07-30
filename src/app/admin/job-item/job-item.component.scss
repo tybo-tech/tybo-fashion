@@ -1,25 +1,246 @@
-.cart-item {
-    display: grid;
-    grid-template-columns: 100px auto;
-    margin-bottom: 18px;
-    grid-gap: 12px;
-    // background: #f9f9f9;
-    // box-shadow:  0 0 10px rgba(0, 0, 0, 0.1);
-    // padding: 8px;
-    img {
+// Modern Job Item Styling
+.modern-job-item {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+
+  // Item Image Container
+  .item-image-container {
+    position: relative;
+    cursor: pointer;
+    border-radius: 12px;
+    overflow: hidden;
+    height: 100px;
+
+    .item-image {
       width: 100%;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px !important;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 12px;
+      transition: transform 0.3s ease;
     }
-    .image-place-holder{
-        width: 100%;
-        height: 100%;
-        background: rgb(230, 230, 230);
-        opacity: .5;
-        border-radius: 8px !important;
+
+    .image-placeholder {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      color: #64748b;
+      font-size: 1.5rem;
     }
-    .price {
-      font-weight: 600;
-      color: #3b71ca;
+
+    .edit-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      border-radius: 12px;
+
+      i {
+        color: white;
+        font-size: 1.25rem;
+      }
+    }
+
+    &:hover {
+      .edit-overlay {
+        opacity: 1;
+      }
+
+      .item-image {
+        transform: scale(1.05);
+      }
     }
   }
+
+  // Item Details
+  .item-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+
+    .item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+
+      .item-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #1e293b;
+        margin: 0;
+        cursor: pointer;
+        flex: 1;
+        line-height: 1.3;
+
+        &:hover {
+          color: #667eea;
+        }
+      }
+
+      .item-total {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #059669;
+        white-space: nowrap;
+      }
+    }
+
+    .item-assignment {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.875rem;
+      color: #64748b;
+
+      i {
+        color: #667eea;
+      }
+    }
+
+    .item-meta {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      .size-info {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        color: #64748b;
+        background: rgba(102, 126, 234, 0.1);
+        padding: 0.25rem 0.5rem;
+        border-radius: 6px;
+
+        i {
+          color: #667eea;
+        }
+      }
+    }
+
+    .item-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: auto;
+
+      .quantity-control {
+        flex: 0 0 auto;
+      }
+
+      .delete-btn {
+        background: none;
+        border: none;
+        color: #dc2626;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover {
+          background: rgba(239, 68, 68, 0.1);
+          color: #b91c1c;
+          transform: scale(1.1);
+        }
+
+        i {
+          font-size: 1.1rem;
+        }
+      }
+    }
+  }
+}
+
+// Responsive Design
+@media (max-width: 768px) {
+  .modern-job-item {
+    grid-template-columns: 100px 1fr;
+    gap: 0.75rem;
+    padding: 1rem;
+
+    .item-image-container {
+      height: 80px;
+    }
+
+    .item-details {
+      .item-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+
+        .item-total {
+          font-size: 1rem;
+        }
+      }
+
+      .item-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+
+        .quantity-control {
+          align-self: flex-start;
+        }
+
+        .delete-btn {
+          align-self: flex-end;
+        }
+      }
+    }
+  }
+}
+
+// Legacy styles for backward compatibility (if needed)
+.cart-item {
+  display: grid;
+  grid-template-columns: 100px auto;
+  margin-bottom: 18px;
+  grid-gap: 12px;
+
+  img {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px !important;
+  }
+
+  .image-place-holder {
+    width: 100%;
+    height: 100%;
+    background: rgb(230, 230, 230);
+    opacity: 0.5;
+    border-radius: 8px !important;
+  }
+
+  .price {
+    font-weight: 600;
+    color: #3b71ca;
+  }
+}
