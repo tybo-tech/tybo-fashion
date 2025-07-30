@@ -47,9 +47,9 @@ export class DashboardComponent {
   ];
 
   shortcuts = [
-    { label: 'Add Job', route: '/store/admin/jobs/add-job' },
-    { label: 'Add Product', route: '/store/admin/products/add-product' },
-    { label: 'Add Customer', route: '/store/admin/customers/add-customer' },
+    { label: 'Add Job', route: '/store/admin/job/add' },
+    { label: 'Add Product', route: '/store/admin/product/add' },
+    { label: 'Add Customer', route: '/store/admin/customer/add' },
   ];
 
   user?: User;

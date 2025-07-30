@@ -326,16 +326,19 @@ LIMIT
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
   }
 
-  public function getFeaturedProducts($companyId)
+  public function getFeaturedProducts($companyId, $isAdmin = false)
   {
     $query = "
         SELECT * FROM product
         WHERE CompanyId = ?
-          AND ShowOnline = 1
-          AND IsFeatured = 'Yes'
-          AND FeaturedImageUrl <> ''
-        ORDER BY CreateDate DESC
-    ";
+          AND IsFeatured = 'Yes'";
+
+    // Add filters for non-admin users
+    if (!$isAdmin) {
+      $query .= " AND ShowOnline = 1 AND FeaturedImageUrl <> ''";
+    }
+
+    $query .= " ORDER BY CreateDate DESC";
 
     $stmt = $this->conn->prepare($query);
     $stmt->execute([$companyId]);
@@ -344,15 +347,18 @@ LIMIT
   }
 
 
-  function getRecentProducts($CompanyId)
+  function getRecentProducts($CompanyId, $isAdmin = false)
   {
     $query = "
             SELECT * FROM product
-            WHERE CompanyId = ?
-              AND ShowOnline = 1
-              AND FeaturedImageUrl <> ''
-            ORDER BY CreateDate DESC
-            LIMIT 4";
+            WHERE CompanyId = ?";
+
+    // Add filters for non-admin users
+    if (!$isAdmin) {
+      $query .= " AND ShowOnline = 1 AND FeaturedImageUrl <> ''";
+    }
+
+    $query .= " ORDER BY CreateDate DESC LIMIT 4";
 
     $stmt = $this->conn->prepare($query);
     $stmt->execute([$CompanyId]);

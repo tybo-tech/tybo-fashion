@@ -210,7 +210,7 @@ class Categories
         // Step 1: Get all categories
         $this->isAdmin = $isAdmin;
         $allCategories = $this->GetByCompanyId($companyId);
-        $counts = $this->getProductCountsByCategory($companyId);
+        $counts = $this->getProductCountsByCategory($companyId, $isAdmin);
 
         $discounts = $this->discountService->getActiveDiscounts($companyId);
 
@@ -235,8 +235,21 @@ class Categories
             $byId,
             fn($cat) =>
             (!$cat['ParentId']) &&
-            (!$onlyPinned || $cat['IsPinned'])
+            (!$onlyPinned || $cat['IsPinned']) &&
+            ($isAdmin || $cat['CountProducts'] >= 3) // For customers: only show categories with 3+ products
         );
+
+        // Step 4.1: Filter children based on product count for non-admin users
+        if (!$isAdmin) {
+            foreach ($roots as &$root) {
+                $root['Children'] = array_filter(
+                    $root['Children'],
+                    fn($child) => $child['CountProducts'] >= 3
+                );
+                // Re-index the array
+                $root['Children'] = array_values($root['Children']);
+            }
+        }
 
         // Step 5: Limit children count if needed
         foreach ($roots as &$root) {
@@ -250,8 +263,8 @@ class Categories
     public function GetCategoryAndChildren($companyId, $categoryId, $isAdmin = false)
     {
         $this->isAdmin = $isAdmin;
-        $query = "SELECT * FROM category 
-              WHERE CompanyId = ? 
+        $query = "SELECT * FROM category
+              WHERE CompanyId = ?
                 AND CategoryId = ?";
         // $query = $this->hasImages($query);
 
@@ -267,8 +280,8 @@ class Categories
     public function GetCategoriesByParent($companyId, $parentId)
     {
         $query = "
-            SELECT 
-                c.*, 
+            SELECT
+                c.*,
                 COUNT(cp.ProductId) AS CountProducts
             FROM category c
             LEFT JOIN category_product cp ON cp.CategoryId = c.CategoryId
@@ -287,13 +300,19 @@ class Categories
 
 
 
-    public function getProductCountsByCategory($companyId)
+    public function getProductCountsByCategory($companyId, $isAdmin = false)
     {
         $query = "SELECT cp.CategoryId, COUNT(*) AS CountProducts
               FROM category_product cp
               JOIN product p ON cp.ProductId = p.Id
-              WHERE p.CompanyId = ? AND p.ShowOnline = 1
-              GROUP BY cp.CategoryId";
+              WHERE p.CompanyId = ?";
+
+        // Add online filter for non-admin users
+        if (!$isAdmin) {
+            $query .= " AND p.ShowOnline = 1";
+        }
+
+        $query .= " GROUP BY cp.CategoryId";
 
         $stmt = $this->conn->prepare($query);
         $stmt->execute([$companyId]);

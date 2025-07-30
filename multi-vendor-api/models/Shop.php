@@ -26,17 +26,22 @@ class Shop
         $item = $stmt->fetch(PDO::FETCH_ASSOC);
         $item["Metadata"] = json_decode($item["Metadata"]);
 
-        // ✅ Load category tree
+        // Get admin flag from request data
+        $isAdmin = isset($data->IsAdmin) ? $data->IsAdmin : false;
+
+        // ✅ Load category tree with admin support
         if ($data->IncludeCategories) {
             $categoryService = new Categories($this->conn);
-            $item["Categories"] = $categoryService->getHierarchyWithCounts($item["CompanyId"],true, 4);
+            // For admin: get all categories, for customers: only categories with 3+ products
+            $minProductCount = $isAdmin ? 0 : 3;
+            $item["Categories"] = $categoryService->getHierarchyWithCounts($item["CompanyId"], true, 4, $isAdmin);
         }
 
-        // ✅ Return pinned products
-        $item["PinnedProducts"] = $this->productQueryService->getFeaturedProducts($item["CompanyId"]);
+        // ✅ Return pinned products with admin support
+        $item["PinnedProducts"] = $this->productQueryService->getFeaturedProducts($item["CompanyId"], $isAdmin);
 
-        // ✅ Return recent products (New In)
-        $item["RecentProducts"] = $this->productQueryService->getRecentProducts($item["CompanyId"]);
+        // ✅ Return recent products with admin support
+        $item["RecentProducts"] = $this->productQueryService->getRecentProducts($item["CompanyId"], $isAdmin);
 
         return $item;
     }
