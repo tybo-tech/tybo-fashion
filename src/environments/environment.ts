@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  api: `https://tybofashion.co.za/api/api`,
+  // api: `https://tybofashion.co.za/api/api`,
+  api: `http://localhost:8080/api`,
   BASE_URL: 'http://localhost:4200'
 };
 

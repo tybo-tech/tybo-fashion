@@ -11,6 +11,7 @@ import { UserService } from 'src/services/user.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
+  today = new Date();
   cards: {
     title: string;
     count: number;
@@ -23,19 +24,19 @@ export class DashboardComponent {
       name: 'Not Started',
       count: 10,
       link: '/store/admin/jobs/not-started',
-      classes: ['bg-white', 'text-dark'],
+      classes: ['bg-white'],
     },
     {
       name: 'In Progress',
       count: 20,
       link: '/store/admin/jobs/in-progress',
-      classes: ['bg-white', 'text-dark'],
+      classes: ['bg-white'],
     },
     {
       name: 'Stuck',
       count: 2,
       link: '/store/admin/jobs/stuck',
-      classes: ['bg-white', 'text-dark'],
+      classes: ['bg-white'],
     },
     {
       name: 'Complete',
@@ -50,8 +51,11 @@ export class DashboardComponent {
     { label: 'Add Product', route: '/store/admin/products/add-product' },
     { label: 'Add Customer', route: '/store/admin/customers/add-customer' },
   ];
+
   user?: User;
   counts?: ICounts;
+  totalJobs = 0;
+
   constructor(
     private router: Router,
     private userService: UserService,
@@ -67,56 +71,55 @@ export class DashboardComponent {
               title: 'Products',
               count: this.counts.ProductCount,
               link: '/store/admin/products',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
-            //Catergories
             {
               title: 'Styles',
               count: this.counts.CategoryCount,
               link: '/store/admin/styles',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
             {
               title: 'Collections',
               count: this.counts.CollectionCount,
               link: '/store/admin/collections',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
             {
               title: 'Customers',
               count: this.counts.CustomerCount,
               link: '/store/admin/customers',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
-            // USers
             {
               title: 'Users',
               count: this.counts.UserCount,
               link: '/store/admin/users',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
-            //Jobs
             {
               title: 'Jobs',
               count: this.counts.JobCount,
               link: '/store/admin/jobs',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
-            // Job cards
             {
               title: 'Job Cards',
               count: this.counts.JobItemCount,
               link: '/store/admin/job-cards',
-              classes: ['bg-white', 'text-dark'],
+              classes: ['bg-white'],
             },
           ];
         }
       });
     }
+
+    // Calculate total jobs for progress indicators
+    this.totalJobs = this.jobStatuses.reduce((sum, status) => sum + status.count, 0);
   }
 
-  ngOnInit(): void {
-    // Fetch actual data here
+  getJobPercentage(count: number): number {
+    return (count / this.totalJobs) * 100;
   }
 
   navigateTo(route: string): void {

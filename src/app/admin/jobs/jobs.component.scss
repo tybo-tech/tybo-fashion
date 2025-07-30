@@ -1,0 +1,64 @@
+:host{
+  .cursor-pointer {
+  cursor: pointer;
+}
+
+.table-hover tbody tr:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+// Status badges
+.badge {
+  &.bg-warning {
+    background-color: #fff3cd !important;
+    color: #664d03 !important;
+  }
+  &.bg-info {
+    background-color: #cff4fc !important;
+    color: #055160 !important;
+  }
+  &.bg-danger {
+    background-color: #f8d7da !important;
+    color: #842029 !important;
+  }
+  &.bg-success {
+    background-color: #d1e7dd !important;
+    color: #0f5132 !important;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .table-responsive {
+    border: 0;
+
+    thead {
+      display: none;
+    }
+
+    tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 0.25rem;
+    }
+
+    td {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #dee2e6;
+
+      &::before {
+        content: attr(data-label);
+        font-weight: bold;
+        margin-right: 1rem;
+      }
+
+      &:last-child {
+        border-bottom: 0;
+      }
+    }
+  }
+}
+}

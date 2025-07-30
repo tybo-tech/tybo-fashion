@@ -19,10 +19,16 @@ $db = $database->connect();
 $service = new Categories($db);
 $companyService = new Company($db);
 $company = $companyService->simple($companyId);
+echo json_encode($company);
+exit;
 if(!$company) {
     echo json_encode(['error' => 'Company not found']);
     exit;
 }
 $result = $service->GetCategoryAndChildren($company['CompanyId'] , $categoryId, $isAdmin === 'yes');
+if(!$result) {
+    echo json_encode(['error' => 'Category not found']);
+    exit;
+}
 $result['Company'] = $company;
 echo json_encode($result);

@@ -15,6 +15,7 @@ export class JobsComponent {
   user = this.userService.getUser;
   jobs?: Job[];
   all_jobs: Job[] | undefined;
+
   constructor(
     private jobService: JobService,
     private userService: UserService,
@@ -29,20 +30,25 @@ export class JobsComponent {
         this.all_jobs = data || [];
       });
   }
+
   filter() {
     if (!this.query) {
       this.jobs = this.all_jobs;
       return;
     }
-    // Filter customers by name & Phone number
-    this.jobs = this.all_jobs?.filter((customer) => {
+    this.jobs = this.all_jobs?.filter((job) => {
       return (
-        customer.Customer?.Name.toLowerCase().includes(
-          this.query.toLowerCase()
-        ) ||
-        customer.Customer?.PhoneNumber?.includes(this.query) ||
-        customer.JobNo?.includes(this.query)
+        job.Customer?.Name.toLowerCase().includes(this.query.toLowerCase()) ||
+        job.Customer?.PhoneNumber?.includes(this.query) ||
+        job.JobNo?.includes(this.query)
       );
     });
+  }
+
+  isPastDue(dueDate: string | Date): boolean {
+    const due = new Date(dueDate);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return due < today;
   }
 }

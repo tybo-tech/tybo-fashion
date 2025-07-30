@@ -34,7 +34,7 @@ class ProductQuery
                 $item['Variations'] = $productVariationManager->getProductVariations($item['Id']);
                 $item['Images'] = json_decode($item['Images'], true);
                 $item['Metadata'] = json_decode($item['Metadata'], true);
-                
+
                 if(!$IsAdmin){
                     // No need to show the company details to the admin since they alreay logged in and have access to the company
                      $item['Company'] = $company->simple($item['CompanyId']);
@@ -193,13 +193,13 @@ class ProductQuery
 
         $query = "SELECT Id,
                     ProductId,
-                    Slug, 
-                    Name, 
-                    FeaturedImageUrl, 
-                    RegularPrice, 
-                    IsJustInTime, 
-                    IsFeatured, 
-                    ShowOnline, 
+                    Slug,
+                    Name,
+                    FeaturedImageUrl,
+                    RegularPrice,
+                    IsJustInTime,
+                    IsFeatured,
+                    ShowOnline,
                     CompanyId
                   FROM product
                   WHERE FeaturedImageUrl <> ''";
@@ -296,7 +296,7 @@ class ProductQuery
     public function getFeaturedProducts($companyId)
     {
         $query = "
-        SELECT * FROM product 
+        SELECT * FROM product
         WHERE CompanyId = ?
           AND ShowOnline = 1
           AND IsFeatured = 'Yes'
@@ -314,7 +314,7 @@ class ProductQuery
     function getRecentProducts($CompanyId)
     {
         $query = "
-            SELECT * FROM product 
+            SELECT * FROM product
             WHERE CompanyId = ?
               AND ShowOnline = 1
               AND FeaturedImageUrl <> ''
