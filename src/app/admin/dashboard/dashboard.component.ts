@@ -122,6 +122,81 @@ export class DashboardComponent {
     return (count / this.totalJobs) * 100;
   }
 
+  // Helper methods for card styling and icons
+  getCardIcon(title: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Products': 'bi-box-seam',
+      'Styles': 'bi-palette2',
+      'Collections': 'bi-collection',
+      'Customers': 'bi-people',
+      'Users': 'bi-person-gear',
+      'Jobs': 'bi-briefcase',
+      'Job Cards': 'bi-kanban'
+    };
+    return iconMap[title] || 'bi-circle';
+  }
+
+  getCardIconClass(title: string): string {
+    const classMap: { [key: string]: string } = {
+      'Products': 'icon-purple',
+      'Styles': 'icon-blue',
+      'Collections': 'icon-green',
+      'Customers': 'icon-orange',
+      'Users': 'icon-pink',
+      'Jobs': 'icon-indigo',
+      'Job Cards': 'icon-teal'
+    };
+    return classMap[title] || 'icon-gray';
+  }
+
+  getJobStatusIcon(status: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Not Started': 'bi-play-circle',
+      'In Progress': 'bi-arrow-clockwise',
+      'Stuck': 'bi-exclamation-triangle',
+      'Complete': 'bi-check-circle'
+    };
+    return iconMap[status] || 'bi-circle';
+  }
+
+  getJobStatusClass(status: string): string {
+    const classMap: { [key: string]: string } = {
+      'Not Started': 'status-pending',
+      'In Progress': 'status-progress',
+      'Stuck': 'status-warning',
+      'Complete': 'status-success'
+    };
+    return classMap[status] || 'status-default';
+  }
+
+  getJobProgressClass(status: string): string {
+    const classMap: { [key: string]: string } = {
+      'Not Started': 'progress-pending',
+      'In Progress': 'progress-active',
+      'Stuck': 'progress-warning',
+      'Complete': 'progress-success'
+    };
+    return classMap[status] || 'progress-default';
+  }
+
+  getShortcutIcon(label: string): string {
+    const iconMap: { [key: string]: string } = {
+      'Add Job': 'bi-plus-circle',
+      'Add Product': 'bi-bag-plus',
+      'Add Customer': 'bi-person-plus'
+    };
+    return iconMap[label] || 'bi-plus';
+  }
+
+  getShortcutDescription(label: string): string {
+    const descriptionMap: { [key: string]: string } = {
+      'Add Job': 'Create a new custom order',
+      'Add Product': 'Add items to your catalog',
+      'Add Customer': 'Register new clients'
+    };
+    return descriptionMap[label] || 'Quick action';
+  }
+
   navigateTo(route: string): void {
     this.router.navigate([route]);
   }

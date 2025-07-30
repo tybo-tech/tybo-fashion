@@ -1,33 +1,100 @@
-<div class="dashboard-container" *ngIf="user">
-  <div class="container-fluid py-4">
-    <!-- Welcome Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div>
-        <h1 class="fw-bold mb-1">Welcome back, {{ user.Name }}!</h1>
-        <p class="text-muted mb-0">Here's what's happening with your business today</p>
-      </div>
-      <div class="d-none d-md-block">
-        <span class="badge bg-primary bg-opacity-10 text-primary p-2">
-          <i class="bi bi-calendar me-2"></i>{{ today | date:'fullDate' }}
-        </span>
+<!-- Modern Dashboard Container -->
+<div class="modern-dashboard" *ngIf="user">
+  <div class="dashboard-content">
+    <!-- Hero Welcome Section -->
+    <div class="welcome-hero">
+      <div class="hero-content">
+        <div class="welcome-text">
+          <h1 class="hero-title">Welcome back, {{ user.Name }}! 👋</h1>
+          <p class="hero-subtitle">Here's what's happening with your fashion business today</p>
+        </div>
+        <div class="hero-badge">
+          <div class="date-badge">
+            <i class="bi bi-calendar-event"></i>
+            <span>{{ today | date:'EEE, MMM d' }}</span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Stats Cards -->
-    <div class="row g-4 mb-4">
-      <div class="col-12">
-        <h5 class="fw-bold mb-3">Business Overview</h5>
+    <!-- Business Overview Cards -->
+    <div class="metrics-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bi bi-graph-up-arrow section-icon"></i>
+          Business Overview
+        </h2>
+        <p class="section-subtitle">Key metrics at a glance</p>
       </div>
-      <div class="col-6 col-md-4 col-lg-3" *ngFor="let card of cards">
-        <a [routerLink]="card.link" class="text-decoration-none">
-          <div class="card card-hover h-100">
-            <div class="card-body text-center p-3">
-              <h6 class="card-subtitle text-muted mb-2">{{ card.title }}</h6>
-              <h3 class="fw-bold mb-0">{{ card.count | number }}</h3>
-              <div class="mt-3">
-                <span class="badge bg-light text-dark">
-                  <i class="bi bi-arrow-right-short"></i> View all
-                </span>
+
+      <div class="metrics-grid">
+        <a
+          *ngFor="let card of cards; let i = index"
+          [routerLink]="card.link"
+          class="metric-card"
+          [attr.data-metric]="i"
+        >
+          <div class="metric-content">
+            <div class="metric-header">
+              <div class="metric-icon" [ngClass]="getCardIconClass(card.title)">
+                <i class="bi" [ngClass]="getCardIcon(card.title)"></i>
+              </div>
+              <div class="metric-trend">
+                <i class="bi bi-arrow-up-right text-success"></i>
+              </div>
+            </div>
+            <div class="metric-body">
+              <h3 class="metric-value">{{ card.count | number }}</h3>
+              <p class="metric-label">{{ card.title }}</p>
+            </div>
+            <div class="metric-footer">
+              <span class="view-more">
+                <i class="bi bi-arrow-right"></i>
+                View Details
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+    </div>
+
+    <!-- Job Status Dashboard -->
+    <div class="jobs-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bi bi-kanban section-icon"></i>
+          Jobs Status
+        </h2>
+        <p class="section-subtitle">Track your project progress</p>
+      </div>
+
+      <div class="jobs-grid">
+        <a
+          *ngFor="let status of jobStatuses; let i = index"
+          [routerLink]="status.link"
+          class="job-status-card"
+          [attr.data-status]="status.name.toLowerCase().replace(' ', '-')"
+        >
+          <div class="status-content">
+            <div class="status-header">
+              <div class="status-icon" [ngClass]="getJobStatusClass(status.name)">
+                <i class="bi" [ngClass]="getJobStatusIcon(status.name)"></i>
+              </div>
+              <div class="status-badge">
+                <span class="status-label">{{ status.name }}</span>
+              </div>
+            </div>
+            <div class="status-body">
+              <h3 class="status-count">{{ status.count | number }}</h3>
+              <div class="status-progress">
+                <div class="progress-track">
+                  <div
+                    class="progress-fill"
+                    [ngClass]="getJobProgressClass(status.name)"
+                    [style.width.%]="getJobPercentage(status.count)"
+                  ></div>
+                </div>
+                <span class="progress-text">{{ getJobPercentage(status.count) }}%</span>
               </div>
             </div>
           </div>
@@ -35,56 +102,57 @@
       </div>
     </div>
 
-    <!-- Jobs Status Section -->
-    <div class="row g-4 mb-4">
-      <div class="col-12">
-        <h5 class="fw-bold mb-3">Jobs Status</h5>
+    <!-- Quick Actions Panel -->
+    <div class="actions-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bi bi-lightning-charge section-icon"></i>
+          Quick Actions
+        </h2>
+        <p class="section-subtitle">Common tasks made simple</p>
       </div>
-      <div class="col-6 col-md-3" *ngFor="let status of jobStatuses">
-        <a [routerLink]="status.link" class="text-decoration-none">
-          <div class="card card-hover h-100" [ngClass]="status.classes">
-            <div class="card-body text-center p-3">
-              <h6 class="card-subtitle mb-2">{{ status.name }}</h6>
-              <h3 class="fw-bold mb-0">{{ status.count | number }}</h3>
-              <div class="progress mt-3" style="height: 4px;">
-                <div class="progress-bar" [ngClass]="{
-                  'bg-warning': status.name === 'Not Started',
-                  'bg-info': status.name === 'In Progress',
-                  'bg-danger': status.name === 'Stuck',
-                  'bg-success': status.name === 'Complete'
-                }" [style.width.%]="getJobPercentage(status.count)"></div>
-              </div>
+
+      <div class="actions-grid">
+        <button
+          *ngFor="let shortcut of shortcuts; let i = index"
+          class="action-card"
+          [attr.data-action]="i"
+          (click)="navigateTo(shortcut.route)"
+        >
+          <div class="action-content">
+            <div class="action-icon">
+              <i class="bi" [ngClass]="getShortcutIcon(shortcut.label)"></i>
+            </div>
+            <div class="action-body">
+              <h4 class="action-title">{{ shortcut.label }}</h4>
+              <p class="action-description">{{ getShortcutDescription(shortcut.label) }}</p>
+            </div>
+            <div class="action-arrow">
+              <i class="bi bi-arrow-right"></i>
             </div>
           </div>
-        </a>
-      </div>
-    </div>
-
-    <!-- Quick Actions -->
-    <div class="row g-3">
-      <div class="col-12">
-        <h5 class="fw-bold mb-3">Quick Actions</h5>
-      </div>
-      <div class="col-6 col-md-4 col-lg-3" *ngFor="let shortcut of shortcuts">
-        <button class="btn btn-outline-primary btn-hover w-100 py-3 d-flex flex-column align-items-center"
-                (click)="navigateTo(shortcut.route)">
-          <i class="bi fs-4 mb-2" [ngClass]="{
-            'bi-briefcase': shortcut.label.includes('Job'),
-            'bi-box-seam': shortcut.label.includes('Product'),
-            'bi-person-plus': shortcut.label.includes('Customer')
-          }"></i>
-          <span>{{ shortcut.label }}</span>
         </button>
       </div>
     </div>
 
-    <!-- Recent Activity (Placeholder for future enhancement) -->
-    <div class="row mt-5">
-      <div class="col-12">
-        <h5 class="fw-bold mb-3">Recent Activity</h5>
-        <div class="card">
-          <div class="card-body">
-            <p class="text-muted text-center py-4">Recent activity will appear here</p>
+    <!-- Recent Activity Section -->
+    <div class="activity-section">
+      <div class="section-header">
+        <h2 class="section-title">
+          <i class="bi bi-clock-history section-icon"></i>
+          Recent Activity
+        </h2>
+        <p class="section-subtitle">Stay updated with latest changes</p>
+      </div>
+
+      <div class="activity-card">
+        <div class="activity-content">
+          <div class="activity-placeholder">
+            <div class="placeholder-icon">
+              <i class="bi bi-activity"></i>
+            </div>
+            <h4 class="placeholder-title">Coming Soon</h4>
+            <p class="placeholder-text">Recent activity tracking will appear here to help you stay on top of your business operations.</p>
           </div>
         </div>
       </div>
