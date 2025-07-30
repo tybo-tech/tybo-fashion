@@ -53,11 +53,18 @@ export class ProductService {
       product
     );
   }
-  products(companyId = '', isAdmin: boolean = false): Observable<Product[]> {
+  products(companyId = '', isAdmin: boolean = false, limit: number = 40, offset: number = 0): Observable<Product[]> {
     return this.http.get<Product[]>(
-      `${this.url}/products/products.php?CompanyId=${companyId}&isAdmin=${isAdmin}`
+      `${this.url}/products/products.php?CompanyId=${companyId}&isAdmin=${isAdmin}&limit=${limit}&offset=${offset}`
     );
   }
+
+  // Helper method for page-based pagination
+  getProductsPage(companyId = '', page: number = 1, pageSize: number = 40, isAdmin: boolean = false): Observable<Product[]> {
+    const offset = (page - 1) * pageSize;
+    return this.products(companyId, isAdmin, pageSize, offset);
+  }
+
   cleanImages() {
     return this.http.get<Product[]>(
       `https://tybofashion.co.za/api/api/utils/clean-up-images.php`

@@ -86,7 +86,7 @@ class ProductQuery
     return $stmt->fetchAll(PDO::FETCH_ASSOC) ?? [];
   }
 
-  public function getByCompany($companyId, $limit = 40, $isAdmin = false)
+  public function getByCompany($companyId, $limit = 40, $isAdmin = false, $offset = 0)
   {
     $companyService = new Company($this->conn);
     $company = $companyService->simple($companyId);
@@ -95,13 +95,14 @@ class ProductQuery
     }
     $companyId = $company['CompanyId']; // Ensure we use the correct company ID
     $limit = (int) $limit; // ensure it's a safe integer
+    $offset = (int) $offset; // ensure it's a safe integer
     if ($isAdmin) {
-      return $this->getAllForAdmin($limit, $companyId); // Admins can see all products
+      return $this->getAllForAdmin($limit, $companyId, $offset); // Admins can see all products
     }
     $query = "SELECT Id, Slug, Name, FeaturedImageUrl, RegularPrice, CompanyId, IsFeatured, ProductId
               FROM product
               WHERE CompanyId = ? AND FeaturedImageUrl <> '' AND ShowOnline = 1
-              ORDER BY CreateDate DESC LIMIT $limit";
+              ORDER BY CreateDate DESC LIMIT $limit OFFSET $offset";
 
     $stmt = $this->conn->prepare($query);
     $stmt->execute([$companyId]);
@@ -111,8 +112,9 @@ class ProductQuery
 
 
   // Get all products for admin without any filters
-  private function getAllForAdmin($limit, $companyId)
+  private function getAllForAdmin($limit, $companyId, $offset = 0)
   {
+    $offset = (int) $offset; // ensure it's a safe integer
     $query = "SELECT
     Id,
     Slug,
@@ -129,7 +131,7 @@ WHERE
 ORDER BY
     CreateDate DESC
 LIMIT
-     $limit";
+     $limit OFFSET $offset";
     $stmt = $this->conn->prepare($query);
     $stmt->execute([$companyId]);
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
