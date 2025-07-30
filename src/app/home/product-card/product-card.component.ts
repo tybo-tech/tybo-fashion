@@ -72,7 +72,7 @@ export class ProductCardComponent extends SmartModal implements OnInit {
     return `/store/admin/product/${this.product.ProductId}`;
   }
   onImageError(event: Event): void {
-    (event.target as HTMLImageElement).src = 'path-to-default-image.jpg';
+    (event.target as HTMLImageElement).src = 'assets/images/placeholder.svg';
   }
   // get url() {
   //   return `/${this.companySlug}/product/${this.product.ProductId}`;

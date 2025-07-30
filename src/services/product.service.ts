@@ -53,9 +53,9 @@ export class ProductService {
       product
     );
   }
-  products(companyId = '') {
+  products(companyId = '', isAdmin: boolean = false): Observable<Product[]> {
     return this.http.get<Product[]>(
-      `${this.url}/products/products.php?CompanyId=${companyId}`
+      `${this.url}/products/products.php?CompanyId=${companyId}&isAdmin=${isAdmin}`
     );
   }
   cleanImages() {

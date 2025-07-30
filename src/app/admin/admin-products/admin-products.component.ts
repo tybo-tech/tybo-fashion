@@ -41,7 +41,7 @@ export class AdminProductsComponent {
       alert('Please select Login to a company');
       return;
     }
-    this.productService.products(this.companyId).subscribe((data) => {
+    this.productService.products(this.companyId, true).subscribe((data) => {
       if (data && data.length) {
         this.products = data;
         this.setHeroHeaderData();
