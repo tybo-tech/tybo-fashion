@@ -33,6 +33,31 @@ export interface Customer extends UiModel {
   UserId: string;
   Measurements: IMeasurement[];
   Metadata: { Source: string };
+
+  // Enhanced fields from optimized API
+  TotalJobs?: number;
+  CompletedJobs?: number;
+  ActiveJobs?: number;
+  TotalJobValue?: number;
+  AverageJobValue?: number;
+  TotalPaidAmount?: number;
+  TotalDueAmount?: number;
+  PaymentCompletionRate?: number;
+  OutstandingBalance?: number;
+  CustomerLifetimeValue?: number;
+  CustomerStatus?: string;
+  CustomerPriority?: string;
+  ProfileCompleteness?: number;
+  LastJobDate?: string;
+  LastActivityDate?: string;
+  FullName?: string;
+  HasEmail?: string;
+  HasPhone?: string;
+  HasAddress?: string;
+  HasMeasurements?: string;
+  PreferredContact?: string;
+  CreateDateFormatted?: string;
+  LastActivityFormatted?: string;
 }
 
 export function initUserDependant(): CustomerDependant {
