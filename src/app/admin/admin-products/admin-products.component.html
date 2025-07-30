@@ -64,7 +64,9 @@
           <div *ngIf="!isLoading && products && products.length" class="list-group list-group-flush">
             <div
               *ngFor="let product of products; let i = index"
-              class="list-group-item border-0 py-3"
+              class="list-group-item border-0 py-3 product-row"
+              style="cursor: pointer;"
+              (click)="navigateToProduct(product.ProductId)"
             >
               <div class="row align-items-center">
                 <!-- Product Image -->
@@ -111,7 +113,7 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="col-md-2">
+                <div class="col-md-2" (click)="$event.stopPropagation()">
                   <div class="dropdown">
                     <button
                       class="btn btn-outline-secondary btn-sm dropdown-toggle"
@@ -124,7 +126,7 @@
                     </button>
                     <ul class="dropdown-menu" [attr.aria-labelledby]="'dropdown-' + product.Id">
                       <li>
-                        <a class="dropdown-item" [href]="'/store/admin/product/edit/' + product.ProductId">
+                        <a class="dropdown-item" [href]="'/store/admin/product/' + product.ProductId">
                           <i class="bi bi-pencil me-2"></i>Edit
                         </a>
                       </li>

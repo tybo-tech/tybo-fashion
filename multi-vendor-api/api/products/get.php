@@ -9,7 +9,7 @@ require_once '../../models/ProductQuery.php';
 
 $ProductId = isset($_GET['ProductId']) ? $_GET['ProductId'] : null;
 $IsAdmin = isset($_GET['IsAdmin']) ? $_GET['IsAdmin'] : null;
-$IsAdmin = $IsAdmin === 'yes' ? true : false;  
+$IsAdmin = $IsAdmin === 'yes' ? true : false;
 
 if (!$ProductId) {
     http_response_code(400);

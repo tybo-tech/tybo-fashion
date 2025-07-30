@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Company } from 'src/models/Company';
 import { HeroHeaderData } from 'src/models/HeroHeaderData';
 import { Product } from 'src/models/Product';
@@ -28,7 +28,8 @@ export class AdminProductsComponent {
   constructor(
     private activatedRoute: ActivatedRoute,
     private productService: ProductService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {
     this.activatedRoute.params.subscribe((r) => {
       this.categoryId = r['categoryId'];
@@ -124,6 +125,11 @@ export class AdminProductsComponent {
   // Handle image loading errors
   onImageError(event: Event): void {
     (event.target as HTMLImageElement).src = 'assets/images/placeholder.svg';
+  }
+
+  // Navigate to product edit page
+  navigateToProduct(productId: string): void {
+    this.router.navigate(['/store/admin/product', productId]);
   }
   getByCategory() {
     this.productService.getByCategory(this.categoryId).subscribe((data) => {

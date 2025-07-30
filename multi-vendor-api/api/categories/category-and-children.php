@@ -19,8 +19,8 @@ $db = $database->connect();
 $service = new Categories($db);
 $companyService = new Company($db);
 $company = $companyService->simple($companyId);
-echo json_encode($company);
-exit;
+// echo json_encode($company);
+// exit;
 if(!$company) {
     echo json_encode(['error' => 'Company not found']);
     exit;

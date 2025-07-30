@@ -20,7 +20,6 @@ class ProductQuery
   {
     $productCategory = new ProductCategory($this->conn);
     $productVariationManager = new ProductVariationManager($this->conn);
-    $company = new Company($this->conn);
 
 
     $stmt = $this->conn->prepare("SELECT * FROM product WHERE ProductId = ? OR Slug = ?");
@@ -33,9 +32,11 @@ class ProductQuery
         $item['Categories'] = $productCategory->getCategoryDetailsByProductId($item['Id']);
         $item['Variations'] = $productVariationManager->getProductVariations($item['Id']);
         $item['Images'] = json_decode($item['Images'], true);
-        $item['Metadata'] = json_decode($item['Metadata'], true);
+        $item['Metadata'] = isset($item['Metadata']) ? json_decode($item['Metadata'], true) : null;
 
         if (!$IsAdmin) {
+          $company = new Company($this->conn);
+
           // No need to show the company details to the admin since they alreay logged in and have access to the company
           $item['Company'] = $company->simple($item['CompanyId']);
 
@@ -46,7 +47,7 @@ class ProductQuery
         $discountService = new Discounts($this->conn);
         $discount = $discountService->getActiveDiscountForProduct($item['Id']);
 
-        if ($discount && $discount['Id']) {
+        if (isset($discount) && isset($discount['Id']) && $discount['Id']) {
           return (new DiscountManager())->applyDiscountToProduct($item, $discount);
         }
         $discountService = new DiscountManager();

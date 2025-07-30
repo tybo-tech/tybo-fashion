@@ -7,6 +7,16 @@
       grid-template-columns: repeat(2, 1fr);
     }
   }
+
+  // Product row hover effect
+  .product-row {
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background-color: #f8f9fa !important;
+    }
+  }
+
   .page-title {
     margin-top: 2rem;
     @media only screen and (max-width: 600px) {

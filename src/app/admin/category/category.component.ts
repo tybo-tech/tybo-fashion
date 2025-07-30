@@ -21,7 +21,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
   loading = false;
   isDeleting = false;
   showEditModal = false;
-  
+
   // Destroy subject for cleanup
   private destroy$ = new Subject<void>();
   showAddCategoryModal: boolean = false;
@@ -121,7 +121,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
     this.heroHeaderData = {
       title: this.category.Name,
       description: this.category.Description,
-      image: this.category.ImageUrl || 
+      image: this.category.ImageUrl ||
         'https://tybofashion.co.za/api/api/upload/uploads/-1738993039357.png',
       slug: '',
     };
@@ -134,7 +134,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
     if (!this.category) return;
 
     const categoryName = this.category.Name;
-    
+
     if (!confirm(`Are you sure you want to delete "${categoryName}"? This action cannot be undone.`)) {
       return;
     }
@@ -247,7 +247,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
     // You might want to implement a toast service here
   }
 
-  
+
   initCategory() {
     if (!this.user?.CompanyId || !this.user?.UserId) {
       this.handleError('User information not available');
@@ -259,7 +259,7 @@ export class CategoryComponent implements OnInit, OnDestroy {
       '',
       this.categoryId
     );
-    this.showAddCategoryModal = true; 
+    this.showAddCategoryModal = true;
   }
 
    /**
@@ -276,6 +276,6 @@ export class CategoryComponent implements OnInit, OnDestroy {
   onAddCategoryCancel(): void {
     this.showAddCategoryModal = false;
     this.newCatergory = undefined
-    
+
   }
 }
