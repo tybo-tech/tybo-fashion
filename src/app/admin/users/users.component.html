@@ -1,48 +1,192 @@
-<div class="max-600">
+<!-- Modern User List with Enhanced Design -->
+<div class="user-list-container">
   <app-list-bread currentPage="Users" />
-  <div class="d-flex justify-content-between gap-3 mb-4">
-    <input
-      type="search"
-      class="form-control"
-      placeholder="Search by name"
-      [(ngModel)]="quary"
-    />
-    <button
-      class="btn btn-primary w-200px"
-      (click)="initUser(); show_add = true"
-    >
-      <i class="bi bi-plus"></i> User
-    </button>
-  </div>
-  <div class="list-group w-auto" *ngIf="users">
-    <a
-      *ngFor="let userItem of users"
-      [routerLink]="['/store/admin/user', userItem.UserId]"
-      class="list-group-item list-group-item-action align-items-center d-flex gap-3 py-3"
-      aria-current="true"
-    >
-      <i class="bi bi-breafcase"></i>
-      <div class="d-flex flex-wrap gap-2 w-100 justify-content-between">
-        <div>
-          <h6 class="mb-0">{{ userItem?.Name }}</h6>
-          <p class="text-muted mb-0">
-            <small>{{ userItem.Email }}</small>
-          </p>
 
-          <span class="badge text-bg-primary">{{ userItem.UserType }}</span>
-        </div>
-        <small class="opacity-80 text-nowrap">
-          <b>
-            <span class="text-success">{{ userItem.PhoneNumber }}</span>
-          </b>
-        </small>
+  <!-- Header with Search and Stats -->
+  <div class="list-header">
+    <div class="search-add-section">
+      <div class="search-wrapper">
+        <i class="bi bi-search search-icon"></i>
+        <input
+          type="search"
+          class="search-input"
+          placeholder="Search users by name, email, or type..."
+          [(ngModel)]="quary"
+        />
       </div>
-    </a>
+      <button
+        class="add-user-btn"
+        (click)="initUser(); show_add = true"
+      >
+        <i class="bi bi-plus-circle me-2"></i>
+        Add User
+      </button>
+    </div>
+
+    <!-- User Statistics Summary -->
+    <div class="user-stats-bar" *ngIf="users && users.length > 0">
+      <div class="stat-item">
+        <span class="stat-value">{{ users.length }}</span>
+        <span class="stat-label">Total Users</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getActiveUsers() }}</span>
+        <span class="stat-label">Active</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getStaffCount() }}</span>
+        <span class="stat-label">Staff</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">{{ getAdminCount() }}</span>
+        <span class="stat-label">Admins</span>
+      </div>
+    </div>
   </div>
-  <app-add-user
-    (closed)="show_add = false; new_user = undefined"
-    (done)="show_add = false; getUsers()"
-    *ngIf="show_add && new_user"
-    [user]="new_user"
-  ></app-add-user>
+
+  <!-- User Cards Grid -->
+  <div class="user-grid" *ngIf="users && users.length > 0">
+    <div
+      *ngFor="let userItem of users"
+      class="user-card"
+      [ngClass]="{
+        'admin-user': userItem.UserType === 'Admin',
+        'staff-user': userItem.UserType === 'Staff',
+        'manager-user': userItem.UserType === 'Manager'
+      }"
+      [routerLink]="['/store/admin/user', userItem.UserId]"
+    >
+      <!-- User Header -->
+      <div class="user-header">
+        <div class="user-info">
+          <div class="user-avatar">
+            <img
+              *ngIf="userItem.Dp"
+              [src]="userItem.Dp"
+              [alt]="userItem.Name + ' ' + userItem.Surname"
+              class="avatar-img"
+            />
+            <div *ngIf="!userItem.Dp" class="avatar-placeholder">
+              {{ getInitials(userItem.Name, userItem.Surname) }}
+            </div>
+          </div>
+          <div class="user-details">
+            <h5 class="user-name">{{ userItem.Name }} {{ userItem.Surname }}</h5>
+            <div class="user-meta">
+              <span class="user-type" [ngClass]="'type-' + userItem.UserType.toLowerCase()">
+                {{ userItem.UserType }}
+              </span>
+              <span class="user-status" [ngClass]="userItem.StatusId === 1 ? 'status-active' : 'status-inactive'">
+                {{ userItem.StatusId === 1 ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- User Actions -->
+        <div class="user-actions">
+          <button
+            *ngIf="userItem.PhoneNumber"
+            class="action-btn phone-btn"
+            (click)="callUser(userItem, $event)"
+            title="Call {{ userItem.PhoneNumber }}"
+          >
+            <i class="bi bi-telephone"></i>
+          </button>
+          <button
+            *ngIf="userItem.Email"
+            class="action-btn email-btn"
+            (click)="emailUser(userItem, $event)"
+            title="Email {{ userItem.Email }}"
+          >
+            <i class="bi bi-envelope"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Contact Information -->
+      <div class="contact-info">
+        <div class="contact-item" *ngIf="userItem.PhoneNumber">
+          <i class="bi bi-telephone"></i>
+          <span>{{ userItem.PhoneNumber }}</span>
+        </div>
+        <div class="contact-item" *ngIf="userItem.Email">
+          <i class="bi bi-envelope"></i>
+          <span>{{ userItem.Email }}</span>
+        </div>
+        <div class="contact-item" *ngIf="userItem.City">
+          <i class="bi bi-geo-alt"></i>
+          <span>{{ userItem.City }}</span>
+        </div>
+      </div>
+
+      <!-- User Metrics (if we have rate data) -->
+      <div class="user-metrics" *ngIf="userItem.Metadata?.RatePerDay || userItem.Metadata?.RatePerNight">
+        <div class="metric" *ngIf="userItem.Metadata.RatePerDay">
+          <span class="metric-value">{{ userItem.Metadata.RatePerDay | currency:'ZAR':'symbol':'1.0-0' }}</span>
+          <span class="metric-label">Day Rate</span>
+        </div>
+        <div class="metric" *ngIf="userItem.Metadata.RatePerNight">
+          <span class="metric-value">{{ userItem.Metadata.RatePerNight | currency:'ZAR':'symbol':'1.0-0' }}</span>
+          <span class="metric-label">Night Rate</span>
+        </div>
+      </div>
+
+      <!-- User Badges -->
+      <div class="user-badges">
+        <span class="badge admin-badge" *ngIf="userItem.UserType === 'Admin'">
+          <i class="bi bi-shield-check"></i> Admin
+        </span>
+        <span class="badge manager-badge" *ngIf="userItem.UserType === 'Manager'">
+          <i class="bi bi-people"></i> Manager
+        </span>
+        <span class="badge staff-badge" *ngIf="userItem.UserType === 'Staff'">
+          <i class="bi bi-person"></i> Staff
+        </span>
+        <span class="badge active-badge" *ngIf="userItem.StatusId === 1">
+          <i class="bi bi-check-circle"></i> Active
+        </span>
+        <span class="badge inactive-badge" *ngIf="userItem.StatusId !== 1">
+          <i class="bi bi-x-circle"></i> Inactive
+        </span>
+      </div>
+
+      <!-- Last Activity (placeholder for future enhancement) -->
+      <div class="user-activity">
+        <i class="bi bi-clock-history"></i>
+        <span>Member since {{ userItem.CreateDate | date:'mediumDate' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Empty State -->
+  <div class="empty-state" *ngIf="users && users.length === 0">
+    <div class="empty-content">
+      <i class="bi bi-people"></i>
+      <h3>No Users Found</h3>
+      <p>{{ quary ? 'Try adjusting your search terms' : 'Get started by adding your first user' }}</p>
+      <button class="btn btn-primary" (click)="initUser(); show_add = true">
+        <i class="bi bi-plus-circle me-2"></i>
+        Add User
+      </button>
+    </div>
+  </div>
+
+  <!-- Add User Modal -->
+  <div class="app-overlay" *ngIf="show_add && new_user">
+    <div class="my-modal cloud full-height">
+      <app-admin-modal-header (onClose)="show_add = false" title="Add User" />
+      <div class="actions">
+        <div class="p-1">
+          <app-add-user
+            (closed)="show_add = false; new_user = undefined"
+            (done)="show_add = false; getUsers()"
+            [user]="new_user"
+          ></app-add-user>
+          <br />
+          <br />
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
