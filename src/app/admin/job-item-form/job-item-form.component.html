@@ -1,140 +1,171 @@
 <div class="_overlay" *ngIf="jobItem">
-  <div class="_modal cloud">
-    <div class="_header">
-      <h2>Job item</h2>
-      <a (click)="onClose.emit()" class="link-info h6">Done</a>
-    </div>
+  <div class="_modal cloud modern-job-form">
+    <!-- Consistent Modal Header -->
+    <app-admin-modal-header
+      title="Job Item Details"
+      (onClose)="onClose.emit()"
+      [show_x]="true"
+    />
 
     <div class="_body">
-      <div class="p-2">
-        <div class="row">
-          <div class="col-12">
+      <div class="form-container">
+        <!-- Image Section -->
+        <div class="image-section">
+          <div class="image-wrapper">
             <app-image-widget
               [image_url]="jobItem.FeaturedImageUrl"
               (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"
             />
           </div>
-          <div class="col-12">
-            <div class="mb-3">
-              <label for="RegularPrice" class="form-label">Name</label>
+        </div>
+
+        <!-- Basic Information Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h6><i class="bi bi-info-circle me-2"></i>Basic Information</h6>
+          </div>
+          <div class="form-grid">
+            <div class="form-group full-width">
+              <label for="item-name" class="form-label">Item Name</label>
               <input
-                type="search"
-                id="RegularPrice"
+                type="text"
+                id="item-name"
                 [(ngModel)]="jobItem.ItemName"
-                class="form-control"
+                class="form-control modern-input"
+                placeholder="Enter item name..."
               />
             </div>
-          </div>
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Size</label>
-              <!-- <input
-                type="search"
-                id="TotalStock"
-                [(ngModel)]="jobItem.Size"
-                class="form-control"
-              /> -->
+            <div class="form-group">
+              <label for="item-size" class="form-label">Size</label>
               <app-admin-select-size
                 [user]="user"
                 [measurements]="jobItem.Metadata.Measurements || []"
                 [size]="jobItem.Size"
                 (selectSize)="jobItem.Size = $event; sizeChanged($event)"
-                (on_measurements_captured)="
-                  jobItem.Metadata.Measurements = $event
-                "
+                (on_measurements_captured)="jobItem.Metadata.Measurements = $event"
                 [jobItem]="jobItem"
               />
             </div>
-          </div>
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Color</label>
+            <div class="form-group">
+              <label for="item-color" class="form-label">Color</label>
               <input
-                type="search"
-                id="TotalStock"
+                type="text"
+                id="item-color"
                 [(ngModel)]="jobItem.Colour"
-                class="form-control"
+                class="form-control modern-input"
+                placeholder="Enter color..."
               />
             </div>
           </div>
-          <div
-            class="col-12"
-            *ngIf="
-              isMeasurements &&
-              jobItem.Metadata &&
-              jobItem.Metadata.Measurements
-            "
-          >
-            <label for="RegularPrice" class="form-label">Measurements</label>
+        </div>
+
+        <!-- Measurements Section -->
+        <div class="form-section" *ngIf="isMeasurements && jobItem.Metadata && jobItem.Metadata.Measurements">
+          <div class="section-header">
+            <h6><i class="bi bi-rulers me-2"></i>Measurements</h6>
+          </div>
+          <div class="measurements-wrapper">
             <app-admin-measurements
               [measurements]="jobItem.Metadata.Measurements"
               (onCaptured)="jobItem.Metadata.Measurements = $event"
             />
           </div>
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Quantity</label>
-              <input
-                type="number"
-                id="TotalStock"
-                [(ngModel)]="jobItem.Quantity"
-                class="form-control"
-              />
-            </div>
-          </div>
-          <div class="col-6">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Price</label>
-              <input
-                type="number"
-                id="TotalStock"
-                [(ngModel)]="jobItem.UnitPrice"
-                class="form-control"
-              />
-            </div>
-          </div>
+        </div>
 
-          <div class="col-12">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Notes</label>
-              <textarea
-                type="text"
-                id="TotalStock"
-                [(ngModel)]="jobItem.Metadata.Notes"
-                class="form-control"
-              ></textarea>
+        <!-- Pricing & Quantity Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h6><i class="bi bi-calculator me-2"></i>Pricing & Quantity</h6>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="item-quantity" class="form-label">Quantity</label>
+              <div class="input-with-icon">
+                <i class="bi bi-hash input-icon"></i>
+                <input
+                  type="number"
+                  id="item-quantity"
+                  [(ngModel)]="jobItem.Quantity"
+                  class="form-control modern-input with-icon"
+                  placeholder="0"
+                  min="1"
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="item-price" class="form-label">Unit Price</label>
+              <div class="input-with-icon">
+                <i class="bi bi-currency-dollar input-icon"></i>
+                <input
+                  type="number"
+                  id="item-price"
+                  [(ngModel)]="jobItem.UnitPrice"
+                  class="form-control modern-input with-icon"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
             </div>
           </div>
-          <div class="col-12" *ngIf="users.length">
-            <div class="mb-3">
-              <label for="TotalStock" class="form-label">Assigned to</label>
+          <div class="total-display" *ngIf="jobItem.Quantity && jobItem.UnitPrice">
+            <div class="total-card">
+              <span class="total-label">Total Amount:</span>
+              <span class="total-value">{{ (jobItem.Quantity * jobItem.UnitPrice) | currency:'ZAR':'symbol':'1.2-2' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assignment & Notes Section -->
+        <div class="form-section">
+          <div class="section-header">
+            <h6><i class="bi bi-person-gear me-2"></i>Assignment & Notes</h6>
+          </div>
+          <div class="form-grid">
+            <div class="form-group" *ngIf="users.length">
+              <label for="assigned-user" class="form-label">Assigned To</label>
               <select
-                type="text"
+                id="assigned-user"
                 (change)="onUserChange(users)"
-                id="TotalStock"
                 [(ngModel)]="jobItem.Metadata.AssignedTo"
-                class="form-select"
+                class="form-select modern-select"
               >
+                <option value="" disabled>Select a user...</option>
                 <option [value]="u.UserId" *ngFor="let u of users">
-                  {{ u.Name }}
+                  {{ u.Name }} {{ u.Surname }}
                 </option>
               </select>
             </div>
+            <div class="form-group full-width">
+              <label for="item-notes" class="form-label">Notes</label>
+              <textarea
+                id="item-notes"
+                [(ngModel)]="jobItem.Metadata.Notes"
+                class="form-control modern-textarea"
+                rows="4"
+                placeholder="Add any special instructions or notes..."
+              ></textarea>
+            </div>
           </div>
+        </div>
 
-          <div class="p-3">
+        <!-- Action Buttons -->
+        <div class="action-section">
+          <div class="action-buttons">
             <button
-              class="btn btn-primary w-100 mb-2 col-12"
+              class="btn btn-primary action-btn save-btn"
               (click)="jobItemUpdated.emit(jobItem)"
             >
-              Save
+              <i class="bi bi-check-circle me-2"></i>
+              Save Item
             </button>
             <a
-              class="btn btn-light border w-100 mb-2 col-12"
+              class="btn btn-light action-btn print-btn"
               [href]="jobCard"
               target="_blank"
             >
-              <i class="bi bi-printer"></i> Job card
+              <i class="bi bi-printer me-2"></i>
+              Print Job Card
             </a>
           </div>
         </div>
