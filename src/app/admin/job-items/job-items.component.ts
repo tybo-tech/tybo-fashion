@@ -38,7 +38,7 @@ export class JobItemsComponent implements OnInit {
   }
 
   get totalQuantity(): number {
-    return this.jobItems.reduce((sum, item) => sum + (item.Quantity || 0), 0);
+    return this.jobItems.reduce((sum, item) => sum + (Number(item.Quantity) || 0), 0);
   }
 
   toggleAddMode(): void {
