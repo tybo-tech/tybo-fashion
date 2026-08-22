@@ -9,15 +9,42 @@
 
     <div class="_body">
       <div class="form-container">
-        <!-- Image Section -->
-        <div class="image-section">
-          <div class="image-wrapper">
-            <app-image-widget
-              [image_url]="jobItem.FeaturedImageUrl"
-              (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"
-            />
+        <div class="form-content">
+          <!-- Left Column (Desktop) / Top Section (Mobile) -->
+          <div class="left-column">
+            <!-- Image Section -->
+            <div class="image-section">
+              <div class="image-wrapper">
+                <app-image-widget
+                  [image_url]="jobItem.FeaturedImageUrl"
+                  (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"
+                />
+              </div>
+              
+              <!-- Quick Info Card (Desktop Only) -->
+              <div class="image-info d-none d-md-block" *ngIf="jobItem">
+                <div class="info-item" *ngIf="jobItem.ItemName">
+                  <span class="label">Item Name</span>
+                  <span class="value">{{ jobItem.ItemName }}</span>
+                </div>
+                <div class="info-item" *ngIf="jobItem.Size">
+                  <span class="label">Size</span>
+                  <span class="value">{{ jobItem.Size }}</span>
+                </div>
+                <div class="info-item" *ngIf="jobItem.Colour">
+                  <span class="label">Color</span>
+                  <span class="value">{{ jobItem.Colour }}</span>
+                </div>
+                <div class="info-item" *ngIf="jobItem.Quantity">
+                  <span class="label">Quantity</span>
+                  <span class="value">{{ jobItem.Quantity }}</span>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
+
+          <!-- Right Column (Desktop) / Main Content (Mobile) -->
+          <div class="right-column">
 
         <!-- Basic Information Section -->
         <div class="form-section">
@@ -167,6 +194,8 @@
               <i class="bi bi-printer me-2"></i>
               Print Job Card
             </a>
+          </div>
+        </div>
           </div>
         </div>
       </div>
