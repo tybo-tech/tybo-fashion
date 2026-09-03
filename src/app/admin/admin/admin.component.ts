@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { UxModel } from 'src/models/ux.model';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
@@ -18,7 +20,7 @@ declare global {
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   menu: IMenuGroup[] = [
     {
       name: 'Overview',
@@ -99,15 +101,21 @@ export class AdminComponent implements OnInit {
     },
   ];
   user = this.userService.getUser;
-  current_url: any;
   ux?: UxModel;
   defaultConfirm = 'Are you sure you want to continue?';
+  private navSub?: Subscription;
 
-  constructor(private userService: UserService, public uxService: UxService) {
-    this.current_url = window.location.pathname;
+  constructor(
+    private userService: UserService,
+    public uxService: UxService,
+    private router: Router
+  ) {
     uxService.$ux.subscribe((data) => {
       this.ux = data;
       this.ux.Toast && console.log(this.ux?.Toast);
+    });
+    this.navSub = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) this.closeOffcanvas();
     });
   }
   ngOnInit(): void {
@@ -133,6 +141,9 @@ export class AdminComponent implements OnInit {
       const instance = window.bootstrap.Offcanvas.getInstance(el);
       if (instance) instance.hide();
     }
+  }
+  ngOnDestroy(): void {
+    this.navSub?.unsubscribe();
   }
   logout() {
     const slug = this.user?.Company?.Slug;

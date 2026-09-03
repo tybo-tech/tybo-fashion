@@ -1,7 +1,7 @@
 <div class="mt-5 max-50" *ngIf="company && company.Metadata">
   <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-      <li class="breadcrumb-item"><a href="/store/admin/">Dashboard</a></li>
+      <li class="breadcrumb-item"><a routerLink="/store/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a></li>
       <li class="breadcrumb-item active" aria-current="page">
         <small> Settings </small>
       </li>

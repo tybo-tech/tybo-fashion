@@ -32,7 +32,7 @@
           <i class="bi bi-funnel me-2"></i>
           Filter
         </button>
-        <a href="/store/admin/product/add" class="btn btn-add-product">
+        <a routerLink="/store/admin/product/add" class="btn btn-add-product">
           <i class="bi bi-plus-lg me-2"></i>
           Add Product
         </a>
@@ -135,7 +135,7 @@
                 </button>
                 <ul class="dropdown-menu modern-dropdown" [attr.aria-labelledby]="'dropdown-' + product.Id">
                   <li>
-                    <a class="dropdown-item" [href]="'/store/admin/product/' + product.ProductId">
+                    <a class="dropdown-item" [routerLink]="'/store/admin/product/' + product.ProductId">
                       <i class="bi bi-pencil"></i>
                       <span>Edit Product</span>
                     </a>
@@ -176,7 +176,7 @@
           <p class="empty-description">
             Your product catalog is empty. Start building your inventory by adding your first product.
           </p>
-          <a href="/store/admin/product/add" class="btn btn-add-first">
+          <a routerLink="/store/admin/product/add" class="btn btn-add-first">
             <i class="bi bi-plus-lg me-2"></i>
             Add Your First Product
           </a>
