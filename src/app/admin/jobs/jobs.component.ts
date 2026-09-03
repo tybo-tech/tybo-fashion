@@ -1,5 +1,5 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Job } from 'src/models/job.model';
 import { JobService } from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
@@ -9,21 +9,23 @@ import { UserService } from 'src/services/user.service';
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.scss'],
 })
-export class JobsComponent {
+export class JobsComponent implements OnInit {
   show_add = false;
   query = '';
   selectedStatus = '';
+  routeStatus = '';
   loading = true;
   error: string | null = null;
   user = this.userService.getUser;
   jobs?: Job[];
   all_jobs: Job[] | undefined;
-  Math = Math; // Expose Math to template
+  Math = Math;
 
   constructor(
     private jobService: JobService,
     private userService: UserService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     if (!this.user) {
       this.router.navigate(['/sign-in']);
@@ -36,6 +38,7 @@ export class JobsComponent {
         this.all_jobs = data || [];
         this.loading = false;
         this.error = null;
+        this.applyRouteStatus();
       },
       error: (error) => {
         console.error('Error loading jobs:', error);
@@ -45,6 +48,36 @@ export class JobsComponent {
         this.loading = false;
       },
     });
+  }
+
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      const s = params.get('status') || '';
+      this.routeStatus = this.normalizeStatus(s);
+      if (this.routeStatus) this.selectedStatus = this.routeStatus;
+      if (this.all_jobs) this.filter();
+    });
+  }
+
+  private normalizeStatus(raw: string): string {
+    if (!raw) return '';
+    const m: Record<string,string> = {
+      'not-started': 'Not Started',
+      'in-progress': 'In Progress',
+      'stuck': 'Stuck',
+      'complete': 'Complete',
+      'completed': 'Completed',
+      'terminated': 'Terminated'
+    };
+    const key = raw.toLowerCase().trim();
+    return m[key] || raw;
+  }
+
+  private applyRouteStatus(): void {
+    if (this.routeStatus) {
+      this.selectedStatus = this.routeStatus;
+      this.filter();
+    }
   }
 
   // Enhanced filtering
@@ -91,9 +124,28 @@ export class JobsComponent {
     this.filter();
   }
 
-  toggleAdvancedFilters() {
-    // Implement advanced filters modal/dropdown
-    console.log('Advanced filters clicked');
+  clearFilters(): void {
+    this.query = '';
+    this.selectedStatus = '';
+    this.routeStatus = '';
+    this.router.navigate(['/store/admin/jobs']);
+    this.jobs = this.all_jobs;
+  }
+
+  statusBadgeClass(status: string): string {
+    const map: Record<string,string> = {
+      'Not Started': 'bg-light text-dark',
+      'In Progress': 'bg-primary-subtle text-primary',
+      'Completed': 'bg-success-subtle text-success',
+      'Complete': 'bg-success-subtle text-success',
+      'Terminated': 'bg-danger-subtle text-danger',
+      'Stuck': 'bg-warning-subtle text-dark'
+    };
+    return map[status] || 'bg-light text-dark';
+  }
+
+  viewJobCard(job: Job): void {
+    this.router.navigate(['/store/admin/job', job.JobId, 'jobs']);
   }
 
   // Statistics methods
@@ -143,11 +195,12 @@ export class JobsComponent {
     return iconMap[status] || 'bi-circle';
   }
 
-  // Payment calculation
+  // Payment calculation — capped 0..100, safe division
   getPaymentPercentage(job: Job): number {
     if (!job.TotalCost || job.TotalCost === 0) return 0;
     const paidAmount = job.Metadata?.paidAmount || 0;
-    return Math.round((paidAmount / job.TotalCost) * 100);
+    const pct = Math.round((paidAmount / job.TotalCost) * 100);
+    return Math.max(0, Math.min(100, pct));
   }
 
   // Safe metadata accessors
