@@ -23,6 +23,7 @@ import { CollectionComponent } from './collection/collection.component';
 import { WorkGalleryComponent } from './work-gallery/work-gallery.component';
 import { EditWorkGalleryComponent } from './edit-work-gallery/edit-work-gallery.component';
 import { AdminProductsComponent } from './admin-products/admin-products.component';
+import { JobItemPageComponent } from './job-item-page/job-item-page.component';
 
 const routes: Routes = [
   {
@@ -57,6 +58,14 @@ const routes: Routes = [
       {
         path: 'job/:id/:backTo',
         component: JobComponent,
+      },
+      {
+        path: 'job/:jobId/items/new',
+        component: JobItemPageComponent,
+      },
+      {
+        path: 'job/:jobId/items/:jobItemId/edit',
+        component: JobItemPageComponent,
       },
       {
         path: 'job-cards',

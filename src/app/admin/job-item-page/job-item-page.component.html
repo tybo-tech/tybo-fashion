@@ -1,0 +1,43 @@
+<div class="container-fluid p-0">
+  <!-- Breadcrumb / back -->
+  <nav aria-label="breadcrumb" class="mb-2">
+    <ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a routerLink="/store/admin">Dashboard</a></li>
+      <li class="breadcrumb-item">
+        <a [routerLink]="jobDetailsLink">{{ jobNo || 'Job' }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">{{ pageTitle }}</li>
+    </ol>
+  </nav>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <a class="btn btn-sm btn-light border" [routerLink]="jobDetailsLink" aria-label="Back to job"><i class="bi bi-arrow-left"></i></a>
+    <div class="min-w-0">
+      <span class="fw-semibold small d-block text-truncate">{{ pageTitle }}</span>
+      <span class="small text-muted d-block text-truncate" *ngIf="jobNo">{{ jobNo }}</span>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border spinner-border-sm"></div>
+    <div class="small text-muted mt-2">Loading…</div>
+  </div>
+
+  <!-- Inline error state -->
+  <div *ngIf="!loading && error" class="alert alert-danger">
+    <div class="fw-semibold small mb-1">{{ error }}</div>
+    <div class="small text-muted mb-3">You can safely go back to the job details.</div>
+    <a class="btn btn-sm btn-outline-secondary" [routerLink]="jobDetailsLink"><i class="bi bi-arrow-left me-1"></i> Back to job</a>
+  </div>
+
+  <!-- Form -->
+  <div *ngIf="!loading && !error && job && jobItem">
+    <app-job-item-form
+      [jobItem]="jobItem"
+      [user]="user!"
+      [saving]="saving"
+      (save)="save($event)"
+      (cancel)="cancel()">
+    </app-job-item-form>
+  </div>
+</div>

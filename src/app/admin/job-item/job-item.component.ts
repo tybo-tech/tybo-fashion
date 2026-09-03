@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Router } from '@angular/router';
 import { JobItem } from 'src/models/job-item.model';
 import { Job } from 'src/models/job.model';
 import { User } from 'src/models/user.model';
@@ -11,12 +12,15 @@ import { UxService } from 'src/services/ux.service';
   styleUrls: ['./job-item.component.scss'],
 })
 export class JobItemComponent {
-  editMode = false;
   @Input() jobItem?: JobItem;
   @Input() job?: Job;
   @Input({required: true}) user!: User;
 
-  constructor(private jobService: JobService, private uxService: UxService) {}
+  constructor(
+    private jobService: JobService,
+    private uxService: UxService,
+    private router: Router
+  ) {}
 
   // Safe getters for better null handling
   get itemName(): string {
@@ -44,27 +48,13 @@ export class JobItemComponent {
     return this.jobItem?.Quantity || 1;
   }
 
-  toggleEditMode(): void {
-    this.editMode = !this.editMode;
-  }
-
-  onJobItemUpdated($event: JobItem): void {
-    if (!$event?.JobItemId) return;
-
-    this.jobService.updateJobItem($event).subscribe({
-      next: (data) => {
-        if (data?.JobItemId) {
-          this.jobItem = data;
-          this.editMode = false;
-          this.uxService.show_toast('Item updated successfully', 'success');
-          this.updateJobTotals();
-        }
-      },
-      error: (error) => {
-        console.error('Error updating job item:', error);
-        this.uxService.show_toast('Failed to update item', 'error');
-      }
-    });
+  // Complex editing happens on the dedicated routed page
+  editItem(): void {
+    if (this.job && this.jobItem?.JobItemId) {
+      this.router.navigate([
+        '/store/admin/job', this.job.JobId, 'items', this.jobItem.JobItemId, 'edit',
+      ]);
+    }
   }
 
   delete_from_cart(jobItem: JobItem): void {

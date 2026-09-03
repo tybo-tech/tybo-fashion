@@ -1,64 +1,64 @@
-<div class="_overlay" *ngIf="jobItem">
-  <div class="_modal">
-    <app-admin-modal-header title="Job item" (onClose)="onClose.emit()" [show_x]="true"></app-admin-modal-header>
-    <div class="_body p-3">
-      <div class="row g-3">
-        <div class="col-12 col-md-4">
-          <app-image-widget [image_url]="jobItem.FeaturedImageUrl" (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"></app-image-widget>
+<div class="card border bg-white" *ngIf="jobItem">
+  <div class="card-body p-3">
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <app-image-widget [image_url]="jobItem.FeaturedImageUrl" (imageChangedEvent)="jobItem.FeaturedImageUrl = $event"></app-image-widget>
+      </div>
+      <div class="col-12 col-md-8">
+        <div class="mb-3">
+          <label for="item-name" class="form-label small text-muted">Item name</label>
+          <input type="text" id="item-name" [(ngModel)]="jobItem.ItemName" class="form-control" placeholder="Item name">
         </div>
-        <div class="col-12 col-md-8">
-          <div class="mb-3">
-            <label for="item-name" class="form-label small text-muted">Item name</label>
-            <input type="text" id="item-name" [(ngModel)]="jobItem.ItemName" class="form-control" placeholder="Item name">
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label class="form-label small text-muted">Size</label>
+            <app-admin-select-size [user]="user" [measurements]="jobItem.Metadata.Measurements || []" [size]="jobItem.Size" (selectSize)="jobItem.Size = $event; sizeChanged($event)" (on_measurements_captured)="jobItem.Metadata.Measurements = $event" [jobItem]="jobItem"></app-admin-select-size>
           </div>
-          <div class="row g-2 mb-3">
-            <div class="col-6">
-              <label class="form-label small text-muted">Size</label>
-              <app-admin-select-size [user]="user" [measurements]="jobItem.Metadata.Measurements || []" [size]="jobItem.Size" (selectSize)="jobItem.Size = $event; sizeChanged($event)" (on_measurements_captured)="jobItem.Metadata.Measurements = $event" [jobItem]="jobItem"></app-admin-select-size>
-            </div>
-            <div class="col-6">
-              <label for="item-color" class="form-label small text-muted">Colour</label>
-              <input type="text" id="item-color" [(ngModel)]="jobItem.Colour" class="form-control" placeholder="Colour">
-            </div>
+          <div class="col-6">
+            <label for="item-color" class="form-label small text-muted">Colour</label>
+            <input type="text" id="item-color" [(ngModel)]="jobItem.Colour" class="form-control" placeholder="Colour">
           </div>
-          <div *ngIf="isMeasurements && jobItem.Metadata && jobItem.Metadata.Measurements" class="card border bg-light mb-3">
-            <div class="card-body p-3">
-              <div class="small fw-semibold mb-2"><i class="bi bi-rulers me-1"></i> Measurements</div>
-              <app-admin-measurements [measurements]="jobItem.Metadata.Measurements" (onCaptured)="jobItem.Metadata.Measurements = $event"></app-admin-measurements>
-            </div>
+        </div>
+        <div *ngIf="isMeasurements && jobItem.Metadata && jobItem.Metadata.Measurements" class="card border bg-light mb-3">
+          <div class="card-body p-3">
+            <div class="small fw-semibold mb-2"><i class="bi bi-rulers me-1"></i> Measurements</div>
+            <app-admin-measurements [measurements]="jobItem.Metadata.Measurements" (onCaptured)="jobItem.Metadata.Measurements = $event"></app-admin-measurements>
           </div>
-          <div class="row g-2 mb-3">
-            <div class="col-6">
-              <label for="item-quantity" class="form-label small text-muted">Quantity</label>
-              <input type="number" id="item-quantity" [(ngModel)]="jobItem.Quantity" class="form-control" min="1">
-            </div>
-            <div class="col-6">
-              <label for="item-price" class="form-label small text-muted">Unit price</label>
-              <div class="input-group">
-                <span class="input-group-text">R</span>
-                <input type="number" id="item-price" [(ngModel)]="jobItem.UnitPrice" class="form-control" min="0" step="0.01">
-              </div>
+        </div>
+        <div class="row g-2 mb-3">
+          <div class="col-6">
+            <label for="item-quantity" class="form-label small text-muted">Quantity</label>
+            <input type="number" id="item-quantity" [(ngModel)]="jobItem.Quantity" class="form-control" min="1">
+          </div>
+          <div class="col-6">
+            <label for="item-price" class="form-label small text-muted">Unit price</label>
+            <div class="input-group">
+              <span class="input-group-text">R</span>
+              <input type="number" id="item-price" [(ngModel)]="jobItem.UnitPrice" class="form-control" min="0" step="0.01">
             </div>
           </div>
-          <div *ngIf="jobItem.Quantity && jobItem.UnitPrice" class="alert alert-success py-2 small d-flex justify-content-between">
-            <span>Total</span><span class="fw-semibold">{{ (jobItem.Quantity * jobItem.UnitPrice) | currency:'ZAR':'symbol':'1.2-2' }}</span>
-          </div>
-          <div class="mb-3" *ngIf="users.length">
-            <label for="assigned-user" class="form-label small text-muted">Assigned to</label>
-            <select id="assigned-user" (change)="onUserChange(users)" [(ngModel)]="jobItem.Metadata.AssignedTo" class="form-select">
-              <option value="" disabled>Select user…</option>
-              <option [value]="u.UserId" *ngFor="let u of users">{{ u.Name }} {{ u.Surname }}</option>
-            </select>
-          </div>
-          <div class="mb-3">
-            <label for="item-notes" class="form-label small text-muted">Notes</label>
-            <textarea id="item-notes" [(ngModel)]="jobItem.Metadata.Notes" class="form-control" rows="3" placeholder="Special instructions…"></textarea>
-          </div>
-          <div class="d-flex gap-2">
-            <button class="btn btn-primary btn-sm" (click)="jobItemUpdated.emit(jobItem)"><i class="bi bi-check-lg me-1"></i> Save</button>
-            <a class="btn btn-outline-secondary btn-sm" [href]="jobCard" target="_blank"><i class="bi bi-printer me-1"></i> Print card</a>
-            <button class="btn btn-outline-secondary btn-sm ms-auto" (click)="onClose.emit()">Close</button>
-          </div>
+        </div>
+        <div *ngIf="jobItem.Quantity && jobItem.UnitPrice" class="alert alert-success py-2 small d-flex justify-content-between">
+          <span>Total</span><span class="fw-semibold">{{ (jobItem.Quantity * jobItem.UnitPrice) | currency:'ZAR':'symbol':'1.2-2' }}</span>
+        </div>
+        <div class="mb-3" *ngIf="users.length">
+          <label for="assigned-user" class="form-label small text-muted">Assigned to</label>
+          <select id="assigned-user" (change)="onUserChange(users)" [(ngModel)]="jobItem.Metadata.AssignedTo" class="form-select">
+            <option value="" disabled>Select user…</option>
+            <option [value]="u.UserId" *ngFor="let u of users">{{ u.Name }} {{ u.Surname }}</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label for="item-notes" class="form-label small text-muted">Notes</label>
+          <textarea id="item-notes" [(ngModel)]="jobItem.Metadata.Notes" class="form-control" rows="3" placeholder="Special instructions…"></textarea>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="button" class="btn btn-primary" [disabled]="saving" (click)="submit()">
+            <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+            {{ saving ? 'Saving…' : 'Save' }}
+          </button>
+          <a type="button" class="btn btn-outline-secondary" *ngIf="jobItem.JobItemId" [href]="jobCard" target="_blank"><i class="bi bi-printer me-1"></i> Print card</a>
+          <button type="button" class="btn btn-outline-secondary ms-auto" [disabled]="saving" (click)="onCancel()">Cancel</button>
         </div>
       </div>
     </div>

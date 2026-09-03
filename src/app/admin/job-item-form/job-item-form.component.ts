@@ -5,6 +5,11 @@ import { initMeasurements } from 'src/models/measurement.model';
 import { User } from 'src/models/user.model';
 import { UserService } from 'src/services/user.service';
 
+/**
+ * Reusable job-item form: presentation only. Loading, persistence and
+ * navigation are owned by the routed JobItemPageComponent (no overlay,
+ * no modal chrome, no close-X assumptions). Emits `save` on submit.
+ */
 @Component({
   selector: 'app-job-item-form',
   templateUrl: './job-item-form.component.html',
@@ -13,8 +18,9 @@ import { UserService } from 'src/services/user.service';
 export class JobItemFormComponent implements OnInit {
   @Input() jobItem?: JobItem;
   @Input({ required: true }) user!: User;
-  @Output() jobItemUpdated = new EventEmitter<JobItem>();
-  @Output() onClose = new EventEmitter<any>();
+  @Input() saving = false;
+  @Output() save = new EventEmitter<JobItem>();
+  @Output() cancel = new EventEmitter<void>();
   users: User[] = [];
   constructor(private userService: UserService) {}
   ngOnInit(): void {
@@ -44,5 +50,15 @@ export class JobItemFormComponent implements OnInit {
   }
   get jobCard() {
     return Constants.PrintJobCard + this.jobItem?.JobItemId;
+  }
+  submit() {
+    if (this.jobItem && !this.saving) {
+      this.save.emit(this.jobItem);
+    }
+  }
+  onCancel() {
+    if (!this.saving) {
+      this.cancel.emit();
+    }
   }
 }

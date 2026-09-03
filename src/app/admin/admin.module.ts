@@ -20,6 +20,7 @@ import { CategoryComponent } from './category/category.component';
 import { JobItemsComponent } from './job-items/job-items.component';
 import { JobItemComponent } from './job-item/job-item.component';
 import { JobItemFormComponent } from './job-item-form/job-item-form.component';
+import { JobItemPageComponent } from './job-item-page/job-item-page.component';
 import { SettingsComponent } from './settings/settings.component';
 import { UploadInputComponent } from './upload-input/upload-input.component';
 import { ImageWidgetComponent } from './image-widget/image-widget.component';
@@ -106,6 +107,7 @@ import { CategoryFormComponent } from './shared/category-form/category-form.comp
     JobItemsComponent,
     JobItemComponent,
     JobItemFormComponent,
+    JobItemPageComponent,
     SettingsComponent,
     UploadInputComponent,
     ImageWidgetComponent,
