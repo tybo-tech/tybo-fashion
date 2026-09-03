@@ -1,260 +1,101 @@
-<!-- Modern Job Details Interface -->
-<div *ngIf="job && user" class="p-4">
-  <app-list-bread
-    [currentPage]="job.JobNo"
-    prevPage="Jobs"
-    [prevLink]="'/store/admin/' + backTo"
-  />
+<div *ngIf="job && user" class="container-fluid p-0">
+  <app-list-bread [currentPage]="job.JobNo" prevPage="Jobs" [prevLink]="'/store/admin/' + backTo"></app-list-bread>
 
-  <!-- Job Summary Cards -->
-  <div class="row mb-4">
-    <!-- Job Status Card -->
-    <div class="col-md-6 col-lg-3 mb-3">
-      <div class="admin-info-card">
-        <div class="card-icon status-icon" [ngClass]="isCompleted() ? 'completed' : (isOverdue() ? 'overdue' : 'in-progress')">
+  <!-- Summary -->
+  <div class="row g-3 mb-3">
+    <div class="col-6 col-lg-3">
+      <div class="card border shadow-sm h-100"><div class="card-body p-3 d-flex align-items-center gap-3">
+        <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white" style="width:36px;height:36px" [ngStyle]="{background: isCompleted() ? '#16a34a' : (isOverdue() ? '#dc2626' : 'var(--admin-primary)')}">
           <i class="bi" [ngClass]="isCompleted() ? 'bi-check-circle-fill' : (isOverdue() ? 'bi-exclamation-triangle-fill' : 'bi-clock-fill')"></i>
-        </div>
-        <div class="card-content">
-          <h6 class="card-label">Status</h6>
-          <p class="card-value">{{ job.Status }}</p>
-        </div>
-      </div>
+        </span>
+        <span><span class="small text-muted d-block">Status</span><span class="fw-semibold small">{{ job.Status }}</span></span>
+      </div></div>
     </div>
-
-    <!-- Total Cost Card -->
-    <div class="col-md-6 col-lg-3 mb-3">
-      <div class="admin-info-card">
-        <div class="card-icon cost-icon">
-          <i class="bi bi-currency-dollar"></i>
-        </div>
-        <div class="card-content">
-          <h6 class="card-label">Total Cost</h6>
-          <p class="card-value">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</p>
-        </div>
-      </div>
+    <div class="col-6 col-lg-3">
+      <div class="card border shadow-sm h-100"><div class="card-body p-3">
+        <div class="small text-muted">Total</div><div class="fw-semibold">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</div>
+      </div></div>
     </div>
-
-    <!-- Payment Progress Card -->
-    <div class="col-md-6 col-lg-3 mb-3">
-      <div class="admin-info-card">
-        <div class="card-icon payment-icon">
-          <i class="bi bi-credit-card"></i>
-        </div>
-        <div class="card-content">
-          <h6 class="card-label">Payment Progress</h6>
-          <p class="card-value">{{ getPaymentPercentage() }}% Paid</p>
-          <div class="progress-mini">
-            <div class="progress-mini-fill" [style.width.%]="getPaymentPercentage()"></div>
-          </div>
-        </div>
-      </div>
+    <div class="col-6 col-lg-3">
+      <div class="card border shadow-sm h-100"><div class="card-body p-3">
+        <div class="small text-muted">Paid {{ getPaymentPercentage() }}%</div>
+        <div class="progress mt-2" style="height:6px"><div class="progress-bar" [style.width.%]="getPaymentPercentage()"></div></div>
+      </div></div>
     </div>
-
-    <!-- Due Date Card -->
-    <div class="col-md-6 col-lg-3 mb-3">
-      <div class="admin-info-card">
-        <div class="card-icon due-icon" [ngClass]="isOverdue() ? 'overdue' : ''">
-          <i class="bi bi-calendar-event"></i>
-        </div>
-        <div class="card-content">
-          <h6 class="card-label">Due Date</h6>
-          <p class="card-value" [ngClass]="isOverdue() ? 'text-danger' : ''">
-            {{ job.DueDate | date:'mediumDate' }}
-            <small *ngIf="getDaysUntilDue() !== null" class="d-block">
-              {{ getDaysUntilDue()! > 0 ? (getDaysUntilDue() + ' days left') : (Math.abs(getDaysUntilDue()!) + ' days overdue') }}
-            </small>
-          </p>
-        </div>
-      </div>
+    <div class="col-6 col-lg-3">
+      <div class="card border shadow-sm h-100"><div class="card-body p-3">
+        <div class="small text-muted">Due date</div>
+        <div class="fw-medium small" [class.text-danger]="isOverdue()">{{ job.DueDate | date:'mediumDate' }}</div>
+        <div *ngIf="getDaysUntilDue() !== null" class="small" [class.text-danger]="isOverdue()" [class.text-muted]="!isOverdue()">{{ getDaysUntilDue()! > 0 ? (getDaysUntilDue() + ' days left') : (Math.abs(getDaysUntilDue()!) + ' days overdue') }}</div>
+      </div></div>
     </div>
   </div>
 
-  <!-- Financial Summary -->
-  <div class="row mb-4" *ngIf="getPaidAmount() > 0 || getDueAmount() > 0">
-    <div class="col-12">
-      <div class="financial-summary-card">
-        <h5 class="mb-3">
-          <i class="bi bi-graph-up me-2"></i>
-          Financial Summary
-        </h5>
-        <div class="row">
-          <div class="col-md-4">
-            <div class="financial-item">
-              <span class="financial-label">Total Amount</span>
-              <span class="financial-value total">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
-          <div class="col-md-4" *ngIf="getPaidAmount() > 0">
-            <div class="financial-item">
-              <span class="financial-label">Amount Paid</span>
-              <span class="financial-value paid">{{ getPaidAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
-          <div class="col-md-4" *ngIf="getDueAmount() > 0">
-            <div class="financial-item">
-              <span class="financial-label">Amount Due</span>
-              <span class="financial-value due">{{ getDueAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
-            </div>
-          </div>
+  <!-- Manage -->
+  <div class="card border shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-gear" style="color:var(--admin-primary)"></i> Job details</h2>
+      <div class="row g-3">
+        <div class="col-12">
+          <label class="form-label small text-muted">Customer</label>
+          <button type="button" class="form-control text-start d-flex align-items-center gap-2" (click)="show_customer = true">
+            <i class="bi bi-person"></i> {{ job.Customer?.Name || "No Customer" }}
+          </button>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Job Management Form -->
-  <div class="admin-form-section">
-    <h5 class="section-title">
-      <i class="bi bi-gear me-2"></i>
-      Job Management
-    </h5>
-
-    <div class="form-group mb-3">
-      <label for="customer" class="form-label">Customer</label>
-      <a class="form-control form-select modern-select" (click)="show_customer = true">
-        <i class="bi bi-person me-2"></i>
-        {{ job.Customer?.Name || "No Customer" }}
-      </a>
-    </div>
-
-    <div class="row">
-      <div class="col-md-4">
-        <div class="form-group mb-3">
-          <label for="DueDate" class="form-label">Due Date</label>
-          <input
-            type="date"
-            id="DueDate"
-            [(ngModel)]="job.DueDate"
-            class="form-control modern-input"
-            (change)="updateJob()"
-          />
+        <div class="col-md-6">
+          <label for="DueDate" class="form-label small text-muted">Due date</label>
+          <input type="date" id="DueDate" [(ngModel)]="job.DueDate" class="form-control" (change)="updateJob()">
         </div>
-      </div>
-
-      <div class="col-md-4">
-        <div class="form-group mb-3">
-          <label for="status" class="form-label">Status</label>
-          <select
-            id="status"
-            [(ngModel)]="job.Status"
-            (change)="updateJob()"
-            class="form-select modern-select"
-          >
-            <option [value]="item" *ngFor="let item of statuses">
-              {{ item }}
-            </option>
+        <div class="col-md-6">
+          <label for="status" class="form-label small text-muted">Status</label>
+          <select id="status" [(ngModel)]="job.Status" (change)="updateJob()" class="form-select">
+            <option [value]="item" *ngFor="let item of statuses">{{ item }}</option>
           </select>
         </div>
       </div>
-
-    </div>
-
-    <!-- Action Buttons -->
-    <hr class="my-4">
-    <div class="row">
-      <div class="col-md-4">
-        <a
-          [href]="invoice"
-          class="form-control modern-button invoice-btn"
-          target="_blank"
-        >
-          <i class="bi bi-file-earmark-text me-2"></i>
-          {{ getInvoiceNo() }}
-        </a>
-      </div>
-
-      <div class="col-md-4">
-        <a
-          (click)="show_capture_payment = true"
-          class="form-control modern-button payments-btn"
-        >
-          <i class="bi bi-credit-card me-2"></i>
-          Manage Payments
-        </a>
-      </div>
-
-      <div class="col-md-4" *ngIf="hasPaymentProof()">
-        <a
-          [href]="getPaymentProof()"
-          class="form-control modern-button proof-btn"
-          target="_blank"
-        >
-          <i class="bi bi-file-earmark-check me-2"></i>
-          View Proof
-        </a>
-      </div>
-
-      <div class="col-md-4" *ngIf="hasUnpaidAmount()">
-        <a
-          (click)="show_capture_payment = true"
-          class="form-control modern-button record-btn"
-        >
-          <i class="bi bi-plus-circle me-2"></i>
-          Record Payment
-        </a>
+      <hr class="my-3">
+      <div class="row g-2">
+        <div class="col-md-4"><a [href]="invoice" target="_blank" class="btn btn-primary btn-sm w-100"><i class="bi bi-file-earmark-text me-1"></i> {{ getInvoiceNo() }}</a></div>
+        <div class="col-md-4"><button class="btn btn-outline-secondary btn-sm w-100" (click)="show_capture_payment = true"><i class="bi bi-credit-card me-1"></i> Manage payments</button></div>
+        <div class="col-md-4" *ngIf="hasPaymentProof()"><a [href]="getPaymentProof()" target="_blank" class="btn btn-outline-success btn-sm w-100"><i class="bi bi-file-earmark-check me-1"></i> View proof</a></div>
       </div>
     </div>
   </div>
 
-  <!-- Job Items Section -->
-  <div class="admin-form-section">
-    <div class="section-title">
-      <i class="bi bi-bag-check me-2"></i>
-      Job Items Management
+  <!-- Items -->
+  <div class="card border shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-check" style="color:var(--admin-primary)"></i> Garments</h2>
+      <app-job-items [job]="job" [user]="user"></app-job-items>
     </div>
-    <app-job-items [job]="job" [user]="user" />
   </div>
 
-  <!-- Job Totals Section -->
-  <div class="admin-form-section">
-    <div class="section-title">
-      <i class="bi bi-calculator me-2"></i>
-      Order Summary & Totals
+  <!-- Totals -->
+  <div class="card border shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-calculator" style="color:var(--admin-primary)"></i> Totals</h2>
+      <app-admin-job-total [job]="job" (showShipping)="showShipping = true" (showPayments)="show_capture_payment = true"></app-admin-job-total>
     </div>
-    <app-admin-job-total
-      [job]="job"
-      (showShipping)="showShipping = true"
-      (showPayments)="show_capture_payment = true"
-    />
   </div>
 
-  <!-- Special Instructions Section -->
-  <div class="admin-form-section" *ngIf="hasSpecialInstructions()">
-    <div class="section-title">
-      <i class="bi bi-chat-left-text me-2"></i>
-      Special Instructions
+  <!-- Instructions -->
+  <div class="card border shadow-sm mb-3" *ngIf="hasSpecialInstructions()">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-chat-left-text" style="color:var(--admin-primary)"></i> Special instructions</h2>
+      <app-admin-comment [title]="'Special Instructions'" [comments]="getSpecialInstructions()" (onEdit)="updateSpecialInstructions($event)"></app-admin-comment>
     </div>
-    <app-admin-comment
-      [title]="'Special Instructions'"
-      [comments]="getSpecialInstructions()"
-      (onEdit)="updateSpecialInstructions($event)"
-    />
   </div>
 
-  <!-- Modal Components -->
-  <app-select-job-shipping
-    *ngIf="showShipping"
-    [job]="job"
-    (jobUpdated)="job = $event; showShipping = false; updateJob()"
-    (onClose)="showShipping = false"
-  />
-  <app-job-payments
-    *ngIf="show_capture_payment"
-    [job]="job"
-    (jobUpdated)="job = $event; show_capture_payment = false; updateJob()"
-    (onClose)="show_capture_payment = false"
-  />
+  <app-select-job-shipping *ngIf="showShipping" [job]="job" (jobUpdated)="job = $event; showShipping = false; updateJob()" (onClose)="showShipping = false"></app-select-job-shipping>
+  <app-job-payments *ngIf="show_capture_payment" [job]="job" (jobUpdated)="job = $event; show_capture_payment = false; updateJob()" (onClose)="show_capture_payment = false"></app-job-payments>
 
   <div class="app-overlay" *ngIf="job && show_customer && job.Customer">
-    <div class="my-modal slide-from-bottom" style="animation-duration: 0.25s">
-      <div
-        class="d-flex align-items-center justify-content-between header w-100"
-      >
-        <h4 class="">Customer Info</h4>
-        <i class="bi bi-x-lg" (click)="show_customer = false"></i>
+    <div class="my-modal slide-from-bottom" style="animation-duration:0.25s">
+      <div class="d-flex align-items-center justify-content-between header w-100">
+        <h4>Customer info</h4>
+        <button class="btn btn-sm btn-outline-secondary" (click)="show_customer = false" aria-label="Close"><i class="bi bi-x-lg"></i></button>
       </div>
-      <div class="body">
-        <app-customer-form [customer]="job.Customer" />
-      </div>
+      <div class="body"><app-customer-form [customer]="job.Customer"></app-customer-form></div>
     </div>
   </div>
 </div>

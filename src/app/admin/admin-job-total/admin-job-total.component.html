@@ -1,62 +1,23 @@
-<!-- Modern Job Totals Component -->
-<div class="modern-job-totals" *ngIf="job">
-  <!-- Subtotal Row -->
-  <div class="total-row subtotal-row">
-    <span class="total-label">Sub Total:</span>
-    <span class="total-value">
-      {{ job.TotalCost - job.ShippingPrice | currency : "ZAR" : "symbol" : "1.2-2" }}
+<div *ngIf="job" class="d-flex flex-column gap-2">
+  <div class="d-flex justify-content-between small"><span class="text-muted">Subtotal</span><span class="fw-medium">{{ job.TotalCost - (job.ShippingPrice || 0) | currency:'ZAR':'symbol':'1.2-2' }}</span></div>
+  <div class="d-flex justify-content-between align-items-center small">
+    <span class="text-muted">{{ job.Shipping ? (job.Shipping | titlecase) + ' shipping' : 'Shipping' }}</span>
+    <span>
+      <span *ngIf="job.Shipping" class="fw-medium">{{ job.ShippingPrice | currency:'ZAR':'symbol':'1.2-2' }}</span>
+      <button *ngIf="!job.Shipping" class="btn btn-sm btn-outline-primary py-1" (click)="showShipping.emit()"><i class="bi bi-plus-lg me-1"></i> Add shipping</button>
+      <button *ngIf="job.Shipping" class="btn btn-sm btn-outline-secondary ms-2 py-1" (click)="showShipping.emit()">Change</button>
     </span>
   </div>
-
-  <!-- Shipping Row -->
-  <div class="total-row shipping-row">
-    <span class="total-label" *ngIf="!job.Shipping">Shipping:</span>
-    <span class="total-label text-capitalize" *ngIf="job.Shipping">{{ job.Shipping }}:</span>
-    <span class="total-value shipping-value" (click)="showShipping.emit()">
-      <span *ngIf="job.Shipping">
-        {{ job.ShippingPrice | currency : "ZAR" : "symbol" : "1.2-2" }}
-      </span>
-      <button class="set-shipping-btn" *ngIf="!job.Shipping">
-        <i class="bi bi-plus-circle me-1"></i>
-        Set Shipping
-      </button>
-    </span>
+  <div class="border rounded-2 bg-light p-2 d-flex flex-column gap-2">
+    <button class="d-flex justify-content-between align-items-center w-100 btn btn-sm btn-light border text-start" (click)="showPayments.emit()">
+      <span class="small text-muted">Amount paid</span><span class="fw-semibold text-success small"><i class="bi bi-credit-card me-1"></i>{{ (job.Metadata.paidAmount || 0) | currency:'ZAR':'symbol':'1.2-2' }}</span>
+    </button>
+    <button class="d-flex justify-content-between align-items-center w-100 btn btn-sm btn-light border text-start" (click)="showPayments.emit()">
+      <span class="small text-muted">Amount due</span><span class="fw-semibold text-danger small"><i class="bi bi-exclamation-circle me-1"></i>{{ (job.Metadata.dueAmount || 0) | currency:'ZAR':'symbol':'1.2-2' }}</span>
+    </button>
   </div>
-
-  <!-- Payment Section -->
-  <div class="payment-section">
-    <!-- Amount Paid Row -->
-    <div class="total-row payment-row clickable" (click)="showPayments.emit()">
-      <span class="total-label">Amount Paid:</span>
-      <span class="total-value paid-amount">
-        <i class="bi bi-credit-card me-2"></i>
-        {{ job.Metadata.paidAmount || 0 | currency : "ZAR" : "symbol" : "1.2-2" }}
-      </span>
-    </div>
-
-    <!-- Amount Due Row -->
-    <div class="total-row due-row clickable" (click)="showPayments.emit()">
-      <span class="total-label">Amount Due:</span>
-      <span class="total-value due-amount">
-        <i class="bi bi-exclamation-circle me-2"></i>
-        {{ job.Metadata.dueAmount || 0 | currency : "ZAR" : "symbol" : "1.2-2" }}
-      </span>
-    </div>
+  <div class="d-flex justify-content-between align-items-center border-top pt-2">
+    <span class="fw-semibold">Total</span><span class="fw-bold" style="color:var(--admin-primary)">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</span>
   </div>
-
-  <!-- Total Row -->
-  <div class="total-row final-total-row">
-    <span class="total-label">Total:</span>
-    <span class="total-value final-total">
-      {{ job.TotalCost | currency : "ZAR" : "symbol" : "1.2-2" }}
-    </span>
-  </div>
-
-  <!-- Deposit Row (if applicable) -->
-  <div class="total-row deposit-row" *ngIf="job.PaymentAmount === 'deposit'">
-    <span class="total-label">Due Today (50% Deposit):</span>
-    <span class="total-value deposit-amount">
-      {{ job.TotalCost / 2 | currency : "ZAR" : "symbol" : "1.2-2" }}
-    </span>
-  </div>
+  <div *ngIf="job.PaymentAmount === 'deposit'" class="alert alert-warning py-2 small mb-0 d-flex justify-content-between"><span>Due today (50% deposit)</span><span class="fw-semibold">{{ job.TotalCost / 2 | currency:'ZAR':'symbol':'1.2-2' }}</span></div>
 </div>
