@@ -13,7 +13,6 @@ export class JobsComponent implements OnInit {
   show_add = false;
   query = '';
   selectedStatus = '';
-  routeStatus = '';
   loading = true;
   error: string | null = null;
   user = this.userService.getUser;
@@ -41,7 +40,7 @@ export class JobsComponent implements OnInit {
         this.all_jobs = data || [];
         this.loading = false;
         this.error = null;
-        this.applyRouteStatus();
+        this.applyRouteState();
       },
       error: (error) => {
         console.error('Error loading jobs:', error);
@@ -54,40 +53,66 @@ export class JobsComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.route.paramMap.subscribe(params => {
-      const s = params.get('status') || '';
-      this.routeStatus = this.normalizeStatus(s);
-      if (this.routeStatus) this.selectedStatus = this.routeStatus;
-      if (this.all_jobs) this.filter();
+    // Canonical interactive filter URL: /store/admin/jobs?status=&q=
+    // Legacy /store/admin/jobs/:status links redirect here.
+    this.route.queryParamMap.subscribe((params) => {
+      this.selectedStatus = this.normalizeStatus(params.get('status') || '');
+      this.query = params.get('q') || '';
+      if (this.all_jobs) this.filter(false);
+    });
+
+    this.route.paramMap.subscribe((params) => {
+      // Migrate legacy /jobs/:status path to the canonical query-param URL
+      const legacy = params.get('status');
+      if (legacy) {
+        this.router.navigate(['/store/admin/jobs'], {
+          queryParams: { status: this.slugify(legacy) },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
     });
   }
 
   private normalizeStatus(raw: string): string {
     if (!raw) return '';
-    const m: Record<string,string> = {
+    const m: Record<string, string> = {
       'not-started': 'Not Started',
       'in-progress': 'In Progress',
       'stuck': 'Stuck',
       'complete': 'Complete',
       'completed': 'Completed',
-      'terminated': 'Terminated'
+      'terminated': 'Terminated',
     };
     const key = raw.toLowerCase().trim();
     return m[key] || raw;
   }
 
-  private applyRouteStatus(): void {
-    if (this.routeStatus) {
-      this.selectedStatus = this.routeStatus;
-      this.filter();
-    }
+  private slugify(status: string): string {
+    return status.toLowerCase().replace(/\s+/g, '-');
   }
 
-  // Enhanced filtering
-  filter() {
+  // Sync current search + status into the URL; refresh restores filters.
+  private syncUrl(): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: this.selectedStatus ? this.slugify(this.selectedStatus) : null, q: this.query || null },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
+  }
+
+  private applyRouteState(): void {
+    // Apply filters once data has arrived (queryParamMap subscription also fires)
+    this.filter(false);
+  }
+
+  // Enhanced filtering; writeUrl controls whether the URL is updated
+  filter(writeUrl = true) {
     this.currentPage = 1;
     if (!this.query && !this.selectedStatus) {
       this.jobs = this.all_jobs;
+      if (writeUrl) this.syncUrl();
       return;
     }
 
@@ -117,24 +142,23 @@ export class JobsComponent implements OnInit {
     }
 
     this.jobs = filteredJobs;
+    if (writeUrl) this.syncUrl();
   }
 
-  filterByStatus() {
-    this.routeStatus = '';
+  onSearchInput() {
     this.filter();
   }
 
-  clearSearch() {
-    this.query = '';
+  onStatusChange() {
     this.filter();
   }
 
-  clearFilters(): void {
+  resetFilters(): void {
     this.query = '';
     this.selectedStatus = '';
-    this.routeStatus = '';
-    this.router.navigate(['/store/admin/jobs']);
-    this.filter();
+    // Clear path status + query params by returning to the canonical URL
+    this.router.navigate(['/store/admin/jobs'], { replaceUrl: true });
+    this.filter(false);
   }
 
   // Pagination over the filtered collection
@@ -173,120 +197,19 @@ export class JobsComponent implements OnInit {
     if (this.hasNextPage) this.currentPage++;
   }
 
-  goToPage(page: number) {
-    if (page >= 1 && page <= this.totalPages) this.currentPage = page;
-  }
-
   trackByJobId(_index: number, job: Job): string {
     return job.JobId;
   }
 
   statusBadgeClass(status: string): string {
-    const map: Record<string,string> = {
+    const map: Record<string, string> = {
       'Not Started': 'bg-light text-dark',
-      'In Progress': 'bg-primary-subtle text-primary',
+      'In Progress': 'bg-dark-subtle text-dark',
       'Completed': 'bg-success-subtle text-success',
       'Complete': 'bg-success-subtle text-success',
       'Terminated': 'bg-danger-subtle text-danger',
-      'Stuck': 'bg-warning-subtle text-dark'
+      'Stuck': 'bg-warning-subtle text-dark',
     };
     return map[status] || 'bg-light text-dark';
-  }
-
-  // Statistics methods
-  getTotalRevenue(): number {
-    if (!this.all_jobs) return 0;
-    return this.all_jobs.reduce(
-      (total, job) => total + (Number(job.TotalCost || '0') || 0),
-      0
-    );
-  }
-
-  getOverdueCount(): number {
-    if (!this.all_jobs) return 0;
-    return this.all_jobs.filter((job) => job.IsOverdue === true).length;
-  }
-
-  getPendingPayments(): number {
-    if (!this.all_jobs) return 0;
-    return this.all_jobs.reduce((total, job) => {
-      const dueAmount = job.Metadata?.dueAmount || 0;
-      return total + dueAmount;
-    }, 0);
-  }
-
-  getStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
-      'Not Started': 'bi-play-circle',
-      'In Progress': 'bi-arrow-clockwise',
-      Completed: 'bi-check-circle-fill',
-      Complete: 'bi-check-circle-fill',
-      Terminated: 'bi-x-circle-fill',
-      Stuck: 'bi-exclamation-triangle-fill',
-    };
-    return iconMap[status] || 'bi-circle';
-  }
-
-  // Money formatting — "ZAR 900.00" with visible spacing
-  formatMoney(value: number | null | undefined): string {
-    const n = Number(value || 0);
-    return 'ZAR ' + n.toLocaleString('en-US', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  }
-
-  // Payment calculation — capped 0..100, safe division
-  getPaymentPercentage(job: Job): number {
-    if (!job.TotalCost || job.TotalCost === 0) return 0;
-    const paidAmount = job.Metadata?.paidAmount || 0;
-    const pct = Math.round((paidAmount / job.TotalCost) * 100);
-    return Math.max(0, Math.min(100, pct));
-  }
-
-  // Safe metadata accessors
-  hasPaidAmount(job: Job): boolean {
-    return !!(job.Metadata?.paidAmount && job.Metadata.paidAmount > 0);
-  }
-
-  hasDueAmount(job: Job): boolean {
-    return !!(job.Metadata?.dueAmount && job.Metadata.dueAmount > 0);
-  }
-
-  getPaidAmount(job: Job): number {
-    return job.Metadata?.paidAmount || 0;
-  }
-
-  getDueAmount(job: Job): number {
-    return job.Metadata?.dueAmount || 0;
-  }
-
-  hasPaymentProgress(job: Job): boolean {
-    return !!(job.Metadata?.paidAmount !== undefined && job.TotalCost > 0);
-  }
-
-  // Safe days remaining calculation
-  getDaysRemainingText(job: Job): string {
-    if (job.DaysRemaining === null || job.DaysRemaining === undefined) {
-      return '';
-    }
-    const days = job.DaysRemaining;
-    if (days === 0) return 'Due today';
-    return days > 0 ? `${days} days left` : `${Math.abs(days)} days overdue`;
-  }
-
-  hasDaysRemaining(job: Job): boolean {
-    return job.DaysRemaining !== null && job.DaysRemaining !== undefined;
-  }
-
-  // Action methods
-  editJob(event: Event, job: Job) {
-    event.stopPropagation();
-    this.router.navigate(['/store/admin/job', job.JobId, 'edit']);
-  }
-
-  viewJob(event: Event, job: Job) {
-    event.stopPropagation();
-    this.router.navigate(['/store/admin/job', job.JobId, 'jobs']);
   }
 }
