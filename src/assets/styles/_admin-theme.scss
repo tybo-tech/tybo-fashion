@@ -1,21 +1,40 @@
 // Admin workspace scoped theme — Bootstrap-first, minimal custom layer
 // Usage: wrap admin outlet with <div class="admin-workspace"> in AdminComponent
+//
+// Palette: neutral black/white/gray foundation with the project yellow accent
+// (#e6b505). Purple admin identity (#6d28d9/#5b21b6/#ede9fe) is retired.
+// Light theme only.
 .admin-workspace {
-  // Tokens — quiet neutral palette with purple primary
-  --admin-primary: #6d28d9; // Tybo purple
-  --admin-primary-soft: #ede9fe;
-  --admin-primary-hover: #5b21b6;
-  --admin-bg: #f8f9fb;
+  // ── Tokens ────────────────────────────────────────────────────────────────
+  // Accent: project yellow. Dark text sits on yellow (never white) because
+  // white on #e6b505 fails contrast.
+  --admin-accent: #e6b505;
+  --admin-accent-rgb: 230, 181, 5;
+  --admin-accent-hover: #d1a304;
+  --admin-accent-soft: #fdf6e0;
+  --admin-accent-ink: #1a1a1a; // text/icon colour on yellow surfaces
+  // Ink + neutrals
+  --admin-ink: #16181d; // near-black: headings, strong values, nav surface
+  --admin-text: #2b2f36; // primary body text (dark neutral gray)
+  --admin-muted: #6b7280; // secondary text
+  --admin-bg: #f6f7f9; // app background (quiet light gray)
   --admin-surface: #ffffff;
   --admin-border: #e5e7eb;
   --admin-border-strong: #d1d5db;
-  --admin-text: #1f2937;
-  --admin-muted: #6b7280;
-  --admin-muted-soft: #f3f4f6;
   --admin-radius: 10px;
   --admin-radius-sm: 6px;
-  --admin-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
-  --admin-shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+  --admin-shadow: 0 1px 3px rgba(0, 0, 0, .06), 0 1px 2px rgba(0, 0, 0, .04);
+  --admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, .05);
+
+  // Map admin tokens onto Bootstrap CSS variables. Bootstrap ships compiled
+  // component-level variables (e.g. .btn has its own --bs-btn-* set), so
+  // --bs-primary alone does not restyle buttons — hence the component maps
+  // below.
+  --bs-primary: var(--admin-accent);
+  --bs-primary-rgb: var(--admin-accent-rgb);
+  --bs-link-color: var(--admin-ink);
+  --bs-link-hover-color: var(--admin-accent-hover);
+  --bs-focus-ring-color: rgba(var(--admin-accent-rgb), .35);
 
   background: var(--admin-bg);
   color: var(--admin-text);
@@ -46,7 +65,7 @@
     display: flex;
     align-items: center;
     gap: .5rem;
-    i { color: var(--admin-primary); font-size: 1rem; }
+    i { color: var(--admin-ink); font-size: 1rem; }
   }
   .admin-section-sub {
     font-size: .8rem;
@@ -64,8 +83,8 @@
   }
 
   // ── Legacy _boot.scss compatibility boundary ─────────────────────────────
-  // _boot.scss applies global !important rules (.btn, .btn-primary, .btn-light,
-  // .text-primary, .form-check-input:checked, mobile full-width buttons and an
+  // _boot.scss applies global !important rules (.btn radius/width, .btn-primary
+  // accent colour, .btn-light shadow, .text-primary, .form-check-input:checked,
   // asymmetric hover radius) that predate the admin theme and would otherwise
   // override it. These narrowly scoped !important rules re-assert the admin
   // theme inside .admin-workspace only; the public storefront keeps the legacy
@@ -76,21 +95,38 @@
     border-radius: var(--admin-radius) !important;
     &:hover { border-radius: var(--admin-radius) !important; } // disable asymmetric hover radius
   }
+  // Primary action = yellow with near-black text (accent used sparingly)
   .btn-primary {
-    background-color: var(--admin-primary) !important;
-    border-color: var(--admin-primary) !important;
-    color: #fff !important;
+    --bs-btn-bg: var(--admin-accent);
+    --bs-btn-border-color: var(--admin-accent);
+    --bs-btn-color: var(--admin-accent-ink);
+    --bs-btn-hover-bg: var(--admin-accent-hover);
+    --bs-btn-hover-border-color: var(--admin-accent-hover);
+    --bs-btn-hover-color: var(--admin-accent-ink);
+    --bs-btn-active-bg: var(--admin-accent-hover);
+    --bs-btn-active-border-color: var(--admin-accent-hover);
+    --bs-btn-active-color: var(--admin-accent-ink);
+    --bs-btn-disabled-bg: var(--admin-accent);
+    --bs-btn-disabled-border-color: var(--admin-accent);
+    --bs-btn-disabled-color: var(--admin-accent-ink);
+    --bs-btn-focus-shadow-rgb: var(--admin-accent-rgb);
+    background-color: var(--bs-btn-bg) !important;
+    border-color: var(--bs-btn-border-color) !important;
+    color: var(--bs-btn-color) !important;
     &:hover, &:focus, &:active {
-      background-color: var(--admin-primary-hover) !important;
-      border-color: var(--admin-primary-hover) !important;
-      color: #fff !important;
+      background-color: var(--admin-accent-hover) !important;
+      border-color: var(--admin-accent-hover) !important;
+      color: var(--admin-accent-ink) !important;
     }
   }
   .btn-outline-primary {
-    --bs-btn-color: var(--admin-primary);
+    --bs-btn-color: var(--admin-ink);
     --bs-btn-border-color: var(--admin-border-strong);
-    --bs-btn-hover-bg: var(--admin-primary);
-    --bs-btn-hover-border-color: var(--admin-primary);
+    --bs-btn-hover-bg: var(--admin-accent);
+    --bs-btn-hover-border-color: var(--admin-accent);
+    --bs-btn-hover-color: var(--admin-accent-ink);
+    --bs-btn-active-bg: var(--admin-accent);
+    --bs-btn-active-color: var(--admin-accent-ink);
   }
   .btn-light {
     box-shadow: none !important;
@@ -98,10 +134,10 @@
     border-color: var(--admin-border) !important;
     color: var(--admin-text) !important;
   }
-  .text-primary { color: var(--admin-primary) !important; }
+  .text-primary { color: var(--admin-accent) !important; }
   .form-check-input:checked {
-    background-color: var(--admin-primary) !important;
-    border-color: var(--admin-primary) !important;
+    background-color: var(--admin-accent) !important;
+    border-color: var(--admin-accent) !important;
   }
   @media only screen and (max-width: 600px) {
     // Legacy _boot.scss forces every .btn to width:100% on small screens.
@@ -111,6 +147,10 @@
     .btn:not(.w-100):not(.w-fit) { width: auto !important; }
   }
 
+  // Links inside the workspace follow the neutral ink, accent on hover
+  a { color: var(--bs-link-color); }
+  a:hover { color: var(--bs-link-hover-color); }
+
   // Badges for status — restrained
   .badge-soft {
     font-weight: 600;
@@ -118,24 +158,47 @@
     border: 1px solid var(--admin-border);
   }
 
-  // Progress: use admin primary by default
+  // Progress: accent by default
   .progress {
     --bs-progress-height: 6px;
     --bs-progress-bg: #eef2f7;
     border-radius: 999px;
   }
   .progress-bar {
-    background: var(--admin-primary);
+    background: var(--admin-accent);
   }
 
-  // Form controls compact polish
+  // Form controls: neutral borders, accent focus ring
   .form-control, .form-select {
     border-color: var(--admin-border);
     border-radius: var(--admin-radius-sm);
     &:focus {
-      border-color: var(--admin-primary);
-      box-shadow: 0 0 0 .2rem rgba(109,40,217,.12);
+      border-color: var(--admin-accent);
+      box-shadow: 0 0 0 .2rem rgba(var(--admin-accent-rgb), .18);
     }
+  }
+  .input-group-text {
+    background: var(--admin-muted-soft, #f3f4f6);
+    border-color: var(--admin-border);
+    color: var(--admin-muted);
+  }
+
+  // List groups: flush neutral dividers (used by the unboxed list pattern)
+  .list-group {
+    --bs-list-group-border-color: var(--admin-border);
+    --bs-list-group-action-hover-bg: #fafafa;
+    --bs-list-group-action-hover-color: var(--admin-text);
+    --bs-list-group-active-bg: var(--admin-accent-soft);
+    --bs-list-group-active-color: var(--admin-ink);
+    --bs-list-group-active-border-color: var(--admin-border);
+  }
+
+  // Nav variants (pills/tabs) follow the accent
+  .nav-pills, .nav {
+    --bs-nav-link-color: var(--admin-text);
+    --bs-nav-link-hover-color: var(--admin-ink);
+    --bs-nav-pills-link-active-bg: var(--admin-accent);
+    --bs-nav-pills-link-active-color: var(--admin-accent-ink);
   }
 
   // Table helper if needed
@@ -166,14 +229,14 @@
   // Modal backdrop (Bootstrap confirm modal)
   .modal-backdrop-admin { background: rgba(0, 0, 0, .4); }
 
-  // Toast stacking above everything
-  .toast-admin { z-index: 1080; }
+  // Toast stacking above everything (above bottom nav)
+  .toast-admin { z-index: 1120; }
 
   // Attachment preview cap
   .attachment-preview { max-height: 240px; }
 
-  // Brand icon background (purple)
-  .bg-admin-primary { background: var(--admin-primary); }
+  // Brand icon background (near-black ink; accent reserved for actions)
+  .bg-admin-primary { background: var(--admin-ink); }
 
   // Compact font sizes for the admin shell
   .fs-95 { font-size: .95rem; }
@@ -182,4 +245,87 @@
 
   // Object-fit helper for avatars/thumbnails
   .object-fit-cover { object-fit: cover; }
+
+  // ── Admin navigation (sidebar + offcanvas) ───────────────────────────────
+  // Mutually exclusive variants: inactive = .admin-nav-item, active =
+  // .admin-nav-item.active (set by routerLinkActive). Never btn-light +
+  // btn-primary on the same element.
+  .admin-nav-item {
+    --bs-btn-bg: var(--admin-surface);
+    --bs-btn-border-color: var(--admin-border);
+    --bs-btn-color: var(--admin-text);
+    --bs-btn-hover-bg: #f3f4f6;
+    --bs-btn-hover-border-color: var(--admin-border);
+    --bs-btn-hover-color: var(--admin-ink);
+    background-color: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    color: var(--admin-text);
+    i { color: var(--admin-muted); }
+  }
+  .admin-nav-item.active {
+    --bs-btn-bg: var(--admin-accent);
+    background-color: var(--admin-accent);
+    border-color: var(--admin-accent);
+    color: var(--admin-accent-ink);
+    font-weight: 600;
+    i { color: var(--admin-accent-ink); }
+  }
+
+  // ── Mobile bottom navigation ──────────────────────────────────────────────
+  // Near-black bar, white inactive icons, yellow active shape with ink icon.
+  // Hidden on ≥992px where the sidebar takes over. Fixed above safe area.
+  .admin-bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1090;
+    background: var(--admin-ink);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -1px 0 rgba(255, 255, 255, .06), 0 -4px 16px rgba(0, 0, 0, .18);
+  }
+  .admin-bottom-nav .nav-item-btn {
+    min-height: 44px; // touch target
+    border: 0;
+    background: transparent;
+    color: rgba(255, 255, 255, .72);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    width: 100%;
+    padding: 6px 4px;
+    font-size: .65rem;
+    i { font-size: 1.15rem; line-height: 1; }
+  }
+  .admin-bottom-nav .nav-item-btn.active {
+    color: #fff;
+    .active-pill {
+      background: var(--admin-accent);
+      color: var(--admin-accent-ink);
+      border-radius: 999px;
+    }
+  }
+  .admin-bottom-nav .active-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 4px 14px;
+  }
+  .admin-bottom-nav .grid-4 {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  // Routed content clearance so the fixed bar never covers forms/buttons.
+  // !important needed because Bootstrap's .p-3/.p-md-4 padding utilities on the
+  // same element are !important and would otherwise override the bottom
+  // clearance for the fixed bottom navigation.
+  .admin-content {
+    padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
+    @media (min-width: 992px) {
+      padding-bottom: 1.5rem !important; // sidebar layout on desktop
+    }
+  }
 }
