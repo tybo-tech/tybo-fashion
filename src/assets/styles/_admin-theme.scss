@@ -1,0 +1,185 @@
+// Admin workspace scoped theme — Bootstrap-first, minimal custom layer
+// Usage: wrap admin outlet with <div class="admin-workspace"> in AdminComponent
+.admin-workspace {
+  // Tokens — quiet neutral palette with purple primary
+  --admin-primary: #6d28d9; // Tybo purple
+  --admin-primary-soft: #ede9fe;
+  --admin-primary-hover: #5b21b6;
+  --admin-bg: #f8f9fb;
+  --admin-surface: #ffffff;
+  --admin-border: #e5e7eb;
+  --admin-border-strong: #d1d5db;
+  --admin-text: #1f2937;
+  --admin-muted: #6b7280;
+  --admin-muted-soft: #f3f4f6;
+  --admin-radius: 10px;
+  --admin-radius-sm: 6px;
+  --admin-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --admin-shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  // Enforce sans-serif for headings inside workspace (override Young Serif)
+  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Poppins", system-ui, -apple-system, sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em;
+  }
+
+  // Reusable card: lean wrapper, rely on Bootstrap .card where possible
+  .admin-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  // Section title helper
+  .admin-section-title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    i { color: var(--admin-primary); font-size: 1rem; }
+  }
+  .admin-section-sub {
+    font-size: .8rem;
+    color: var(--admin-muted);
+    margin: 0;
+  }
+
+  // Metric helpers
+  .admin-kicker {
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-muted);
+  }
+
+  // ── Legacy _boot.scss compatibility boundary ─────────────────────────────
+  // _boot.scss applies global !important rules (.btn, .btn-primary, .btn-light,
+  // .text-primary, .form-check-input:checked, mobile full-width buttons and an
+  // asymmetric hover radius) that predate the admin theme and would otherwise
+  // override it. These narrowly scoped !important rules re-assert the admin
+  // theme inside .admin-workspace only; the public storefront keeps the legacy
+  // behaviour untouched. They are a temporary boundary until the legacy
+  // overrides are removed or scoped themselves.
+
+  .btn {
+    border-radius: var(--admin-radius) !important;
+    &:hover { border-radius: var(--admin-radius) !important; } // disable asymmetric hover radius
+  }
+  .btn-primary {
+    background-color: var(--admin-primary) !important;
+    border-color: var(--admin-primary) !important;
+    color: #fff !important;
+    &:hover, &:focus, &:active {
+      background-color: var(--admin-primary-hover) !important;
+      border-color: var(--admin-primary-hover) !important;
+      color: #fff !important;
+    }
+  }
+  .btn-outline-primary {
+    --bs-btn-color: var(--admin-primary);
+    --bs-btn-border-color: var(--admin-border-strong);
+    --bs-btn-hover-bg: var(--admin-primary);
+    --bs-btn-hover-border-color: var(--admin-primary);
+  }
+  .btn-light {
+    box-shadow: none !important;
+    background-color: #fff !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text) !important;
+  }
+  .text-primary { color: var(--admin-primary) !important; }
+  .form-check-input:checked {
+    background-color: var(--admin-primary) !important;
+    border-color: var(--admin-primary) !important;
+  }
+  @media only screen and (max-width: 600px) {
+    // Legacy _boot.scss forces every .btn to width:100% on small screens.
+    // Keep explicit Bootstrap .w-100 buttons full width and legacy .w-fit
+    // buttons at fit-content; restore auto width for everything else inside
+    // the admin workspace.
+    .btn:not(.w-100):not(.w-fit) { width: auto !important; }
+  }
+
+  // Badges for status — restrained
+  .badge-soft {
+    font-weight: 600;
+    letter-spacing: .02em;
+    border: 1px solid var(--admin-border);
+  }
+
+  // Progress: use admin primary by default
+  .progress {
+    --bs-progress-height: 6px;
+    --bs-progress-bg: #eef2f7;
+    border-radius: 999px;
+  }
+  .progress-bar {
+    background: var(--admin-primary);
+  }
+
+  // Form controls compact polish
+  .form-control, .form-select {
+    border-color: var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    &:focus {
+      border-color: var(--admin-primary);
+      box-shadow: 0 0 0 .2rem rgba(109,40,217,.12);
+    }
+  }
+
+  // Table helper if needed
+  .table thead th {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-muted);
+    font-weight: 600;
+    border-bottom-width: 1px;
+  }
+
+  // ── Reusable layout utilities (replace literal inline styles) ─────────────
+  // Icon containers — fixed square, centered content
+  .icon-28 { width: 28px; height: 28px; }
+  .icon-32 { width: 32px; height: 32px; }
+  .icon-36 { width: 36px; height: 36px; }
+  .icon-40 { width: 40px; height: 40px; }
+  .icon-48 { width: 48px; height: 48px; }
+  .icon-30 { width: 30px; height: 30px; }
+
+  // Job-item thumbnail
+  .thumb-96 { width: 96px; height: 96px; }
+
+  // Allow flex children to shrink below content width (text truncation)
+  .min-w-0 { min-width: 0; }
+
+  // Modal backdrop (Bootstrap confirm modal)
+  .modal-backdrop-admin { background: rgba(0, 0, 0, .4); }
+
+  // Toast stacking above everything
+  .toast-admin { z-index: 1080; }
+
+  // Attachment preview cap
+  .attachment-preview { max-height: 240px; }
+
+  // Brand icon background (purple)
+  .bg-admin-primary { background: var(--admin-primary); }
+
+  // Compact font sizes for the admin shell
+  .fs-95 { font-size: .95rem; }
+  .fs-7 { font-size: .7rem; }
+  .lh-1 { line-height: 1; }
+
+  // Object-fit helper for avatars/thumbnails
+  .object-fit-cover { object-fit: cover; }
+}

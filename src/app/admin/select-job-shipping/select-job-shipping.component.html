@@ -1,28 +1,15 @@
 <div class="_overlay" *ngIf="job">
   <div class="_modal">
-    <div class="_header">
-      <h2>Select shipping</h2>
-      <a (click)="onClose.emit()" class="link-info h6">Done</a>
+    <div class="_header d-flex align-items-center justify-content-between">
+      <h2 class="h6 mb-0">Select shipping</h2>
+      <button class="btn btn-sm btn-light" (click)="onClose.emit()" aria-label="Close"><i class="bi bi-x-lg"></i></button>
     </div>
-
-    <div class="_body">
-      <div class="p-2">
-        <div class="delivery-method pl-3">
-          <div class="form-check p-1" *ngFor="let option of shippingOptions">
-            <input
-              class="form-check-input"
-              type="radio"
-              name="delivery"
-              [id]="option.name"
-              (change)="update_delivery()"
-              [value]="option.name.toLowerCase()"
-              [(ngModel)]="job.Shipping"
-            />
-            <label class="form-check-label" [for]="option.name">
-              {{ option.name }} - R{{ option.price }}
-            </label>
-          </div>
-        </div>
+    <div class="_body p-3">
+      <div class="d-flex flex-column gap-2">
+        <label class="d-flex align-items-center gap-2 border rounded-2 p-2 bg-light" *ngFor="let option of shippingOptions" [attr.for]="'ship-' + option.name">
+          <input class="form-check-input m-0" type="radio" name="delivery" [id]="'ship-' + option.name" (change)="update_delivery()" [value]="option.name.toLowerCase()" [(ngModel)]="job.Shipping">
+          <span class="small">{{ option.name }} — {{ option.price | currency:'ZAR':'symbol':'1.2-2' }}</span>
+        </label>
       </div>
     </div>
   </div>

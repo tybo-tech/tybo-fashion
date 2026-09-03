@@ -1,78 +1,48 @@
-<div class="comment-section">
-  <h4 class="mb-2">{{ title }}</h4>
-  <div *ngFor="let comment of comments" class="comment">
-    <div class="comment-header">
-      <img
-        *ngIf="comment.userImage"
-        [src]="comment.userImage"
-        alt="{{ comment.userDisplayName }}"
-        class="user-image"
-      />
-      <div class="comment-info">
-        <span class="user-name">{{ comment.userDisplayName }}</span>
-        <span class="comment-date">{{ comment.date }}</span>
-      </div>
-      <div class="comment-options">
-        <i class="bi bi-three-dots" (click)="openMenu(comment)"></i>
-        <div class="menu" *ngIf="selectedComment === comment">
-          <ul>
-            <li (click)="editComment(comment)">Edit</li>
-            <li (click)="deleteComment(comment)">Delete</li>
+<div>
+  <h6 class="small text-muted mb-2">{{ title }}</h6>
+  <div *ngFor="let comment of comments" class="card border mb-2">
+    <div class="card-body p-3">
+      <div class="d-flex align-items-center gap-2 mb-2">
+        <img *ngIf="comment.userImage" [src]="comment.userImage" [alt]="comment.userDisplayName" class="rounded-circle icon-28 object-fit-cover">
+        <span class="small fw-semibold">{{ comment.userDisplayName }}</span>
+        <span class="small text-muted ms-auto">{{ comment.date }}</span>
+        <div class="dropdown">
+          <button class="btn btn-sm btn-light border py-1 px-2" type="button" data-bs-toggle="dropdown" aria-label="Comment actions"><i class="bi bi-three-dots"></i></button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><button class="dropdown-item small" (click)="editComment(comment)">Edit</button></li>
+            <li><button class="dropdown-item small text-danger" (click)="deleteComment(comment)">Delete</button></li>
           </ul>
         </div>
       </div>
-    </div>
-    <div class="comment-body">
-      <div *ngIf="editingComment !== comment">
-        <p>{{ comment.comment }}</p>
+      <div *ngIf="editingComment !== comment" class="small">{{ comment.comment }}</div>
+      <div *ngIf="editingComment === comment" class="d-flex flex-column gap-2">
+        <textarea [(ngModel)]="editingComment.comment" class="form-control form-control-sm" rows="3"></textarea>
+        <button class="btn btn-primary btn-sm align-self-start" (click)="saveEditComment(comment)">Save</button>
       </div>
-      <div *ngIf="editingComment === comment">
-        <textarea [(ngModel)]="editingComment.comment"></textarea>
-        <button (click)="saveEditComment(comment)">Save</button>
-      </div>
-      <img
-        *ngIf="comment.attachment"
-        [src]="comment.attachment"
-        alt="attachment"
-        class="attachment"
-      />
+      <img *ngIf="comment.attachment" [src]="comment.attachment" alt="attachment" class="img-fluid rounded-2 border mt-2 attachment-preview">
     </div>
   </div>
-  <div class="add-comment">
-    <textarea
-      class="form-control"
-      [(ngModel)]="comment"
-      placeholder="Add a comment..."
-    ></textarea>
-    <div class="d-flex gap-3 align-items-center">
-      <button class="btn btn-dark" [disabled]="!comment" (click)="addComment()">
-        Comment
-      </button>
-      <h3
-        *ngIf="!attachment"
-        class="m-0 p-0 d-flex align-items-center justify-content-center link-info"
-      >
-        <i class="bi bi-camera" (click)="show_attachment = true"></i>
-      </h3>
-      <a (click)="show_attachment = true" *ngIf="attachment" class="link-info">
-        <i class="bi bi-check"></i> Image attached.
-      </a>
+  <div class="card border bg-light">
+    <div class="card-body p-3">
+      <label class="form-label small text-muted" for="new-comment">Add comment</label>
+      <textarea id="new-comment" class="form-control form-control-sm mb-2" [(ngModel)]="comment" rows="3" placeholder="Special instructions…"></textarea>
+      <div class="d-flex gap-2 align-items-center flex-wrap">
+        <button class="btn btn-primary btn-sm" [disabled]="!comment" (click)="addComment()">Add comment</button>
+        <button class="btn btn-outline-secondary btn-sm" type="button" (click)="show_attachment = true">
+          <i class="bi bi-camera me-1"></i> {{ attachment ? 'Change image' : 'Attach image' }}
+        </button>
+        <span *ngIf="attachment" class="small text-success"><i class="bi bi-check-lg"></i> Image attached</span>
+      </div>
     </div>
   </div>
-
-  <div class="app-overlay" *ngIf="show_attachment">
-    <div class="my-modal">
-      <div
-        class="d-flex align-items-center justify-content-between header w-100"
-      >
-        <h4 class="">Attach Image</h4>
-        <i class="bi bi-x-lg" (click)="show_attachment = false"></i>
+  <div class="_overlay" *ngIf="show_attachment">
+    <div class="_modal">
+      <div class="_header">
+        <h2 class="h6 mb-0">Attach image</h2>
+        <button class="btn btn-sm btn-light" (click)="show_attachment = false" aria-label="Close"><i class="bi bi-x-lg"></i></button>
       </div>
-      <div class="body">
-        <app-image-widget
-          [image_url]="attachment"
-          (imageChangedEvent)="image_changed($event)"
-        />
+      <div class="_body p-3">
+        <app-image-widget [image_url]="attachment" (imageChangedEvent)="image_changed($event)"></app-image-widget>
       </div>
     </div>
   </div>

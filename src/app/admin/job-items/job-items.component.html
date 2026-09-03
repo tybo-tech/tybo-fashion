@@ -1,68 +1,28 @@
-<!-- Modern Job Items Section -->
-<div class="job-items-container" *ngIf="job">
-  <!-- Section Header -->
-  <div class="section-header">
-    <div class="header-info">
-      <div class="items-summary" *ngIf="hasItems">
-        <span class="item-count">{{ totalItems }} item{{ totalItems !== 1 ? 's' : '' }}</span>
-        <span class="quantity-count">{{ totalQuantity }} total qty</span>
-      </div>
+<div *ngIf="job">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <div class="d-flex gap-2 small">
+      <span *ngIf="hasItems" class="badge bg-light text-dark border">{{ totalItems }} item{{ totalItems !== 1 ? 's' : '' }}</span>
+      <span *ngIf="hasItems" class="badge bg-light text-dark border">{{ totalQuantity }} qty</span>
     </div>
-    <button
-      class="add-item-btn"
-      [class.loading]="isLoading"
-      [disabled]="isLoading"
-      (click)="toggleAddMode()"
-      *ngIf="!addMode"
-    >
-      <i class="bi bi-plus-circle"></i>
-      Add Item
+    <button *ngIf="!addMode" class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" [disabled]="isLoading" (click)="toggleAddMode()">
+      <i class="bi bi-plus-lg"></i> Add item
     </button>
   </div>
 
-  <!-- Items List -->
-  <div class="items-list" *ngIf="hasItems">
-    <div *ngFor="let item of jobItems; let i = index" class="item-wrapper">
-      <app-job-item
-        [jobItem]="item"
-        [user]="user"
-        [job]="job"
-      />
+  <div *ngIf="hasItems" class="d-flex flex-column gap-3">
+    <div *ngFor="let item of jobItems" class="border rounded-3 bg-white">
+      <app-job-item [jobItem]="item" [user]="user" [job]="job"></app-job-item>
     </div>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="!hasItems && !addMode">
-    <div class="empty-icon">
-      <i class="bi bi-bag"></i>
-    </div>
-    <h6>No items in this job</h6>
-    <p>Start by adding items to this job order</p>
-    <button
-      class="add-first-item-btn"
-      [disabled]="isLoading"
-      (click)="toggleAddMode()"
-    >
-      <i class="bi bi-plus-circle"></i>
-      Add First Item
-    </button>
+  <div *ngIf="!hasItems && !addMode" class="text-center py-4 border rounded-3 bg-light">
+    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-white border mb-2 icon-40"><i class="bi bi-bag"></i></div>
+    <h6 class="mb-1">No items yet</h6>
+    <p class="small text-muted mb-3">Add garments to this job.</p>
+    <button class="btn btn-primary btn-sm" [disabled]="isLoading" (click)="toggleAddMode()"><i class="bi bi-plus-lg me-1"></i> Add first item</button>
   </div>
 
-  <!-- Add Item Form -->
-  <div class="add-item-section" *ngIf="addMode">
-    <app-job-item-form
-      [user]="user"
-      [jobItem]="jobItem"
-      (onClose)="addMode = false"
-      (jobItemUpdated)="onJobItemUpdated($event)"
-    />
-  </div>
-
-  <!-- Loading State -->
-  <div class="loading-overlay" *ngIf="isLoading">
-    <div class="loading-spinner">
-      <i class="bi bi-arrow-clockwise"></i>
-    </div>
-    <p>Processing...</p>
+  <div *ngIf="addMode" class="mt-3">
+    <app-job-item-form [user]="user" [jobItem]="jobItem" (onClose)="addMode = false" (jobItemUpdated)="onJobItemUpdated($event)"></app-job-item-form>
   </div>
 </div>

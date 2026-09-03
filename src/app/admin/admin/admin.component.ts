@@ -3,6 +3,16 @@ import { UxModel } from 'src/models/ux.model';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
+declare global {
+  interface Window {
+    bootstrap?: {
+      Offcanvas: {
+        getInstance(el: HTMLElement): { hide(): void } | null;
+      };
+    };
+  }
+}
+
 @Component({
   selector: 'app-admin',
   templateUrl: './admin.component.html',
@@ -116,6 +126,13 @@ export class AdminComponent implements OnInit {
   }
   clearToast() {
     this.uxService.clear_toast();
+  }
+  closeOffcanvas() {
+    const el = document.getElementById('adminOffcanvas');
+    if (el && window.bootstrap) {
+      const instance = window.bootstrap.Offcanvas.getInstance(el);
+      if (instance) instance.hide();
+    }
   }
   logout() {
     const slug = this.user?.Company?.Slug;

@@ -15,24 +15,19 @@ export class AdminCommentComponent {
   attachment = '';
   show_attachment = false;
 
-  selectedComment: IComment | null = null;
   newComment?: IComment;
 
-  openMenu(comment: IComment) {
-    this.selectedComment = comment;
-  }
-
   closeMenu() {
-    this.selectedComment = null;
+    this.editingComment = undefined;
   }
 
   editComment(comment: IComment) {
-    this.onEdit.emit(this.comments);
-    this.closeMenu();
+    this.editingComment = comment;
   }
 
   deleteComment(comment: IComment) {
-    this.comments = [];
+    if (!confirm('Are you sure you want to delete this comment?')) return;
+    this.comments = this.comments.filter((c) => c.id !== comment.id);
     this.onEdit.emit(this.comments);
     this.closeMenu();
   }

@@ -145,11 +145,12 @@ export class JobComponent {
     }
   }
 
-  // Payment progress calculation
+  // Payment progress calculation — capped, guard div0
   getPaymentPercentage(): number {
     if (!this.job?.TotalCost || this.job.TotalCost === 0) return 0;
     const paid = this.getPaidAmount();
-    return Math.round((paid / this.job.TotalCost) * 100);
+    const pct = Math.round((paid / this.job.TotalCost) * 100);
+    return Math.max(0, Math.min(100, pct));
   }
 
   // Job status helpers
