@@ -1,0 +1,118 @@
+// Admin workspace scoped theme — Bootstrap-first, minimal custom layer
+// Usage: wrap admin outlet with <div class="admin-workspace"> in AdminComponent
+.admin-workspace {
+  // Tokens — quiet neutral palette with purple primary
+  --admin-primary: #6d28d9; // Tybo purple
+  --admin-primary-soft: #ede9fe;
+  --admin-primary-hover: #5b21b6;
+  --admin-bg: #f8f9fb;
+  --admin-surface: #ffffff;
+  --admin-border: #e5e7eb;
+  --admin-border-strong: #d1d5db;
+  --admin-text: #1f2937;
+  --admin-muted: #6b7280;
+  --admin-muted-soft: #f3f4f6;
+  --admin-radius: 10px;
+  --admin-radius-sm: 6px;
+  --admin-shadow: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --admin-shadow-sm: 0 1px 2px rgba(0,0,0,.05);
+
+  background: var(--admin-bg);
+  color: var(--admin-text);
+  min-height: 100vh;
+  font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  // Enforce sans-serif for headings inside workspace (override Young Serif)
+  h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+    font-family: "Poppins", system-ui, -apple-system, sans-serif !important;
+    font-weight: 600 !important;
+    letter-spacing: -0.01em;
+  }
+
+  // Reusable card: lean wrapper, rely on Bootstrap .card where possible
+  .admin-card {
+    background: var(--admin-surface);
+    border: 1px solid var(--admin-border);
+    border-radius: var(--admin-radius);
+    box-shadow: var(--admin-shadow-sm);
+  }
+
+  // Section title helper
+  .admin-section-title {
+    font-size: .95rem;
+    font-weight: 600;
+    color: var(--admin-text);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    i { color: var(--admin-primary); font-size: 1rem; }
+  }
+  .admin-section-sub {
+    font-size: .8rem;
+    color: var(--admin-muted);
+    margin: 0;
+  }
+
+  // Metric helpers
+  .admin-kicker {
+    font-size: .7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-muted);
+  }
+
+  // Buttons: ensure primary uses admin purple without !important explosion
+  .btn-primary {
+    --bs-btn-bg: var(--admin-primary);
+    --bs-btn-border-color: var(--admin-primary);
+    --bs-btn-hover-bg: var(--admin-primary-hover);
+    --bs-btn-hover-border-color: var(--admin-primary-hover);
+    --bs-btn-active-bg: var(--admin-primary-hover);
+    --bs-btn-active-border-color: var(--admin-primary-hover);
+  }
+  .btn-outline-primary {
+    --bs-btn-color: var(--admin-primary);
+    --bs-btn-border-color: var(--admin-border-strong);
+    --bs-btn-hover-bg: var(--admin-primary);
+    --bs-btn-hover-border-color: var(--admin-primary);
+  }
+
+  // Badges for status — restrained
+  .badge-soft {
+    font-weight: 600;
+    letter-spacing: .02em;
+    border: 1px solid var(--admin-border);
+  }
+
+  // Progress: use admin primary by default
+  .progress {
+    --bs-progress-height: 6px;
+    --bs-progress-bg: #eef2f7;
+    border-radius: 999px;
+  }
+  .progress-bar {
+    background: var(--admin-primary);
+  }
+
+  // Form controls compact polish
+  .form-control, .form-select {
+    border-color: var(--admin-border);
+    border-radius: var(--admin-radius-sm);
+    &:focus {
+      border-color: var(--admin-primary);
+      box-shadow: 0 0 0 .2rem rgba(109,40,217,.12);
+    }
+  }
+
+  // Table helper if needed
+  .table thead th {
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    color: var(--admin-muted);
+    font-weight: 600;
+    border-bottom-width: 1px;
+  }
+}
