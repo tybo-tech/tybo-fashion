@@ -85,7 +85,9 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
           return;
         }
 
-        // Edit: locate the item inside the loaded job and verify ownership.
+        // Edit: parent-child validation — confirm the item belongs to the
+        // loaded job. (Client-side only; the PHP endpoints do not enforce
+        // authenticated tenant authorization.)
         const item = (job.JobItems || []).find(
           (x) => x.JobItemId === this.jobItemId
         );
@@ -158,6 +160,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     if (this.mode === 'new') {
       this.jobService.addJobItem(item).subscribe({
         next: (saved) => {
+          // The API must confirm creation with a new item ID.
           if (!saved || !saved.JobItemId) {
             this.saving = false;
             this.fail('Failed to create the item. Please try again.');
@@ -175,7 +178,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Edit: verify ownership, replace in the parent collection, persist.
+    // Edit: parent-child validation, replace in the collection, persist.
     const index = (this.job!.JobItems || []).findIndex(
       (x) => x.JobItemId === item.JobItemId
     );
@@ -186,7 +189,14 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     }
     this.jobService.updateJobItem(item).subscribe({
       next: (saved) => {
-        if (this.job!.JobItems && saved?.JobItemId) {
+        // Only treat the edit as successful when the API confirms it by
+        // echoing the edited item's ID; otherwise surface a failure.
+        if (!saved || !saved.JobItemId || saved.JobItemId !== item.JobItemId) {
+          this.saving = false;
+          this.fail('The change was not saved as expected. Please try again.');
+          return;
+        }
+        if (this.job!.JobItems) {
           this.job!.JobItems[index] = saved;
         }
         persistTotals('Item updated but job update failed');

@@ -248,8 +248,8 @@
 
   // ── Admin navigation (sidebar + offcanvas) ───────────────────────────────
   // Mutually exclusive variants: inactive = .admin-nav-item, active =
-  // .admin-nav-item.active (set by routerLinkActive). Never btn-light +
-  // btn-primary on the same element.
+  // .admin-nav-item.active (set by the shared nav-routes helper). Never
+  // btn-light + btn-primary on the same element.
   .admin-nav-item {
     --bs-btn-bg: var(--admin-surface);
     --bs-btn-border-color: var(--admin-border);
@@ -318,10 +318,9 @@
     grid-template-columns: repeat(4, 1fr);
   }
 
-  // Routed content clearance so the fixed bar never covers forms/buttons.
-  // !important needed because Bootstrap's .p-3/.p-md-4 padding utilities on the
-  // same element are !important and would otherwise override the bottom
-  // clearance for the fixed bottom navigation.
+  // Routed content needs bottom clearance so the fixed mobile bar never
+  // covers forms/buttons. !important because Bootstrap's .p-3/.p-md-4
+  // padding utilities on the same element are !important.
   .admin-content {
     padding-bottom: calc(76px + env(safe-area-inset-bottom, 0px)) !important;
     @media (min-width: 992px) {

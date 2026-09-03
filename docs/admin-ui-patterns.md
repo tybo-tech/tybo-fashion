@@ -105,9 +105,12 @@ Reference: `src/app/admin/jobs/jobs.component.{html,ts,scss}`.
 - Desktop keeps the sidebar; the bottom nav is never duplicated there.
 - Internal navigation is Angular Router only (`routerLink`), so no document
   reloads; active state follows child routes (Jobs stays active on job and
-  job-item routes; Customers on customer routes). External links (store,
-  invoices, print, downloads) keep plain `href`.
-- The top bar keeps branding; the hamburger remains as a secondary path.
+  job-item routes — but not job-cards; Customers on customer routes).
+  Desktop sidebar, offcanvas and bottom nav share one route-matching helper
+  (`src/app/admin/admin/nav-routes.ts`) so they can never disagree.
+  External links (store, invoices, print, downloads) keep plain `href`.
+- The top bar keeps branding; the mobile header has no hamburger — bottom
+  More is the single path to the full menu.
 
 ### Future PWA customer capability (not implemented)
 
@@ -132,8 +135,10 @@ Complex forms (e.g. job items) use dedicated routed pages, not popups:
 - A routed page component owns loading, persistence, errors and navigation; a
   reusable form component holds presentation only.
 - Direct refresh works on editor routes; the page reloads both IDs and
-  verifies ownership (mismatch shows an inline error with a safe route back —
-  a failed edit never silently becomes a create).
+  performs parent-child validation (confirming the item belongs to the loaded
+  job; a mismatch shows an inline error with a safe route back —
+  a failed edit never silently becomes a create). This is a client-side check
+  only; the PHP endpoints do not enforce authenticated tenant authorization.
 - Predictable exits: browser Back works, Cancel returns to the parent detail
   page, successful Save returns to the parent detail page.
 - Save is disabled while saving with a visible busy state; duplicate

@@ -83,8 +83,9 @@ Observed edit payload:
   and **persisted** via `update-job.php`.
 - Edit: item replaced in `job.JobItems` (matched by `JobItemId`); totals
   recalculated and persisted.
-- Item ownership check: `item.JobId === route jobId` (edit of a mismatched
-  item must fail loudly, never silently create).
+- Parent-child validation: `item.JobId === route jobId` (edit of a mismatched
+  item must fail loudly, never silently create). Client-side check only; the
+  PHP endpoints do not enforce authenticated tenant authorization.
 - Cancel returns to Job Details; Save returns to Job Details; browser Back
   works; direct refresh works on both routes.
 - Size "Measurements"/"Later" keeps `Metadata.Measurements` handling.

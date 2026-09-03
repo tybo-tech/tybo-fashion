@@ -1,11 +1,10 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
-
-type BottomNavKey = 'home' | 'jobs' | 'customers';
 import { UxModel } from 'src/models/ux.model';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
+import { isAdminHome, isCustomersArea, isJobsArea } from './nav-routes';
 
 declare global {
   interface Window {
@@ -150,16 +149,24 @@ export class AdminComponent implements OnInit, OnDestroy {
     }
   }
 
-  // Bottom nav: Jobs stays active through job/job-item routes, Customers
-  // through customer routes. Home is exact.
-  isBottomActive(key: BottomNavKey): boolean {
-    if (key === 'home') return this.currentUrl === '/store/admin' || this.currentUrl === '/store/admin/';
-    if (key === 'jobs') return this.currentUrl.startsWith('/store/admin/job');
-    return this.currentUrl.startsWith('/store/admin/customer');
+  // Shared route matching keeps desktop sidebar, offcanvas and bottom nav
+  // in agreement. Jobs stays active through job/job-item routes (but not
+  // job-cards); Customers through customer routes; Home is exact.
+  isBottomActive(key: 'home' | 'jobs' | 'customers'): boolean {
+    if (key === 'home') return isAdminHome(this.currentUrl);
+    if (key === 'jobs') return isJobsArea(this.currentUrl);
+    return isCustomersArea(this.currentUrl);
   }
 
-  goBottom(key: BottomNavKey): void {
-    const targets: Record<BottomNavKey, string> = {
+  isMenuActive(url: string): boolean {
+    if (url === '/store/admin') return isAdminHome(this.currentUrl);
+    if (url === '/store/admin/jobs') return isJobsArea(this.currentUrl);
+    if (url === '/store/admin/customers') return isCustomersArea(this.currentUrl);
+    return this.currentUrl === url || this.currentUrl.startsWith(url + '/');
+  }
+
+  goBottom(key: 'home' | 'jobs' | 'customers'): void {
+    const targets: Record<'home' | 'jobs' | 'customers', string> = {
       home: '/store/admin',
       jobs: '/store/admin/jobs',
       customers: '/store/admin/customers',

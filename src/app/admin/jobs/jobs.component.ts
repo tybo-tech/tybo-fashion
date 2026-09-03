@@ -132,12 +132,15 @@ export class JobsComponent implements OnInit {
       });
     }
 
-    // Filter by status
+    // Filter by status — compare case-insensitively because the database
+    // and Job Details use "Not started" while the filter options use
+    // "Not Started".
     if (this.selectedStatus) {
+      const wanted = this.selectedStatus.toLowerCase();
       filteredJobs = filteredJobs.filter(
         (job) =>
-          job.Status === this.selectedStatus ||
-          job.StatusDisplay === this.selectedStatus
+          (job.Status || '').toLowerCase() === wanted ||
+          (job.StatusDisplay || '').toLowerCase() === wanted
       );
     }
 
@@ -202,14 +205,15 @@ export class JobsComponent implements OnInit {
   }
 
   statusBadgeClass(status: string): string {
+    // Case-insensitive: the database uses "Not started", the UI "Not Started".
     const map: Record<string, string> = {
-      'Not Started': 'bg-light text-dark',
-      'In Progress': 'bg-dark-subtle text-dark',
-      'Completed': 'bg-success-subtle text-success',
-      'Complete': 'bg-success-subtle text-success',
-      'Terminated': 'bg-danger-subtle text-danger',
-      'Stuck': 'bg-warning-subtle text-dark',
+      'not started': 'bg-light text-dark',
+      'in progress': 'bg-dark-subtle text-dark',
+      'completed': 'bg-success-subtle text-success',
+      'complete': 'bg-success-subtle text-success',
+      'terminated': 'bg-danger-subtle text-danger',
+      'stuck': 'bg-warning-subtle text-dark',
     };
-    return map[status] || 'bg-light text-dark';
+    return map[(status || '').toLowerCase()] || 'bg-light text-dark';
   }
 }
