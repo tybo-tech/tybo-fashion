@@ -1,6 +1,8 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import { Subscription } from 'rxjs';
+
+type BottomNavKey = 'home' | 'jobs' | 'customers';
 import { UxModel } from 'src/models/ux.model';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
@@ -103,6 +105,7 @@ export class AdminComponent implements OnInit, OnDestroy {
   user = this.userService.getUser;
   ux?: UxModel;
   defaultConfirm = 'Are you sure you want to continue?';
+  currentUrl = '';
   private navSub?: Subscription;
 
   constructor(
@@ -115,10 +118,14 @@ export class AdminComponent implements OnInit, OnDestroy {
       this.ux.Toast && console.log(this.ux?.Toast);
     });
     this.navSub = this.router.events.subscribe((event) => {
-      if (event instanceof NavigationEnd) this.closeOffcanvas();
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.urlAfterRedirects;
+        this.closeOffcanvas();
+      }
     });
   }
   ngOnInit(): void {
+    this.currentUrl = this.router.url;
     const slug = this.user?.Company?.Slug || this.user?.Company?.CompanyId;
     if (slug)
       this.menu[0].items.push({
@@ -141,6 +148,23 @@ export class AdminComponent implements OnInit, OnDestroy {
       const instance = window.bootstrap.Offcanvas.getInstance(el);
       if (instance) instance.hide();
     }
+  }
+
+  // Bottom nav: Jobs stays active through job/job-item routes, Customers
+  // through customer routes. Home is exact.
+  isBottomActive(key: BottomNavKey): boolean {
+    if (key === 'home') return this.currentUrl === '/store/admin' || this.currentUrl === '/store/admin/';
+    if (key === 'jobs') return this.currentUrl.startsWith('/store/admin/job');
+    return this.currentUrl.startsWith('/store/admin/customer');
+  }
+
+  goBottom(key: BottomNavKey): void {
+    const targets: Record<BottomNavKey, string> = {
+      home: '/store/admin',
+      jobs: '/store/admin/jobs',
+      customers: '/store/admin/customers',
+    };
+    this.router.navigate([targets[key]]);
   }
   ngOnDestroy(): void {
     this.navSub?.unsubscribe();

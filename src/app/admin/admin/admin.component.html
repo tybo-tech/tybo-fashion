@@ -37,14 +37,14 @@
             <div class="admin-kicker mb-2 px-2">{{ group.name }}</div>
             <div class="d-flex flex-column gap-1">
               <ng-container *ngFor="let item of group.items">
-                <a *ngIf="item.url.startsWith('/store/admin')" class="btn btn-sm text-start d-flex align-items-center gap-2 btn-light border"
+                <a *ngIf="item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
                    [routerLink]="item.url"
-                   routerLinkActive="btn-primary"
+                   routerLinkActive="active"
                    [routerLinkActiveOptions]="{exact: item.url === '/store/admin'}">
                   <i [ngClass]="item.icon"></i>
                   <span class="text-truncate">{{ item.name }}</span>
                 </a>
-                <a *ngIf="!item.url.startsWith('/store/admin')" class="btn btn-sm text-start d-flex align-items-center gap-2 btn-light border"
+                <a *ngIf="!item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
                    [href]="item.url">
                   <i [ngClass]="item.icon"></i>
                   <span class="text-truncate">{{ item.name }}</span>
@@ -74,14 +74,14 @@
             <div class="admin-kicker mb-2">{{ group.name }}</div>
             <div class="d-flex flex-column gap-1">
               <ng-container *ngFor="let item of group.items">
-                <a *ngIf="item.url.startsWith('/store/admin')" class="btn btn-sm text-start d-flex align-items-center gap-2 btn-light border"
+                <a *ngIf="item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
                    [routerLink]="item.url"
-                   routerLinkActive="btn-primary"
+                   routerLinkActive="active"
                    [routerLinkActiveOptions]="{exact: item.url === '/store/admin'}">
                   <i [ngClass]="item.icon"></i>
                   <span class="text-truncate">{{ item.name }}</span>
                 </a>
-                <a *ngIf="!item.url.startsWith('/store/admin')" class="btn btn-sm text-start d-flex align-items-center gap-2 btn-light border"
+                <a *ngIf="!item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
                    [href]="item.url">
                   <i [ngClass]="item.icon"></i>
                   <span class="text-truncate">{{ item.name }}</span>
@@ -98,12 +98,30 @@
 
       <!-- Main -->
       <main class="col-12 col-lg-10">
-        <div class="p-3 p-md-4">
+        <div class="admin-content p-3 p-md-4">
           <router-outlet></router-outlet>
         </div>
       </main>
     </div>
   </div>
+
+  <!-- Mobile bottom navigation (Home / Jobs / Customers / More) -->
+  <nav class="admin-bottom-nav d-lg-none" aria-label="Primary">
+    <div class="d-grid grid-4">
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('home')" (click)="goBottom('home')">
+        <span class="active-pill"><i class="bi bi-house"></i><span>Home</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('jobs')" (click)="goBottom('jobs')">
+        <span class="active-pill"><i class="bi bi-briefcase"></i><span>Jobs</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('customers')" (click)="goBottom('customers')">
+        <span class="active-pill"><i class="bi bi-people"></i><span>Customers</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas">
+        <span class="active-pill"><i class="bi bi-list"></i><span>More</span></span>
+      </button>
+    </div>
+  </nav>
 
   <!-- Toast -->
   <div class="position-fixed top-0 end-0 p-3 toast-admin" *ngIf="ux && ux.Toast && ux.Toast.Message">
