@@ -2,4 +2,5 @@
 .admin-workspace {
   .admin-topbar { min-height: 56px; }
   .admin-kicker { letter-spacing: .04em; }
+  .admin-sidebar { min-height: calc(100vh - 56px); }
 }

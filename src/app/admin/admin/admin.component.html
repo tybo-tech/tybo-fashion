@@ -2,14 +2,14 @@
   <!-- Top bar -->
   <header class="admin-topbar border-bottom bg-white sticky-top">
     <div class="container-fluid px-3 px-lg-4 py-2 d-flex align-items-center justify-content-between gap-2">
-      <div class="d-flex align-items-center gap-2 flex-shrink-1" style="min-width:0">
+      <div class="d-flex align-items-center gap-2 flex-shrink-1 min-w-0">
         <a class="d-flex align-items-center gap-2 text-decoration-none text-dark" href="/store/admin">
-          <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white flex-shrink-0" style="width:32px;height:32px;background:var(--admin-primary)">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white flex-shrink-0 icon-32 bg-admin-primary">
             <i class="bi bi-shop"></i>
           </span>
-          <span class="d-flex flex-column" style="min-width:0">
-            <span class="fw-semibold text-truncate" style="font-size:.95rem;line-height:1">{{ user.Company.Name }}</span>
-            <small class="text-muted" style="font-size:.7rem">Admin</small>
+          <span class="d-flex flex-column min-w-0">
+            <span class="fw-semibold text-truncate fs-95 lh-1">{{ user.Company.Name }}</span>
+            <small class="text-muted fs-7">Admin</small>
           </span>
         </a>
       </div>
@@ -31,7 +31,7 @@
   <div class="container-fluid">
     <div class="row g-0">
       <!-- Sidebar desktop -->
-      <nav class="col-lg-2 d-none d-lg-block border-end bg-white" style="min-height:calc(100vh - 56px)">
+      <nav class="col-lg-2 d-none d-lg-block border-end bg-white admin-sidebar">
         <div class="p-3">
           <div *ngFor="let group of menu" class="mb-4">
             <div class="admin-kicker mb-2 px-2">{{ group.name }}</div>
@@ -56,7 +56,7 @@
       <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="adminOffcanvas" aria-labelledby="adminOffcanvasLabel">
         <div class="offcanvas-header border-bottom">
           <h6 id="adminOffcanvasLabel" class="mb-0 d-flex align-items-center gap-2">
-            <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white" style="width:28px;height:28px;background:var(--admin-primary)"><i class="bi bi-shop"></i></span>
+            <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white icon-28 bg-admin-primary"><i class="bi bi-shop"></i></span>
             {{ user.Company.Name }}
           </h6>
           <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
@@ -67,7 +67,7 @@
             <div class="d-flex flex-column gap-1">
               <a *ngFor="let item of group.items" class="btn btn-sm text-start d-flex align-items-center gap-2"
                  [ngClass]="item.url === current_url ? 'btn-primary' : 'btn-light border'"
-                 [href]="item.url" data-bs-dismiss="offcanvas">
+                 [href]="item.url" (click)="closeOffcanvas()">
                 <i [ngClass]="item.icon"></i> {{ item.name }}
               </a>
             </div>
@@ -87,33 +87,33 @@
       </main>
     </div>
   </div>
-</div>
 
-<!-- Toast -->
-<div class="position-fixed top-0 end-0 p-3" style="z-index: 1080" *ngIf="ux && ux.Toast && ux.Toast.Message">
-  <div class="toast show bg-white border shadow-sm" role="alert" [ngClass]="ux.Toast.Classes">
-    <div class="toast-header">
-      <strong class="me-auto">{{ ux.Toast.Title }}</strong>
-      <button type="button" class="btn-close" (click)="clearToast()" aria-label="Close"></button>
+  <!-- Toast -->
+  <div class="position-fixed top-0 end-0 p-3 toast-admin" *ngIf="ux && ux.Toast && ux.Toast.Message">
+    <div class="toast show bg-white border shadow-sm" role="alert" [ngClass]="ux.Toast.Classes">
+      <div class="toast-header">
+        <strong class="me-auto">{{ ux.Toast.Title }}</strong>
+        <button type="button" class="btn-close" (click)="clearToast()" aria-label="Close"></button>
+      </div>
+      <div class="toast-body small">{{ ux.Toast.Message }}</div>
     </div>
-    <div class="toast-body small">{{ ux.Toast.Message }}</div>
   </div>
-</div>
 
-<!-- Confirm modal (Bootstrap) -->
-<div *ngIf="ux && ux.Confirm && ux.Confirm.Show" class="modal d-block" tabindex="-1" style="background:rgba(0,0,0,.4)">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h6 class="modal-title">{{ (ux && ux.Confirm && ux.Confirm.Title) || "Please confirm" }}</h6>
-        <button type="button" class="btn-close" (click)="uxService.onConfirm(false)" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-0 small text-muted">{{ (ux && ux.Confirm && ux.Confirm.Message) || defaultConfirm }}</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-outline-secondary btn-sm" (click)="uxService.onConfirm(false)">Cancel</button>
-        <button class="btn btn-primary btn-sm" (click)="uxService.onConfirm(true)">Confirm</button>
+  <!-- Confirm modal (Bootstrap) -->
+  <div *ngIf="ux && ux.Confirm && ux.Confirm.Show" class="modal d-block modal-backdrop-admin" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h6 class="modal-title">{{ (ux && ux.Confirm && ux.Confirm.Title) || "Please confirm" }}</h6>
+          <button type="button" class="btn-close" (click)="uxService.onConfirm(false)" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0 small text-muted">{{ (ux && ux.Confirm && ux.Confirm.Message) || defaultConfirm }}</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-outline-secondary btn-sm" (click)="uxService.onConfirm(false)">Cancel</button>
+          <button class="btn btn-primary btn-sm" (click)="uxService.onConfirm(true)">Confirm</button>
+        </div>
       </div>
     </div>
   </div>

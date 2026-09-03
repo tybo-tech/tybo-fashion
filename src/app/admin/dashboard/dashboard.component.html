@@ -22,7 +22,7 @@
       <a [routerLink]="card.link" class="card h-100 border shadow-sm text-decoration-none">
         <div class="card-body p-3 d-flex flex-column gap-2">
           <div class="d-flex align-items-center justify-content-between">
-            <span class="d-inline-flex align-items-center justify-content-center rounded-2 border bg-light" style="width:36px;height:36px">
+            <span class="d-inline-flex align-items-center justify-content-center rounded-2 border bg-light icon-36">
               <i class="bi" [ngClass]="getCardIcon(card.title)"></i>
             </span>
             <i class="bi bi-arrow-right small text-muted"></i>
@@ -44,33 +44,13 @@
     </div>
   </div>
 
-  <!-- Job status — hidden if no real data; show derived note instead -->
-  <div class="card border shadow-sm mb-4" *ngIf="jobStatuses.length">
+  <!-- Job status — no real data feed yet; show neutral note instead of invented metrics -->
+  <div class="card border shadow-sm mb-4">
     <div class="card-body p-3">
       <div class="d-flex align-items-center justify-content-between mb-2">
         <h2 class="admin-section-title"><i class="bi bi-kanban"></i> Jobs by status</h2>
-        <span class="badge bg-light text-muted border fw-normal">Illustrative — derived locally</span>
       </div>
-      <p class="small text-muted mb-3">Status breakdown is illustrative until a live jobs feed is wired to the dashboard. Percentages are formatted safely.</p>
-      <div class="row g-3">
-        <div *ngFor="let status of jobStatuses" class="col-6 col-md-3">
-          <a [routerLink]="status.link" class="card h-100 border text-decoration-none">
-            <div class="card-body p-3">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="d-inline-flex align-items-center justify-content-center rounded-2 border bg-light" style="width:30px;height:30px">
-                  <i class="bi" [ngClass]="getJobStatusIcon(status.name)"></i>
-                </span>
-                <span class="badge bg-light text-dark border small">{{ status.name }}</span>
-              </div>
-              <div class="h5 mb-1">{{ status.count | number }}</div>
-              <div class="progress mb-1" style="height:6px">
-                <div class="progress-bar" role="progressbar" [style.width.%]="getJobPercentage(status.count)" [attr.aria-valuenow]="getJobPercentage(status.count)" aria-valuemin="0" aria-valuemax="100"></div>
-              </div>
-              <div class="small text-muted">{{ formatPercent(getJobPercentage(status.count)) }} of jobs</div>
-            </div>
-          </a>
-        </div>
-      </div>
+      <p class="small text-muted mb-0">Status breakdown will appear here once a live jobs feed is wired to the dashboard.</p>
     </div>
   </div>
 
@@ -82,7 +62,7 @@
     <div *ngFor="let shortcut of shortcuts" class="col-12 col-md-4">
       <button class="card border shadow-sm w-100 text-start h-100" (click)="navigateTo(shortcut.route)">
         <div class="card-body p-3 d-flex align-items-center gap-3">
-          <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white flex-shrink-0" style="width:36px;height:36px;background:var(--admin-primary)">
+          <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white flex-shrink-0 icon-36 bg-admin-primary">
             <i class="bi" [ngClass]="getShortcutIcon(shortcut.label)"></i>
           </span>
           <span class="flex-grow-1">
@@ -98,7 +78,7 @@
   <!-- Recent activity placeholder compact -->
   <div class="card border shadow-sm">
     <div class="card-body p-3 d-flex align-items-center gap-3">
-      <span class="d-inline-flex align-items-center justify-content-center rounded-2 bg-light border" style="width:36px;height:36px"><i class="bi bi-clock-history"></i></span>
+      <span class="d-inline-flex align-items-center justify-content-center rounded-2 bg-light border icon-36"><i class="bi bi-clock-history"></i></span>
       <div>
         <div class="fw-semibold small">Recent activity</div>
         <div class="small text-muted">Activity feed will appear here. No mock data shown.</div>

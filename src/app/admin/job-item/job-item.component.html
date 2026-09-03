@@ -1,9 +1,9 @@
 <div class="p-3 d-flex gap-3" *ngIf="jobItem && job">
-  <button type="button" class="border-0 bg-transparent p-0 flex-shrink-0" (click)="toggleEditMode()" [attr.aria-label]="'Edit ' + itemName" style="width:96px;height:96px">
+  <button type="button" class="border-0 bg-transparent p-0 flex-shrink-0 thumb-96" (click)="toggleEditMode()" [attr.aria-label]="'Edit ' + itemName">
     <img *ngIf="featuredImageUrl" [src]="featuredImageUrl" [alt]="itemName" class="w-100 h-100 object-fit-cover rounded-2 border">
     <span *ngIf="!featuredImageUrl" class="w-100 h-100 d-flex align-items-center justify-content-center rounded-2 border bg-light"><i class="bi bi-image text-muted"></i></span>
   </button>
-  <div class="flex-grow-1 d-flex flex-column gap-1" style="min-width:0">
+  <div class="flex-grow-1 d-flex flex-column gap-1 min-w-0">
     <div class="d-flex justify-content-between gap-2">
       <button type="button" class="btn btn-link p-0 text-start fw-semibold text-dark text-truncate" (click)="toggleEditMode()">{{ itemName }}</button>
       <span class="fw-semibold small text-success flex-shrink-0">{{ itemTotal | currency:'ZAR':'symbol':'1.2-2' }}</span>

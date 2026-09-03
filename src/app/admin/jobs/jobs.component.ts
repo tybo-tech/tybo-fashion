@@ -144,10 +144,6 @@ export class JobsComponent implements OnInit {
     return map[status] || 'bg-light text-dark';
   }
 
-  viewJobCard(job: Job): void {
-    this.router.navigate(['/store/admin/job', job.JobId, 'jobs']);
-  }
-
   // Statistics methods
   getTotalRevenue(): number {
     if (!this.all_jobs) return 0;
@@ -168,19 +164,6 @@ export class JobsComponent implements OnInit {
       const dueAmount = job.Metadata?.dueAmount || 0;
       return total + dueAmount;
     }, 0);
-  }
-
-  // Status styling methods
-  getStatusClass(status: string): string {
-    const statusMap: { [key: string]: string } = {
-      'Not Started': 'status-pending',
-      'In Progress': 'status-progress',
-      Completed: 'status-success',
-      Complete: 'status-success',
-      Terminated: 'status-danger',
-      Stuck: 'status-warning',
-    };
-    return statusMap[status] || 'status-default';
   }
 
   getStatusIcon(status: string): string {
@@ -243,28 +226,8 @@ export class JobsComponent implements OnInit {
     this.router.navigate(['/store/admin/job', job.JobId, 'edit']);
   }
 
-  recordPayment(event: Event, job: Job) {
-    event.stopPropagation();
-    // Implement payment recording modal
-    console.log('Record payment for job:', job.JobNo);
-  }
-
   viewJob(event: Event, job: Job) {
     event.stopPropagation();
     this.router.navigate(['/store/admin/job', job.JobId, 'jobs']);
-  }
-
-  showMoreActions(event: Event, job: Job) {
-    event.stopPropagation();
-    // Implement action menu
-    console.log('More actions for job:', job.JobNo);
-  }
-
-  // Legacy method for compatibility
-  isPastDue(dueDate: string | Date): boolean {
-    const due = new Date(dueDate);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    return due < today;
   }
 }

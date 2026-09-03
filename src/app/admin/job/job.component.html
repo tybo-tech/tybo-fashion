@@ -5,7 +5,7 @@
   <div class="row g-3 mb-3">
     <div class="col-6 col-lg-3">
       <div class="card border shadow-sm h-100"><div class="card-body p-3 d-flex align-items-center gap-3">
-        <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white" style="width:36px;height:36px" [ngStyle]="{background: isCompleted() ? '#16a34a' : (isOverdue() ? '#dc2626' : 'var(--admin-primary)')}">
+        <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white icon-36" [ngStyle]="{background: isCompleted() ? '#16a34a' : (isOverdue() ? '#dc2626' : 'var(--admin-primary)')}">
           <i class="bi" [ngClass]="isCompleted() ? 'bi-check-circle-fill' : (isOverdue() ? 'bi-exclamation-triangle-fill' : 'bi-clock-fill')"></i>
         </span>
         <span><span class="small text-muted d-block">Status</span><span class="fw-semibold small">{{ job.Status }}</span></span>
@@ -19,7 +19,7 @@
     <div class="col-6 col-lg-3">
       <div class="card border shadow-sm h-100"><div class="card-body p-3">
         <div class="small text-muted">Paid {{ getPaymentPercentage() }}%</div>
-        <div class="progress mt-2" style="height:6px"><div class="progress-bar" [style.width.%]="getPaymentPercentage()"></div></div>
+        <div class="progress mt-2"><div class="progress-bar" [style.width.%]="getPaymentPercentage()"></div></div>
       </div></div>
     </div>
     <div class="col-6 col-lg-3">
@@ -34,7 +34,7 @@
   <!-- Manage -->
   <div class="card border shadow-sm mb-3">
     <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-gear" style="color:var(--admin-primary)"></i> Job details</h2>
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-gear text-primary"></i> Job details</h2>
       <div class="row g-3">
         <div class="col-12">
           <label class="form-label small text-muted">Customer</label>
@@ -65,7 +65,7 @@
   <!-- Items -->
   <div class="card border shadow-sm mb-3">
     <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-check" style="color:var(--admin-primary)"></i> Garments</h2>
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-check text-primary"></i> Garments</h2>
       <app-job-items [job]="job" [user]="user"></app-job-items>
     </div>
   </div>
@@ -73,7 +73,7 @@
   <!-- Totals -->
   <div class="card border shadow-sm mb-3">
     <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-calculator" style="color:var(--admin-primary)"></i> Totals</h2>
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-calculator text-primary"></i> Totals</h2>
       <app-admin-job-total [job]="job" (showShipping)="showShipping = true" (showPayments)="show_capture_payment = true"></app-admin-job-total>
     </div>
   </div>
@@ -81,7 +81,7 @@
   <!-- Instructions -->
   <div class="card border shadow-sm mb-3" *ngIf="hasSpecialInstructions()">
     <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-chat-left-text" style="color:var(--admin-primary)"></i> Special instructions</h2>
+      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-chat-left-text text-primary"></i> Special instructions</h2>
       <app-admin-comment [title]="'Special Instructions'" [comments]="getSpecialInstructions()" (onEdit)="updateSpecialInstructions($event)"></app-admin-comment>
     </div>
   </div>
@@ -90,7 +90,7 @@
   <app-job-payments *ngIf="show_capture_payment" [job]="job" (jobUpdated)="job = $event; show_capture_payment = false; updateJob()" (onClose)="show_capture_payment = false"></app-job-payments>
 
   <div class="app-overlay" *ngIf="job && show_customer && job.Customer">
-    <div class="my-modal slide-from-bottom" style="animation-duration:0.25s">
+    <div class="my-modal slide-from-bottom">
       <div class="d-flex align-items-center justify-content-between header w-100">
         <h4>Customer info</h4>
         <button class="btn btn-sm btn-outline-secondary" (click)="show_customer = false" aria-label="Close"><i class="bi bi-x-lg"></i></button>

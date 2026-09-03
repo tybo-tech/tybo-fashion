@@ -19,33 +19,6 @@ export class DashboardComponent {
     classes: string[];
   }[] = [];
 
-  jobStatuses = [
-    {
-      name: 'Not Started',
-      count: 10,
-      link: '/store/admin/jobs/not-started',
-      classes: ['bg-white'],
-    },
-    {
-      name: 'In Progress',
-      count: 20,
-      link: '/store/admin/jobs/in-progress',
-      classes: ['bg-white'],
-    },
-    {
-      name: 'Stuck',
-      count: 2,
-      link: '/store/admin/jobs/stuck',
-      classes: ['bg-white'],
-    },
-    {
-      name: 'Complete',
-      count: 5,
-      link: '/store/admin/jobs/complete',
-      classes: ['bg-success', 'text-white'],
-    },
-  ];
-
   shortcuts = [
     { label: 'Add Job', route: '/store/admin/job/add' },
     { label: 'Add Product', route: '/store/admin/product/add' },
@@ -54,7 +27,6 @@ export class DashboardComponent {
 
   user?: User;
   counts?: ICounts;
-  totalJobs = 0;
 
   constructor(
     private router: Router,
@@ -114,21 +86,6 @@ export class DashboardComponent {
         }
       });
     }
-
-    // Calculate total jobs for progress indicators
-    this.totalJobs = this.jobStatuses.reduce((sum, status) => sum + status.count, 0);
-  }
-
-  getJobPercentage(count: number): number {
-    if (!this.totalJobs) return 0;
-    const pct = (count / this.totalJobs) * 100;
-    if (!isFinite(pct)) return 0;
-    return Math.round(pct * 10) / 10;
-  }
-
-  formatPercent(v: number): string {
-    if (!isFinite(v)) return '0%';
-    return (Math.round(v * 10) / 10).toFixed(v % 1 === 0 ? 0 : 1) + '%';
   }
 
   // Helper methods for card styling and icons
@@ -143,49 +100,6 @@ export class DashboardComponent {
       'Job Cards': 'bi-kanban'
     };
     return iconMap[title] || 'bi-circle';
-  }
-
-  getCardIconClass(title: string): string {
-    const classMap: { [key: string]: string } = {
-      'Products': 'icon-purple',
-      'Styles': 'icon-blue',
-      'Collections': 'icon-green',
-      'Customers': 'icon-orange',
-      'Users': 'icon-pink',
-      'Jobs': 'icon-indigo',
-      'Job Cards': 'icon-teal'
-    };
-    return classMap[title] || 'icon-gray';
-  }
-
-  getJobStatusIcon(status: string): string {
-    const iconMap: { [key: string]: string } = {
-      'Not Started': 'bi-play-circle',
-      'In Progress': 'bi-arrow-clockwise',
-      'Stuck': 'bi-exclamation-triangle',
-      'Complete': 'bi-check-circle'
-    };
-    return iconMap[status] || 'bi-circle';
-  }
-
-  getJobStatusClass(status: string): string {
-    const classMap: { [key: string]: string } = {
-      'Not Started': 'status-pending',
-      'In Progress': 'status-progress',
-      'Stuck': 'status-warning',
-      'Complete': 'status-success'
-    };
-    return classMap[status] || 'status-default';
-  }
-
-  getJobProgressClass(status: string): string {
-    const classMap: { [key: string]: string } = {
-      'Not Started': 'progress-pending',
-      'In Progress': 'progress-active',
-      'Stuck': 'progress-warning',
-      'Complete': 'progress-success'
-    };
-    return classMap[status] || 'progress-default';
   }
 
   getShortcutIcon(label: string): string {
