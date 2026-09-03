@@ -65,47 +65,48 @@ export class DashboardComponent {
     if (this.user) {
       this.shopService.counts(this.user.CompanyId).subscribe((data) => {
         this.counts = data;
-        if (this.counts.CustomerCount) {
+        // Fix: render cards even when CustomerCount is 0; check counts exists
+        if (this.counts) {
           this.cards = [
             {
               title: 'Products',
-              count: this.counts.ProductCount,
+              count: this.counts.ProductCount ?? 0,
               link: '/store/admin/products',
               classes: ['bg-white'],
             },
             {
-              title: 'Styles',
-              count: this.counts.CategoryCount,
-              link: '/store/admin/styles',
+              title: 'Categories',
+              count: this.counts.CategoryCount ?? 0,
+              link: '/store/admin/categories',
               classes: ['bg-white'],
             },
             {
               title: 'Collections',
-              count: this.counts.CollectionCount,
+              count: this.counts.CollectionCount ?? 0,
               link: '/store/admin/collections',
               classes: ['bg-white'],
             },
             {
               title: 'Customers',
-              count: this.counts.CustomerCount,
+              count: this.counts.CustomerCount ?? 0,
               link: '/store/admin/customers',
               classes: ['bg-white'],
             },
             {
               title: 'Users',
-              count: this.counts.UserCount,
+              count: this.counts.UserCount ?? 0,
               link: '/store/admin/users',
               classes: ['bg-white'],
             },
             {
               title: 'Jobs',
-              count: this.counts.JobCount,
+              count: this.counts.JobCount ?? 0,
               link: '/store/admin/jobs',
               classes: ['bg-white'],
             },
             {
               title: 'Job Cards',
-              count: this.counts.JobItemCount,
+              count: this.counts.JobItemCount ?? 0,
               link: '/store/admin/job-cards',
               classes: ['bg-white'],
             },
@@ -119,7 +120,15 @@ export class DashboardComponent {
   }
 
   getJobPercentage(count: number): number {
-    return (count / this.totalJobs) * 100;
+    if (!this.totalJobs) return 0;
+    const pct = (count / this.totalJobs) * 100;
+    if (!isFinite(pct)) return 0;
+    return Math.round(pct * 10) / 10;
+  }
+
+  formatPercent(v: number): string {
+    if (!isFinite(v)) return '0%';
+    return (Math.round(v * 10) / 10).toFixed(v % 1 === 0 ? 0 : 1) + '%';
   }
 
   // Helper methods for card styling and icons
