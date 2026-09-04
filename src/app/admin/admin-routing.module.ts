@@ -25,6 +25,11 @@ import { WorkGalleryComponent } from './work-gallery/work-gallery.component';
 import { EditWorkGalleryComponent } from './edit-work-gallery/edit-work-gallery.component';
 import { AdminProductsComponent } from './admin-products/admin-products.component';
 import { JobItemPageComponent } from './job-item-page/job-item-page.component';
+import { JobsStatusRedirectComponent } from './jobs/jobs-status-redirect.component';
+import {
+  jobIdRouteMatcher,
+  jobStatusSlugMatcher,
+} from './jobs/job-route-matching';
 
 const routes: Routes = [
   {
@@ -44,29 +49,61 @@ const routes: Routes = [
         component: DiscountComponent,
       },
 
+      // ── Jobs (Sprint 5 §1 route map — locked) ──────────────────────────
       {
         path: 'jobs',
         component: JobsComponent,
       },
       {
-        path: 'jobs/:status',
-        component: JobsComponent,
+        // UUID-only: /jobs/:jobId can never collide with a status slug.
+        matcher: jobIdRouteMatcher,
+        component: JobComponent,
       },
+      {
+        path: 'jobs/:jobId/edit',
+        component: JobComponent,
+      },
+      {
+        path: 'jobs/:jobId/garments/new',
+        component: JobItemPageComponent,
+      },
+      {
+        path: 'jobs/:jobId/garments/:garmentId',
+        component: JobItemPageComponent,
+      },
+      {
+        // Known status slugs only — everything else falls to jobs/**.
+        matcher: jobStatusSlugMatcher,
+        component: JobsStatusRedirectComponent,
+      },
+      {
+        // Unknown /jobs/* segments (e.g. an unknown status slug or a
+        // mistyped job id) land back on the plain jobs list.
+        path: 'jobs/**',
+        redirectTo: 'jobs',
+      },
+
+      // ── Legacy job routes → Sprint 5 hierarchy ─────────────────────────
       {
         path: 'job/:id',
-        component: JobComponent,
+        redirectTo: 'jobs/:id',
+        pathMatch: 'full',
       },
       {
+        // :backTo carries no garment id — the overview is canonical.
         path: 'job/:id/:backTo',
-        component: JobComponent,
+        redirectTo: 'jobs/:id',
+        pathMatch: 'full',
       },
       {
         path: 'job/:jobId/items/new',
-        component: JobItemPageComponent,
+        redirectTo: 'jobs/:jobId/garments/new',
+        pathMatch: 'full',
       },
       {
         path: 'job/:jobId/items/:jobItemId/edit',
-        component: JobItemPageComponent,
+        redirectTo: 'jobs/:jobId/garments/:jobItemId',
+        pathMatch: 'full',
       },
       {
         path: 'job-cards',

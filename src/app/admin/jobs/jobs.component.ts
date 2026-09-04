@@ -141,17 +141,10 @@ export class JobsComponent implements OnInit, OnDestroy {
       });
 
     // Canonical interactive filter URL: /store/admin/jobs?page=&q=&status=
-    // Legacy /store/admin/jobs/:status links redirect here.
-    this.route.paramMap.subscribe((params) => {
-      const legacy = params.get('status');
-      if (legacy) {
-        const mergedQuery = this.route.snapshot.queryParamMap.get('q') || '';
-        this.router.navigate(['/store/admin/jobs'], {
-          queryParams: { status: this.slugify(legacy), q: mergedQuery || null },
-          replaceUrl: true,
-        });
-      }
-    });
+    // Legacy /store/admin/jobs/:status slugs are redirected at the router
+    // level (Sprint 5 §1): known slugs via JobsStatusRedirectComponent,
+    // everything else falls back to /jobs. The status param can no longer
+    // appear here.
 
     // URL is the single source of truth: every query-param change drives one
     // request through switchMap. Any URL change also cancels a pending search
@@ -204,10 +197,6 @@ export class JobsComponent implements OnInit, OnDestroy {
     this.requestSub?.unsubscribe();
     this.searchSub?.unsubscribe();
     this.userSub?.unsubscribe();
-  }
-
-  private slugify(status: string): string {
-    return status.toLowerCase().replace(/\s+/g, '-');
   }
 
   // Queue the next request; emissions replace each other via switchMap.

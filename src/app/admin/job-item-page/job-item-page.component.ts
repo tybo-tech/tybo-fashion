@@ -54,7 +54,9 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
     this.jobId = params.get('jobId') || '';
-    this.jobItemId = params.get('jobItemId') || '';
+    // Sprint 5 §1: canonical route param is `garmentId`; the legacy
+    // `/job/:jobId/items/:jobItemId/edit` redirect also lands here.
+    this.jobItemId = params.get('garmentId') || params.get('jobItemId') || '';
     this.mode = this.jobItemId ? 'edit' : 'new';
     this.load();
   }
@@ -114,7 +116,8 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   get jobDetailsLink(): string {
-    return `/store/admin/job/${this.jobId}/jobs`;
+    // Sprint 5 §1 canonical job overview route.
+    return `/store/admin/jobs/${this.jobId}`;
   }
 
   get pageTitle(): string {

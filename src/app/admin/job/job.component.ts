@@ -37,7 +37,9 @@ export class JobComponent {
     private activatedRoute: ActivatedRoute
   ) {
     this.activatedRoute.params.subscribe((r) => {
-      this.id = r['id'];
+      // Sprint 5 §1: canonical route is /jobs/:jobId (param `jobId`);
+      // legacy links arrive via redirect and also carry `jobId`.
+      this.id = r['jobId'] || r['id'];
       this.backTo = r['backTo'] || 'jobs';
       this.get();
     });
