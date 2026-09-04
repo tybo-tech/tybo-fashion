@@ -199,6 +199,48 @@ Reference: `src/app/admin/customers/customers.component.{html,ts,scss}`,
 `src/services/customer.service.ts` (`getAdminCustomersPage`), and
 `docs/2-customers-server-side-query-and-lean-list.md`.
 
+### Embedded customer picker (New Job)
+
+The New Job picker reuses the same lean, server-paginated pattern but keeps
+its search/page state **local to the modal** — it never touches the URL:
+
+- **Endpoint** — `getAdminCustomersPage()` (20 per page); renders name, phone
+  and email only. Missing values render as an em dash (`—`) from the API and
+  the UI hides the placeholder.
+- **Local state** — search debounces ~300 ms; every request flows through one
+  `switchMap` so a newer request cancels the older one; a pending debounce is
+  cancelled on reset/destroy. No `/customers?page=&q=` URL change.
+- **States** — loading, HTTP-error-with-Retry, empty-search, empty-company,
+  and beyond-last-page; "Showing X–Y of Z" from API metadata.
+- **Whole row is a semantic selection button** (not a routerLink — it emits
+  the selected customer to create a job).
+- **Add Customer** stays inside the picker; after a successful save it
+  continues directly into the existing job-creation behavior.
+- **Job creation protection** — a `creatingJob` state disables all rows after
+  the first selection, shows a spinner + "Creating job…", guarantees one job
+  request per selection via `finalize()`, and shows an error toast on failure.
+
+Reference: `src/app/admin/customer-list-view/`, `src/app/admin/add-job/`.
+
+### Customer detail page
+
+- **Endpoint** — `get-admin-customer-detail.php`, scoped by both `CompanyId`
+  and `CustomerId`; returns editable fields + only rendered analytics. No
+  job/payment history arrays or unused analysis.
+- **Honest analytics** — `null`/missing is never fabricated as zero
+  (`PaymentCompletionRate`, `ProfileCompleteness` are `null` when
+  unavailable); legitimate zero counts/balances are preserved.
+- **States** — loading, HTTP-error-with-Retry, and not-found (with a safe
+  return to Customers).
+- **Layout** — compact neutral header (yellow only for the primary Create Job
+  action), quieter metrics section, Personal Information / Address (only when
+  meaningful) / Measurements (only real values) sections. No Contact
+  Verification card, no Jobs/Activity placeholder tabs.
+- **Edit** — the existing customer form opens in a modal; the detail read
+  model refreshes after a successful update.
+
+Reference: `src/app/admin/customer/`.
+
 ## Mobile navigation pattern
 
 - Bottom navigation on mobile only (`d-lg-none`): **Home** (`/store/admin`),

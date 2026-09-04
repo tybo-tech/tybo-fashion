@@ -921,4 +921,166 @@ class Customer
             return ["error" => true, "message" => $e->getMessage()];
         }
     }
+
+    /**
+     * Focused admin customer detail for /customer/get-admin-customer-detail.php
+     * (Sprint 3). Additive: legacy getCustomerById()/get.php remain untouched.
+     *
+     * Returns the editable customer fields the existing form round-trips
+     * (full row + decoded Measurements/Metadata + FullName) plus only the
+     * analytics the new detail page renders. It deliberately does NOT return
+     * job/payment history arrays, contact/address/activity/service-preference
+     * analysis, or any field the page does not consume.
+     *
+     * Analytics distinguish null/missing from legitimate numeric zero:
+     *   - TotalJobs/ActiveJobs/CompletedJobs are integers (0 when none).
+     *   - CustomerLifetimeValue/OutstandingBalance are floats (0.0 when none).
+     *   - PaymentCompletionRate is null when there is no job value (never a
+     *     fabricated 0), else a percentage.
+     *   - ProfileCompleteness is null when it cannot be computed, else a
+     *     percentage.
+     *   - LastActivityDate is null when there is no activity.
+     *
+     * Lookup is scoped by both CompanyId and CustomerId.
+     */
+    public function GetAdminCustomerDetail($companyId, $customerId)
+    {
+        $query = "SELECT
+            c.CustomerId,
+            c.CompanyId,
+            c.CustomerType,
+            c.Name,
+            c.Surname,
+            c.Email,
+            c.PhoneNumber,
+            c.Dp,
+            c.AddressLineHome,
+            c.AddressUrlHome,
+            c.AddressLineWork,
+            c.AddressUrlWork,
+            c.BuildingType,
+            c.AddressLine2,
+            c.Suburb,
+            c.City,
+            c.PostalCode,
+            c.CompanyName,
+            c.UserId,
+            c.Measurements,
+            c.Metadata,
+            c.CreateDate,
+            c.ModifyDate,
+            c.StatusId,
+            c.UserToken,
+
+            -- Job counts (integers; 0 when none)
+            COUNT(j.JobId) AS TotalJobs,
+            COUNT(CASE WHEN j.Status = 'Completed' THEN 1 END) AS CompletedJobs,
+            COUNT(CASE WHEN j.Status IN ('In Progress', 'Started', 'Pending') THEN 1 END) AS ActiveJobs,
+
+            -- Financial totals (floats; 0.0 when none)
+            COALESCE(SUM(CAST(j.TotalCost AS DECIMAL(10,2))), 0) AS TotalJobValue,
+            COALESCE(SUM(
+                CASE
+                    WHEN j.Metadata IS NOT NULL AND j.Metadata != ''
+                    THEN CAST(JSON_UNQUOTE(JSON_EXTRACT(j.Metadata, '$.paidAmount')) AS DECIMAL(10,2))
+                    ELSE 0
+                END
+            ), 0) AS TotalPaidAmount,
+            COALESCE(SUM(
+                CASE
+                    WHEN j.Metadata IS NOT NULL AND j.Metadata != ''
+                    THEN CAST(JSON_UNQUOTE(JSON_EXTRACT(j.Metadata, '$.dueAmount')) AS DECIMAL(10,2))
+                    ELSE CAST(j.TotalCost AS DECIMAL(10,2))
+                END
+            ), 0) AS TotalDueAmount,
+
+            -- Last activity (null when none)
+            MAX(j.ModifyDate) AS LastActivityDate
+
+        FROM customer c
+        LEFT JOIN job j ON c.CustomerId = j.CustomerId AND j.StatusId = 1
+        WHERE c.CustomerId = :CustomerId
+            AND c.CompanyId = :CompanyId
+            AND c.StatusId = 1
+        GROUP BY c.CustomerId, c.CompanyId, c.CustomerType, c.Name, c.Surname, c.Email,
+                 c.PhoneNumber, c.Dp, c.AddressLineHome, c.AddressUrlHome, c.AddressLineWork,
+                 c.AddressUrlWork, c.BuildingType, c.AddressLine2, c.Suburb, c.City,
+                 c.PostalCode, c.CompanyName, c.UserId, c.Measurements, c.Metadata,
+                 c.CreateDate, c.ModifyDate, c.StatusId, c.UserToken";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->bindValue(':CustomerId', $customerId, PDO::PARAM_STR);
+            $stmt->bindValue(':CompanyId', $companyId, PDO::PARAM_STR);
+            $stmt->execute();
+
+            if (!$stmt->rowCount()) {
+                return null;
+            }
+
+            $customer = $stmt->fetch(PDO::FETCH_ASSOC);
+
+            // Decode JSON fields
+            $customer['Measurements'] = json_decode($customer['Measurements'] ?? '[]', true);
+            $customer['Metadata'] = json_decode($customer['Metadata'] ?? '{}', true);
+
+            // Full name for convenience (matches the form's single Name input)
+            $customer['FullName'] = trim($customer['Name'] . ' ' . $customer['Surname']);
+
+            // Financial analytics — floats, 0.0 when none
+            $customer['CustomerLifetimeValue'] = floatval($customer['TotalJobValue']);
+            $customer['OutstandingBalance'] = floatval($customer['TotalDueAmount']);
+
+            // Payment rate — null when there is no job value (never a fabricated 0)
+            $customer['PaymentCompletionRate'] = floatval($customer['TotalJobValue']) > 0
+                ? round((floatval($customer['TotalPaidAmount']) / floatval($customer['TotalJobValue'])) * 100, 1)
+                : null;
+
+            // Profile completeness — null when it cannot be computed
+            $customer['ProfileCompleteness'] = $this->calculateAdminProfileCompleteness($customer);
+
+            // Last activity — null when none
+            $customer['LastActivityDate'] = $customer['LastActivityDate'] ?: null;
+
+            return $customer;
+
+        } catch (Exception $e) {
+            error_log("Customer GetAdminCustomerDetail error: " . $e->getMessage());
+            return array("ERROR" => "Unable to load customer.");
+        }
+    }
+
+    /**
+     * Profile completeness for the focused detail endpoint. Returns null when
+     * it cannot be computed (no name), else a percentage 0-100. Only counts
+     * fields the detail page actually renders.
+     */
+    private function calculateAdminProfileCompleteness($customer)
+    {
+        if (empty($customer['Name'])) {
+            return null;
+        }
+
+        $score = 0;
+        $maxScore = 6;
+
+        if (!empty($customer['Surname'])) $score++;
+        if (!empty($customer['Email']) && $customer['Email'] !== 'Na') $score++;
+        if (!empty($customer['PhoneNumber'])) $score++;
+        if (!empty($customer['AddressLineHome'])) $score++;
+        if (!empty($customer['City'])) $score++;
+
+        $hasMeasurement = false;
+        if (!empty($customer['Measurements']) && is_array($customer['Measurements'])) {
+            foreach ($customer['Measurements'] as $measurement) {
+                if (!empty($measurement['Value'])) {
+                    $hasMeasurement = true;
+                    break;
+                }
+            }
+        }
+        if ($hasMeasurement) $score++;
+
+        return round(($score / $maxScore) * 100);
+    }
 }

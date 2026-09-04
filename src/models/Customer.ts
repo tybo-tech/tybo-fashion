@@ -87,6 +87,30 @@ export interface CustomersPageResponse {
   pagination: CustomersPagination;
 }
 
+/**
+ * Focused admin customer detail returned by
+ * /customer/get-admin-customer-detail.php (Sprint 3). The `customer` group
+ * carries the editable fields the form round-trips; the `analytics` group is
+ * the single source for the computed metrics. Analytics distinguish
+ * null/missing from legitimate numeric zero (e.g. PaymentCompletionRate is
+ * null when there is no job value, never a fabricated 0).
+ */
+export interface CustomerDetailAnalytics {
+  TotalJobs: number;
+  ActiveJobs: number;
+  CompletedJobs: number;
+  CustomerLifetimeValue: number;
+  OutstandingBalance: number;
+  PaymentCompletionRate: number | null;
+  ProfileCompleteness: number | null;
+  LastActivityDate: string | null;
+}
+
+export interface CustomerDetailResponse {
+  customer: Customer;
+  analytics: CustomerDetailAnalytics;
+}
+
 export function initUserDependant(): CustomerDependant {
   return {
     Id: '',

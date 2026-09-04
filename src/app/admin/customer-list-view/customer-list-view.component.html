@@ -1,214 +1,75 @@
-<!-- Modern Customer List with Enhanced Analytics -->
-<div class="customer-list-container" *ngIf="customers && !show_add">
-  <!-- Header with Filter Panel -->
-  <div class="list-header">
-    <app-filter-panel
-      addText="Customer"
-      (onAdd)="show_add = true; initCustomer()"
-      (onSearch)="query = $event; filter()"
-    />
-
-    <!-- Customer Statistics Summary -->
-    <div class="customer-stats-bar" *ngIf="customers.length > 0">
-      <div class="stat-item">
-        <span class="stat-value">{{ customers.length }}</span>
-        <span class="stat-label">Total Customers</span>
+<!-- Lean, paginated customer picker (Sprint 3) -->
+<div class="picker-container" *ngIf="!show_add">
+  <!-- Search -->
+  <div class="row g-2 align-items-center mb-2">
+    <div class="col">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers">
       </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ getActiveCustomers() }}</span>
-        <span class="stat-label">Active</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ getOutstandingCustomers() }}</span>
-        <span class="stat-label">Outstanding</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{{ getTotalOutstanding() | currency:'ZAR':'symbol':'1.0-0' }}</span>
-        <span class="stat-label">Total Due</span>
-      </div>
+    </div>
+    <div class="col-auto" *ngIf="query">
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetSearch()">Reset</button>
     </div>
   </div>
 
-  <!-- Customer Cards Grid -->
-  <div class="customer-grid">
-    <div
-      *ngFor="let customer of customers"
-      class="customer-card"
-      [ngClass]="{
-        'high-priority': customer.CustomerPriority === 'High',
-        'medium-priority': customer.CustomerPriority === 'Medium',
-        'outstanding-payment': customer.OutstandingBalance && customer.OutstandingBalance > 0,
-        'active-customer': customer.ActiveJobs && customer.ActiveJobs > 0
-      }"
-      (click)="onSelect.emit(customer)"
-    >
-      <!-- Customer Header -->
-      <div class="customer-header">
-        <div class="customer-info">
-          <div class="customer-avatar">
-            <img
-              *ngIf="customer.Dp"
-              [src]="customer.Dp"
-              [alt]="customer.FullName"
-              class="avatar-img"
-            />
-            <div *ngIf="!customer.Dp" class="avatar-placeholder">
-              {{ getInitials(customer.FullName || customer.Name) }}
-            </div>
-          </div>
-          <div class="customer-details">
-            <h5 class="customer-name">{{ customer.FullName || customer.Name }}</h5>
-            <div class="customer-meta">
-              <span class="customer-status" [ngClass]="'status-' + (customer.CustomerStatus || 'new').toLowerCase().replace(' ', '-')">
-                {{ customer.CustomerStatus || 'New' }}
-              </span>
-              <span class="customer-priority" [ngClass]="'priority-' + (customer.CustomerPriority || 'low').toLowerCase()">
-                {{ customer.CustomerPriority || 'Low' }} Priority
-              </span>
-            </div>
-          </div>
-        </div>
+  <div *ngIf="loading" class="text-center py-4">
+    <div class="spinner-border spinner-border-sm"></div>
+    <div class="small text-muted mt-2">Loading customers…</div>
+  </div>
+  <div *ngIf="error && !loading" class="alert alert-danger py-2 small" role="alert">
+    <div>{{ error }}</div>
+    <button class="btn btn-outline-secondary btn-sm mt-2" type="button" (click)="retry()">Retry</button>
+  </div>
 
-        <!-- Customer Actions -->
-        <div class="customer-actions">
-          <button
-            *ngIf="customer.HasPhone === 'Yes'"
-            class="action-btn phone-btn"
-            (click)="callCustomer(customer, $event)"
-            title="Call {{ customer.PhoneNumber }}"
-          >
-            <i class="bi bi-telephone"></i>
-          </button>
-          <button
-            *ngIf="customer.HasEmail === 'Yes'"
-            class="action-btn email-btn"
-            (click)="emailCustomer(customer, $event)"
-            title="Email {{ customer.Email }}"
-          >
-            <i class="bi bi-envelope"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Key Metrics Row -->
-      <div class="customer-metrics">
-        <div class="metric">
-          <span class="metric-value">{{ customer.TotalJobs || 0 }}</span>
-          <span class="metric-label">Jobs</span>
-        </div>
-        <div class="metric">
-          <span class="metric-value">{{ customer.CustomerLifetimeValue | currency:'ZAR':'symbol':'1.0-0' }}</span>
-          <span class="metric-label">Value</span>
-        </div>
-        <div class="metric" *ngIf="customer.OutstandingBalance && customer.OutstandingBalance > 0">
-          <span class="metric-value outstanding">{{ customer.OutstandingBalance | currency:'ZAR':'symbol':'1.0-0' }}</span>
-          <span class="metric-label">Due</span>
-        </div>
-        <div class="metric" *ngIf="!customer.OutstandingBalance || customer.OutstandingBalance <= 0">
-          <span class="metric-value paid">{{ customer.PaymentCompletionRate || 0 }}%</span>
-          <span class="metric-label">Paid</span>
-        </div>
-      </div>
-
-      <!-- Job Status Indicators -->
-      <div class="job-indicators" *ngIf="customer.TotalJobs && customer.TotalJobs > 0">
-        <div class="job-status">
-          <div class="status-item" *ngIf="customer.ActiveJobs && customer.ActiveJobs > 0">
-            <i class="bi bi-clock text-warning"></i>
-            <span>{{ customer.ActiveJobs }} Active</span>
-          </div>
-          <div class="status-item" *ngIf="customer.CompletedJobs && customer.CompletedJobs > 0">
-            <i class="bi bi-check-circle text-success"></i>
-            <span>{{ customer.CompletedJobs }} Complete</span>
-          </div>
-        </div>
-        <div class="last-activity">
-          <i class="bi bi-clock-history"></i>
-          <span>{{ customer.LastActivityFormatted || 'No recent activity' }}</span>
-        </div>
-      </div>
-
-      <!-- Contact Information -->
-      <div class="contact-info">
-        <div class="contact-item" *ngIf="customer.PhoneNumber">
-          <i class="bi bi-telephone"></i>
-          <span>{{ customer.PhoneNumber }}</span>
-        </div>
-        <div class="contact-item" *ngIf="customer.Email && customer.Email !== 'Na'">
-          <i class="bi bi-envelope"></i>
-          <span>{{ customer.Email }}</span>
-        </div>
-        <div class="contact-item" *ngIf="customer.HasAddress === 'Yes'">
-          <i class="bi bi-geo-alt"></i>
-          <span>Has Address</span>
-        </div>
-      </div>
-
-      <!-- Profile Completeness Bar -->
-      <div class="profile-completeness" *ngIf="customer.ProfileCompleteness !== undefined">
-        <div class="completeness-header">
-          <span>Profile {{ customer.ProfileCompleteness }}% Complete</span>
-          <span class="completeness-status" [ngClass]="{
-            'high': customer.ProfileCompleteness >= 80,
-            'medium': customer.ProfileCompleteness >= 50 && customer.ProfileCompleteness < 80,
-            'low': customer.ProfileCompleteness < 50
-          }">
-            {{ customer.ProfileCompleteness >= 80 ? 'Complete' : (customer.ProfileCompleteness >= 50 ? 'Good' : 'Needs Info') }}
+  <!-- Compact rows: name, phone, email only -->
+  <div *ngIf="!loading && !error && customers.length > 0">
+    <ul class="list-group list-group-flush picker-list">
+      <li *ngFor="let customer of customers; trackBy: trackByCustomerId" class="list-group-item picker-list-item">
+        <button type="button" class="picker-row" (click)="onSelect.emit(customer)" [disabled]="busy" [attr.aria-label]="'Select customer ' + customer.CustomerName">
+          <span class="picker-row-main min-w-0">
+            <span class="picker-name text-truncate">{{ customer.CustomerName }}</span>
+            <span class="picker-contact text-truncate">
+              <span *ngIf="customer.PhoneNumber !== '—'">{{ customer.PhoneNumber }}</span>
+              <span *ngIf="customer.PhoneNumber !== '—' && customer.Email !== '—'" class="contact-sep">·</span>
+              <span *ngIf="customer.Email !== '—'">{{ customer.Email }}</span>
+            </span>
           </span>
-        </div>
-        <div class="progress-bar">
-          <div
-            class="progress-fill"
-            [style.width.%]="customer.ProfileCompleteness"
-            [ngClass]="{
-              'high': customer.ProfileCompleteness >= 80,
-              'medium': customer.ProfileCompleteness >= 50 && customer.ProfileCompleteness < 80,
-              'low': customer.ProfileCompleteness < 50
-            }"
-          ></div>
-        </div>
-      </div>
+          <span class="picker-row-side flex-shrink-0">
+            <i class="bi bi-chevron-right text-muted small"></i>
+          </span>
+        </button>
+      </li>
+    </ul>
 
-      <!-- Customer Badges -->
-      <div class="customer-badges">
-        <span class="badge new-customer" *ngIf="customer.CustomerStatus === 'New'">
-          <i class="bi bi-star"></i> New
-        </span>
-        <span class="badge vip-customer" *ngIf="customer.CustomerPriority === 'High'">
-          <i class="bi bi-gem"></i> VIP
-        </span>
-        <span class="badge frequent-customer" *ngIf="customer.TotalJobs && customer.TotalJobs > 5">
-          <i class="bi bi-award"></i> Frequent
-        </span>
-        <span class="badge outstanding-badge" *ngIf="customer.OutstandingBalance && customer.OutstandingBalance > 0">
-          <i class="bi bi-exclamation-triangle"></i> Outstanding
-        </span>
-      </div>
+    <!-- Pagination: driven by API metadata -->
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
+      <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
+      <nav class="d-flex align-items-center gap-1" aria-label="Customers pagination">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
+        <span class="small text-muted px-1">Page {{ pagination.page }} of {{ totalPages }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!pagination.hasNext" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
+      </nav>
     </div>
   </div>
 
-  <!-- Empty State -->
-  <div class="empty-state" *ngIf="customers.length === 0">
-    <div class="empty-content">
-      <i class="bi bi-people"></i>
-      <h3>No Customers Found</h3>
-      <p>{{ query ? 'Try adjusting your search terms' : 'Get started by adding your first customer' }}</p>
-      <button class="btn btn-primary" (click)="show_add = true; initCustomer()">
-        <i class="bi bi-plus-circle me-2"></i>
-        Add Customer
-      </button>
-    </div>
+  <!-- Empty state -->
+  <div *ngIf="!loading && !error && customers.length === 0" class="text-center py-4">
+    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-3 icon-48"><i class="bi bi-people"></i></div>
+    <h6 class="mb-1">{{ emptyStateTitle }}</h6>
+    <p class="small text-muted mb-3">{{ emptyStateHint }}</p>
+    <button class="btn btn-primary btn-sm" (click)="emptyStateAction()">{{ emptyStateActionLabel }}</button>
   </div>
 </div>
 
-<!-- Add Customer Modal -->
+<!-- Add Customer modal -->
 <div class="app-overlay" *ngIf="show_add && newCustomer">
   <div class="my-modal cloud full-height">
     <app-admin-modal-header (onClose)="show_add = false" title="Add Customer" />
     <div class="actions">
       <div class="p-1">
         <app-customer-form
-          (onSave)="onAdd.emit($event); load_customers(); show_add = false"
+          (onSave)="onCustomerSaved($event)"
           [customer]="newCustomer"
         />
         <br />

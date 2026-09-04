@@ -6,7 +6,13 @@
       <app-customer-list-view
         (onSelect)="selected($event)"
         (onAdd)="selected($event)"
+        [busy]="creatingJob"
       />
+      <!-- Visible busy state while a job is being created -->
+      <div *ngIf="creatingJob" class="creating-job d-flex align-items-center gap-2 text-muted small mt-2">
+        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        <span>Creating job…</span>
+      </div>
     </div>
   </div>
 </div>

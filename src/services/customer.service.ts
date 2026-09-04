@@ -2,7 +2,11 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
-import { Customer, CustomersPageResponse } from 'src/models/Customer';
+import {
+  Customer,
+  CustomerDetailResponse,
+  CustomersPageResponse,
+} from 'src/models/Customer';
 
 @Injectable({
   providedIn: 'root',
@@ -51,6 +55,26 @@ export class CustomerService {
   getCustomer(customerId: string): Observable<Customer> {
     return this.http.get<Customer>(
       `${this.url}/customer/get.php?CustomerId=${customerId}`
+    );
+  }
+
+  /**
+   * Focused admin customer detail from /customer/get-admin-customer-detail.php
+   * (Sprint 3). Scoped by both CompanyId and CustomerId. Returns the editable
+   * customer fields plus only the analytics the detail page renders. The
+   * legacy getCustomer()/get.php above remains untouched for rollback.
+   */
+  getAdminCustomerDetail(
+    companyId: string,
+    customerId: string
+  ): Observable<CustomerDetailResponse> {
+    return this.http.get<CustomerDetailResponse>(
+      `${this.url}/customer/get-admin-customer-detail.php`,
+      {
+        params: new HttpParams()
+          .set('CompanyId', companyId)
+          .set('CustomerId', customerId),
+      }
     );
   }
   checkIfCustomerExist(email: string,companyId:string): Observable<Customer> {

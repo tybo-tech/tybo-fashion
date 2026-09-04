@@ -10,8 +10,8 @@ Three distinct surfaces share the `customer` table but must never be conflated:
 | Surface | Route / trigger | Endpoint | Renders | Data weight |
 |---|---|---|---|---|
 | **Admin Customers list** | `/store/admin/customers` | `get-admin-customers.php` | name, phone, email, chevron | one page only (default 20) |
-| **Customer detail dashboard** | `/store/admin/customer/:id` | `get.php` | full analytics, measurements, edit/save | one customer + job/payment history |
-| **New Job embedded picker** | inside the Add Job modal | `list.php` (legacy) | full analytics card grid, add/select | full collection |
+| **Customer detail dashboard** | `/store/admin/customer/:id` | `get-admin-customer-detail.php` | editable fields + rendered analytics, measurements, edit/save | one customer, no job/payment history |
+| **New Job embedded picker** | inside the Add Job modal | `get-admin-customers.php` (lean, paginated) | name, phone, email, add/select | one page only (default 20) |
 
 ### Admin Customers list (Sprint 2)
 
@@ -36,21 +36,37 @@ Three distinct surfaces share the `customer` table but must never be conflated:
   `/store/admin/customer/:CustomerId`. No call/email buttons are nested in the
   link.
 
-### Customer detail dashboard (unchanged)
+### Customer detail dashboard (Sprint 3)
 
-- The detail route and its analytics queries are unchanged by the list work.
-- `get.php` returns the full customer record plus job statistics, financial
-  analytics, payment history, activity, service preferences, profile
-  completeness, priority and formatted dates.
-- Edit/save behaviour is unchanged.
+- The detail route now uses the focused additive endpoint
+  `get-admin-customer-detail.php`, scoped by both `CompanyId` and
+  `CustomerId`. The legacy `get.php` remains untouched for rollback.
+- Returns the editable customer fields the form round-trips (full row +
+  decoded `Measurements`/`Metadata` + `FullName`) plus only the analytics the
+  page renders. It does **not** return job/payment history arrays,
+  contact/address/activity/service-preference analysis, or any field the page
+  does not consume.
+- Analytics distinguish `null`/missing from legitimate numeric zero:
+  `PaymentCompletionRate` and `ProfileCompleteness` are `null` when
+  unavailable (never a fabricated `0`); job counts and balances are `0`/`0.0`
+  when genuinely zero.
+- The page renders loading, HTTP-error-with-Retry, and not-found states; a
+  compact neutral header; a quieter metrics section; Personal Information,
+  Address (only when a meaningful value exists) and Measurements (only real
+  recorded values) sections. The Contact Verification card and the Jobs /
+  Activity placeholder tabs are removed.
+- Edit/save behaviour is unchanged; the detail read model refreshes after a
+  successful update.
 
-### New Job embedded picker (unchanged this sprint)
+### New Job embedded picker (Sprint 3)
 
-- `CustomerListViewComponent` and the legacy `getCustomers()` service method
-  remain available for the New Job flow to select or add a customer.
-- The picker still calls `customer/list.php` and renders the full analytics
-  card grid. Converting it to the lean endpoint is a separate, local-state
-  enhancement after the list sprint is proven.
+- `CustomerListViewComponent` now uses the lean `getAdminCustomersPage()`
+  endpoint (20 per page) with local search/page state inside the modal — no
+  `/customers?page=&q=` URL change. It renders name, phone and email only.
+- The legacy `getCustomers()`/`list.php` remain available for rollback.
+- Job creation is protected: a `creatingJob` state disables all rows after
+  the first selection, shows a spinner + "Creating job…", guarantees one job
+  request per selection via `finalize()`, and shows an error toast on failure.
 
 ## Index evidence
 

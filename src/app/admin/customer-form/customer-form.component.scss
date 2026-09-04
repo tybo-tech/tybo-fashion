@@ -31,12 +31,13 @@
   .section-icon {
     width: 48px;
     height: 48px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--admin-bg);
+    border: 1px solid var(--admin-border);
     border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: white;
+    color: var(--admin-muted);
     font-size: 1.25rem;
   }
 
@@ -117,16 +118,16 @@
   gap: 0.625rem;
   padding: 0.875rem 1rem;
   margin-bottom: 1.5rem;
-  background: linear-gradient(135deg, #eef2ff 0%, #f5f3ff 100%);
-  border: 1px solid #c7d2fe;
+  background: var(--admin-bg);
+  border: 1px solid var(--admin-border);
   border-radius: 10px;
   font-size: 0.8125rem;
   line-height: 1.5;
-  color: #4338ca;
+  color: var(--admin-text);
 
   i {
     font-size: 1rem;
-    color: #6366f1;
+    color: var(--admin-muted);
     margin-top: 1px;
     flex-shrink: 0;
   }
@@ -162,7 +163,7 @@
     gap: 0.5rem;
 
     i {
-      color: #667eea;
+      color: var(--admin-muted);
       font-size: 1rem;
     }
 
@@ -183,9 +184,9 @@
 
     &:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--admin-accent);
       background: white;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 3px rgba(var(--admin-accent-rgb), 0.1);
     }
 
     &::placeholder {
@@ -208,9 +209,9 @@
 
     &:focus {
       outline: none;
-      border-color: #667eea;
+      border-color: var(--admin-accent);
       background: white;
-      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+      box-shadow: 0 0 0 3px rgba(var(--admin-accent-rgb), 0.1);
     }
   }
 }
@@ -359,18 +360,16 @@
     border-radius: 12px;
     font-size: 1rem;
     font-weight: 600;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--admin-accent);
     border: none;
-    color: white;
+    color: var(--admin-accent-ink);
     display: flex;
     align-items: center;
     gap: 0.75rem;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 
     &:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+      background: var(--admin-accent-hover);
     }
 
     &:active {
@@ -390,25 +389,22 @@
   transition: all 0.3s ease;
 
   &.btn-outline-primary {
-    border: 2px solid #667eea;
-    color: #667eea;
-    background: transparent;
+    border: 2px solid var(--admin-accent);
+    color: var(--admin-accent);
 
     &:hover {
-      background: #667eea;
-      color: white;
-      transform: translateY(-1px);
+      background: var(--admin-accent);
+      color: var(--admin-accent-ink);
     }
   }
 
   &.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: var(--admin-accent);
     border: none;
-    color: white;
+    color: var(--admin-accent-ink);
 
     &:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+      background: var(--admin-accent-hover);
     }
   }
 

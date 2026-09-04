@@ -1,55 +1,106 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Customer } from 'src/models/Customer';
+import { EMPTY, Subject, Subscription } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { Customer, CustomerDetailAnalytics } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
+import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
 @Component({
   selector: 'app-customer',
   templateUrl: './customer.component.html',
-  styleUrls: ['./customer.component.scss']
+  styleUrls: ['./customer.component.scss'],
 })
-export class CustomerComponent {
+export class CustomerComponent implements OnDestroy {
   customer?: Customer;
+  analytics?: CustomerDetailAnalytics;
   id = '';
-  activeTab: 'overview' | 'jobs' | 'measurements' | 'activity' = 'overview';
+  loading = true;
+  error: string | null = null;
+  notFound = false;
   showEditForm = false;
+
+  // Last request parameters — Retry re-issues exactly these
+  private lastRequest?: { companyId: string; customerId: string };
+  private request$ = new Subject<{ companyId: string; customerId: string }>();
+  private requestSub?: Subscription;
+  private destroy$ = new Subject<void>();
 
   constructor(
     private cus: CustomerService,
+    private userService: UserService,
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private uxService: UxService
   ) {
+    this.requestSub = this.request$
+      .pipe(
+        switchMap((req) => {
+          this.lastRequest = req;
+          this.loading = true;
+          this.error = null;
+          this.notFound = false;
+          return this.cus.getAdminCustomerDetail(req.companyId, req.customerId).pipe(
+            catchError((err) => {
+              this.loading = false;
+              if (err?.status === 404) {
+                this.notFound = true;
+              } else {
+                this.error =
+                  err?.status === 400
+                    ? 'This request is not valid.'
+                    : 'Failed to load this customer. Please try again.';
+              }
+              return EMPTY;
+            })
+          );
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.customer = res?.customer;
+          this.analytics = res?.analytics;
+          this.loading = false;
+          this.error = null;
+          this.notFound = false;
+        },
+      });
+
     this.activatedRoute.params.subscribe((r) => {
       this.id = r['id'];
       this.get();
     });
   }
 
-  get() {
-    if (!this.id) return;
-    this.cus.getCustomer(this.id).subscribe((data) => {
-      this.customer = data;
-    });
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+    this.requestSub?.unsubscribe();
   }
 
-  // Helper Methods
-  getInitials(name: string): string {
-    if (!name) return '?';
-    const names = name.trim().split(' ');
-    if (names.length === 1) {
-      return names[0].charAt(0).toUpperCase();
-    }
-    return names[0].charAt(0).toUpperCase() + names[names.length - 1].charAt(0).toUpperCase();
+  get() {
+    if (!this.id) return;
+    const user = this.userService.getUser;
+    if (!user?.CompanyId) return;
+    this.request$.next({ companyId: user.CompanyId, customerId: this.id });
+  }
+
+  retry(): void {
+    const req = this.lastRequest;
+    if (!req) return;
+    this.request$.next({ ...req });
+  }
+
+  goToCustomers(): void {
+    this.router.navigate(['/store/admin/customers']);
   }
 
   // Action Methods
   createJob() {
     if (this.customer) {
-      // Navigate to job creation with customer pre-selected
       this.router.navigate(['/store/admin/jobs/new'], {
-        queryParams: { customerId: this.customer.CustomerId }
+        queryParams: { customerId: this.customer.CustomerId },
       });
     }
   }
@@ -60,7 +111,6 @@ export class CustomerComponent {
 
   editMeasurements() {
     this.showEditForm = true;
-    // Could be enhanced to focus on measurements section
   }
 
   callCustomer() {
@@ -79,5 +129,50 @@ export class CustomerComponent {
     this.customer = updatedCustomer;
     this.showEditForm = false;
     this.uxService.show_toast('Customer updated successfully', 'Success');
+    // Refresh the detail read model after a successful update.
+    this.get();
+  }
+
+  // Helper methods
+  get hasValidPhone(): boolean {
+    return !!this.customer?.PhoneNumber;
+  }
+
+  get hasValidEmail(): boolean {
+    return !!this.customer?.Email && this.customer.Email !== 'Na';
+  }
+
+  get hasAddress(): boolean {
+    const c = this.customer;
+    if (!c) return false;
+    return !!(
+      c.AddressLineHome ||
+      c.AddressLine2 ||
+      c.Suburb ||
+      c.City ||
+      c.PostalCode
+    );
+  }
+
+  get hasProfileCompleteness(): boolean {
+    return this.analytics?.ProfileCompleteness != null;
+  }
+
+  get hasLastActivity(): boolean {
+    return !!this.analytics?.LastActivityDate;
+  }
+
+  get hasPaymentRate(): boolean {
+    return this.analytics?.PaymentCompletionRate != null;
+  }
+
+  get hasMeasurements(): boolean {
+    return !!this.customer?.Measurements?.length;
+  }
+
+  get visibleMeasurements() {
+    return (this.customer?.Measurements || []).filter(
+      (m) => m.Name && m.Name.trim() && m.Value !== '' && m.Value != null
+    );
   }
 }
