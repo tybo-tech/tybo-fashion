@@ -205,40 +205,92 @@ backend per section 1 and do not proceed to the frontend.
 
 ## 6. Angular build manifest
 
-Build from the approved commit `92b04c6`:
+Build from the approved commit — now **`7166c4750a034e959c9fc482beb97160cbaa214c`**
+(Sprint 3 + Sprint 4 frontend ride in one bundle). Working tree clean;
+deterministic production build:
 
 ```text
 npm run build
+# Build hash: 04e1edb0f3bdd282
+# Output: dist/tybo-fashion-mat/
 ```
 
-Output: `dist/tybo-fashion-mat/` (or the configured output path). Upload the
-entire `dist/` tree to the production web root that serves the SPA.
+### Exact file manifest (built 2026-09-04)
+
+Hashed bundles + assets:
+
+```text
+runtime.6e868a920bacf8c1.js       (2.7 KB)
+polyfills.a7adb662f81b15de.js    (33 KB)
+scripts.1ac6d0d02f230370.js      (77.7 KB)
+main.e5c2f1ced014034c.js        (357.1 KB)
+styles.81cc6f1c82641653.css     (320.6 KB)
+295.d62203f45092cc6c.js         (240.9 KB, lazy)
+562.f0e4bceb8985d26c.js          (42.7 KB, lazy)
+979.f7bfc910d3d62ea3.js         (448 KB, lazy)
+bootstrap-icons.70a9dee9e5ab72aa.woff
+bootstrap-icons.bfa90bda92a84a6a.woff2
+favicon.ico
+manifest.webmanifest
+3rdpartylicenses.txt
+```
+
+Service worker (the app is a PWA — these are required):
+
+```text
+ngsw.json        (7.4 KB)  — SW asset manifest; references the hashed bundles
+ngsw-worker.js  (66.6 KB)
+safety-worker.js
+worker-basic.min.js
+```
+
+Entry point — upload **last**:
+
+```text
+index.html      (30.5 KB) — references styles.81cc6f1c82641653.css,
+                            runtime.6e868a920bacf8c1.js,
+                            polyfills.a7adb662f81b15de.js,
+                            scripts.1ac6d0d02f230370.js,
+                            main.e5c2f1ced014034c.js
+```
 
 ### Upload order
 
-1. `index.html` last (so a partial upload never serves a broken entry point).
-2. `main.*.js`, `polyfills.*.js`, `runtime.*.js`, `styles.*.js/css` first.
-3. `assets/` and any other hashed chunks.
+1. All hashed bundles, lazy chunks, fonts, `ngsw-worker.js`,
+   `safety-worker.js`, `worker-basic.min.js`, `manifest.webmanifest`,
+   `favicon.ico`, `3rdpartylicenses.txt`.
+2. `ngsw.json` **after** all bundles it references exist on the server (the
+   SW only activates assets it can fetch; a missing chunk means an offline
+   error for clients that already activated).
+3. `index.html` **last** (a partial upload never serves a broken entry
+   point).
 
-### Cache handling
+### Cache handling (PWA-aware)
 
-- Hashed filenames (`main.<hash>.js`) are immutable — upload them and let the
-  CDN/browser cache them; the new `index.html` references the new hashes.
-- `index.html` should be served with `no-cache` so clients pick up the new
-  bundle references. If the hosting panel sets a long cache on `index.html`,
-  add a cache-busting header or purge the CDN cache after upload.
+- Hashed filenames are immutable — safe to cache forever; the new
+  `index.html` references the new hashes.
+- `index.html` must be served `no-cache` so clients fetch new bundle
+  references. Purge the CDN/hosting cache for `index.html` after upload.
+- **Service worker rollout:** browsers check `ngsw.json` on the next
+  navigation after the SW is installed; existing clients pick up the new
+  bundle on their **second** visit (first visit downloads the update in the
+  background). Do not delete `ngsw-worker.js` from the server. If a client
+  appears stale, a hard refresh (Ctrl+Shift+R) forces the update. Verify
+  `ngsw.json` on production references the new hashes after upload.
 
 ### Bundle-hash confirmation
 
-After upload, fetch the production `index.html` and confirm it references the
-new hashed bundle filenames (compare against the local `dist/` build). The
-deployed hashes must differ from the previous production build.
+After upload, fetch production `index.html` and confirm it references
+`main.e5c2f1ced014034c.js` and `styles.81cc6f1c82641653.css` (the new
+hashes). The deployed hashes must differ from the previous production build.
 
 ### Rollback
 
-- Re-upload the previous production `dist/` (or restore from the hosting
-  panel's backup) and purge the CDN cache. The previous build's `index.html`
-  references the old hashes, so clients revert cleanly.
+- Re-upload the previous production `index.html` + `ngsw.json` (backed up
+  before this deploy) and their bundle files, then purge the CDN cache. The
+  old `ngsw.json` re-points the SW at the old hashed bundles. Keep the
+  previous bundle files on the server until the rollback window closes —
+  deleting them immediately would break clients still running the old SW.
 
 ---
 
@@ -285,6 +337,22 @@ After the Angular bundle is deployed, run against production:
 
 - From the picker and from the detail Create Job confirmation, confirm exactly
   one `add-job.php` request per selection (Network tab).
+
+### New Customer wizard (Sprint 4)
+
+- Customers page → New Customer lands on
+  `/store/admin/customers/new/basic`; Next disabled until Name + Email +
+  Phone are filled.
+- Draft persists across Back/Next/Skip; address step "Skip for now" and
+  measurements "Skip & create" work.
+- Skip & create → customer created → lands on the Customer Detail page.
+- Direct URL `/store/admin/customers/new/measurements` (fresh session)
+  redirects to `/new/basic`.
+- Deep-link `/new/bogus` canonicalizes to `/new/basic`.
+- Picker → New Customer → wizard (`?return=picker`) → save → jobs page
+  reopens Add Job preselected → Create Job → job page (one request).
+- Close the preselected dialog → New Job again → normal picker (no lock).
+- Refresh on `/new/address?return=picker` → `/new/basic?return=picker`.
 
 ---
 
