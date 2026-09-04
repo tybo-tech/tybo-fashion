@@ -3,7 +3,7 @@
 -- Sprint 2 — Customer query optimization and lean admin list
 --
 -- Evidence (recorded against the production-shaped local snapshot, 428
--- customer rows; main company 423 active):
+-- customer rows; main company 423 active, and confirmed on production):
 --   SHOW INDEX FROM customer; -> PRIMARY only
 --
 --   EXPLAIN (default page, name/full-name search, phone search, email search)
@@ -15,6 +15,12 @@
 --                 key_len=264, rows=423,
 --                 Extra="Using index condition; Backward index scan"
 --                 (full scan + filesort eliminated on all four shapes)
+--
+--   Production confirmation (2026-09-04): SHOW INDEX showed PRIMARY only
+--   (cardinality 426). After CREATE INDEX, all four EXPLAIN shapes returned
+--   type=range, key=idx_customer_company_type_status_modified, key_len=264,
+--   rows=416, Extra="Using where" (no filesort). Live endpoint verified
+--   total 423 active customers for the main company.
 --
 -- Conclusion (evidence-based):
 --   ADD idx_customer_company_type_status_modified

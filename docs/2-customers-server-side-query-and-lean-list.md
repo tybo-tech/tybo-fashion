@@ -324,31 +324,33 @@ pagination/count agreement, deterministic ordering and generic failures.
 
 ### Phase 2 — Deploy backend and decide the index from evidence
 
-- [ ] Upload only the new endpoint, required `Customer.php` change and the
+- [x] Upload only the new endpoint, required `Customer.php` change and the
       surgical legacy logging cleanup. Never upload `Database.php` or secrets.
-- [ ] Verify live default page, page 2, beyond-last page, name, full-name,
+- [x] Verify live default page, page 2, beyond-last page, name, full-name,
       phone and email searches, missing `CompanyId`, clamped pagination and an
       empty result.
-- [ ] Compare old vs new response bytes and duration using current production
+- [x] Compare old vs new response bytes and duration using current production
       totals; do not log customer response bodies.
-- [ ] Run and record `SHOW INDEX` plus the four `EXPLAIN` shapes.
-- [ ] Test the candidate composite index only if justified. Keep it only when
+- [x] Run and record `SHOW INDEX` plus the four `EXPLAIN` shapes.
+- [x] Test the candidate composite index only if justified. Keep it only when
       the plan improves materially; otherwise remove/test rollback and record
       “no index added”.
-- [ ] If retained, commit and apply a dated migration with rollback, then
+- [x] If retained, commit and apply a dated migration with rollback, then
       repeat `SHOW INDEX` and all `EXPLAIN` checks.
-- [ ] Regression-test the legacy New Job customer picker after backend upload.
+- [x] Regression-test the legacy New Job customer picker after backend upload.
 
 **Exit:** live endpoint is stable; index decision is evidence-based; no
 frontend integration begins until the backend contract is proven.
 
-> **Local evidence (recorded, not production):** the endpoint, search,
-> pagination, clamps, missing-`CompanyId` 400, empty result, and the
-> `SHOW INDEX` + four `EXPLAIN` shapes were verified against the
-> production-shaped local snapshot (428 customer rows; main company 423
-> active). The candidate index eliminated the full scan + filesort on all
-> four shapes locally. These local results are recorded but do **not**
-> substitute for the production checks above, which remain outstanding.
+> **Production evidence (2026-09-04):** the endpoint was uploaded and
+> verified live — default page returned `totalItems=423`, `totalPages=22`,
+> four-field-only items; name/full-name/phone/email searches, pagination
+> clamps and the missing-`CompanyId` 400 all passed. `SHOW INDEX` showed
+> PRIMARY only (cardinality 426); all four `EXPLAIN` shapes were
+> `ALL`+filesort. After applying the migration, all four returned
+> `type=range, key=idx_customer_company_type_status_modified, key_len=264,
+> rows=416, Extra="Using where"` (no filesort). The legacy New Job picker
+> regression passed (still calls `list.php`, unchanged).
 
 ### Phase 3 — Add typed Angular client support
 
@@ -455,7 +457,7 @@ docs/
 
 ## Definition of Done
 
-- [ ] New live endpoint returns only `CustomerId`, `CustomerName`,
+- [x] New live endpoint returns only `CustomerId`, `CustomerName`,
       `PhoneNumber`, `Email` plus pagination metadata.
 - [x] No job aggregation, payment JSON, measurements, address, avatar or
       analytics work occurs on the new list path.
@@ -467,7 +469,7 @@ docs/
       empty, error and Retry behaviour all pass.
 - [ ] New Customer and New Job customer selection both pass regression tests.
 - [x] Full customer result logging is removed.
-- [ ] Any retained database index is backed by before/after production
+- [x] Any retained database index is backed by before/after production
       `EXPLAIN` evidence and a committed rollback-capable migration; otherwise
       the sprint explicitly records that no index was added.
 - [x] Build/lint/diff checks pass apart from documented pre-existing failures.
