@@ -1,0 +1,73 @@
+<ng-container *ngIf="job; else skeleton">
+  <!-- Breadcrumb / back -->
+  <nav aria-label="breadcrumb" class="mb-2">
+    <ol class="breadcrumb small mb-2">
+      <li class="breadcrumb-item"><a routerLink="/store/admin/jobs">Jobs</a></li>
+      <li class="breadcrumb-item">
+        <a [routerLink]="overviewLink">{{ job.JobNo }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">Edit job</li>
+    </ol>
+  </nav>
+  <div class="d-flex align-items-center gap-2 mb-3">
+    <a class="btn btn-sm btn-light border" [routerLink]="overviewLink" aria-label="Back to job"><i class="bi bi-arrow-left"></i></a>
+    <div class="min-w-0">
+      <span class="fw-semibold small d-block text-truncate">Edit job</span>
+      <span class="small text-muted d-block text-truncate" *ngIf="job.JobNo">{{ job.JobNo }}</span>
+    </div>
+  </div>
+
+  <!-- Due date -->
+  <div class="card border shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3"><i class="bi bi-calendar-event text-primary me-2"></i>Due date</h2>
+      <label for="editor-due-date" class="form-label small text-muted">Due date</label>
+      <input type="date" id="editor-due-date" [(ngModel)]="dueDate" (ngModelChange)="onDueDateChange()" class="form-control">
+    </div>
+  </div>
+
+  <!-- Customer -->
+  <div class="card border shadow-sm mb-3" *ngIf="job.Customer">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3"><i class="bi bi-person text-primary me-2"></i>Customer</h2>
+      <app-customer-form [customer]="job.Customer"></app-customer-form>
+    </div>
+  </div>
+
+  <!-- Special instructions -->
+  <div class="card border shadow-sm mb-3">
+    <div class="card-body p-3">
+      <h2 class="h6 mb-3"><i class="bi bi-chat-left-text text-primary me-2"></i>Special instructions</h2>
+      <app-admin-comment
+        [title]="'Special Instructions'"
+        [comments]="instructions"
+        (onEdit)="onInstructionsChange($event)">
+      </app-admin-comment>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex gap-2 pb-4">
+    <button type="button" class="btn btn-primary" [disabled]="saving" (click)="save()">
+      <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+      {{ saving ? 'Saving…' : 'Save' }}
+    </button>
+    <button type="button" class="btn btn-outline-secondary" [disabled]="saving" (click)="cancel()">Cancel</button>
+  </div>
+</ng-container>
+
+<ng-template #skeleton>
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border spinner-border-sm"></div>
+    <div class="small text-muted mt-2">Loading…</div>
+  </div>
+
+  <!-- Error + Retry -->
+  <div *ngIf="!loading && loadError" class="alert alert-danger">
+    <div class="fw-semibold small mb-1">{{ loadError }}</div>
+    <div class="small text-muted mb-3">Nothing was changed.</div>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="retry()"><i class="bi bi-arrow-clockwise me-1"></i> Retry</button>
+    <a class="btn btn-sm btn-outline-secondary ms-2" routerLink="/store/admin/jobs"><i class="bi bi-arrow-left me-1"></i> Back to jobs</a>
+  </div>
+</ng-template>

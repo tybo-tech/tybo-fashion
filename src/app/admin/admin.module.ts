@@ -87,6 +87,7 @@ import { ProductCategorySelectorComponent } from './product-category-selector/pr
 import { ChipPickerComponent } from './chip-picker/chip-picker.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { CategoryFormComponent } from './shared/category-form/category-form.component';
+import { JobEditorComponent } from './job-editor/job-editor.component';
 
 @NgModule({
   declarations: [
@@ -109,6 +110,7 @@ import { CategoryFormComponent } from './shared/category-form/category-form.comp
     JobItemComponent,
     JobItemFormComponent,
     JobItemPageComponent,
+    JobEditorComponent,
     SettingsComponent,
     UploadInputComponent,
     ImageWidgetComponent,

@@ -26,7 +26,6 @@ export class JobComponent {
   ];
   job?: Job;
   showShipping = false;
-  show_customer = false;
   show_capture_payment = false;
   user?: User;
   Math = Math; // Expose Math to template
@@ -55,14 +54,14 @@ export class JobComponent {
         this.job = data;
         this.tempStatus = this.job.Status;
 
-        // Ensure Metadata exists and has proper structure
+        // Read-only overview (Sprint 5 §2): no automatic writes fire on
+        // load. Missing Metadata fields get in-memory defaults only —
+        // totals are owned by the server (Sprint 5 §6).
         if (!this.job.Metadata) {
           this.job.Metadata = {
             InvoiceNo: this.job.JobNo.replace('JOB', 'INV'),
             Source: '',
           };
-          console.log('Created new Metadata:', this.job.Metadata);
-          this.jobService.update(this.job).subscribe();
         }
 
         // Ensure Special_instructions array exists
@@ -81,7 +80,6 @@ export class JobComponent {
           this.job.Metadata.payments = [];
         }
 
-        this.jobService.check_total(this.job);
         this.uxService.load(false);
       },
       error: (error) => {
@@ -92,6 +90,8 @@ export class JobComponent {
     });
   }
   updateJob() {
+    // Explicit save — used by the status quick action and the
+    // shipping/payments modals only. Nothing auto-saves on this page.
     this.uxService.load(true);
     this.job &&
       this.jobService.update(this.job).subscribe((data) => {
@@ -138,13 +138,6 @@ export class JobComponent {
 
   getSpecialInstructions(): any[] {
     return this.job?.Metadata?.Special_instructions || [];
-  }
-
-  updateSpecialInstructions(instructions: any[]): void {
-    if (this.job?.Metadata) {
-      this.job.Metadata.Special_instructions = instructions;
-      this.updateJob();
-    }
   }
 
   // Payment progress calculation — capped, guard div0

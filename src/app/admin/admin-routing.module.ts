@@ -26,6 +26,8 @@ import { EditWorkGalleryComponent } from './edit-work-gallery/edit-work-gallery.
 import { AdminProductsComponent } from './admin-products/admin-products.component';
 import { JobItemPageComponent } from './job-item-page/job-item-page.component';
 import { JobsStatusRedirectComponent } from './jobs/jobs-status-redirect.component';
+import { JobEditorComponent } from './job-editor/job-editor.component';
+import { unsavedChangesGuard } from './job-editor/unsaved-changes.guard';
 import {
   jobIdRouteMatcher,
   jobStatusSlugMatcher,
@@ -61,7 +63,8 @@ const routes: Routes = [
       },
       {
         path: 'jobs/:jobId/edit',
-        component: JobComponent,
+        component: JobEditorComponent,
+        canDeactivate: [unsavedChangesGuard],
       },
       {
         path: 'jobs/:jobId/garments/new',
