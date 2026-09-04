@@ -12,7 +12,7 @@ class Database
       if ($this->isLocal) {
         $conn = new PDO('mysql:host=localhost;dbname=tybocoza_editor', 'root', '');
       } else {
-        $conn = new PDO('mysql:host=mysql;dbname=docker', 'docker', 'docker');
+        $conn = new PDO('mysql:host=mysql;dbname=tybo_fashion', 'docker', 'docker');
         // $conn = new PDO('mysql:host=localhost:3306;dbname=tybofash_main', 'tybofash_main', 'Tybo4Fashion!');
       }
 

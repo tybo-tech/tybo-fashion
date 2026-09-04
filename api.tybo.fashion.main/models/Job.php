@@ -514,15 +514,19 @@ class Job
             COALESCE(
                 NULLIF(TRIM(CONCAT_WS(' ', customer.Name, customer.Surname)), ''),
                 NULLIF(job.CustomerName, ''),
-                '—'
+                'â€”'
             ) AS CustomerName,
-            CASE LOWER(job.Status)
+            CASE LOWER(TRIM(job.Status))
+                WHEN 'not started' THEN 'Not started'
+                WHEN 'in progress' THEN 'In Progress'
+                WHEN 'working on it' THEN 'In Progress'
                 WHEN 'completed' THEN 'Completed'
                 WHEN 'complete' THEN 'Completed'
                 WHEN 'done' THEN 'Completed'
-                WHEN 'in progress' THEN 'In Progress'
-                WHEN 'working on it' THEN 'In Progress'
-                ELSE 'Not started'
+                WHEN 'stuck' THEN 'Stuck'
+                WHEN 'terminated' THEN 'Terminated'
+                WHEN 'paused' THEN 'Paused'
+                ELSE COALESCE(NULLIF(TRIM(job.Status), ''), 'Not started')
             END AS Status
         FROM job
         LEFT JOIN customer
@@ -540,7 +544,7 @@ class Job
                 $statusPlaceholders[] = $key;
                 $params[$key] = $value;
             }
-            $query .= " AND LOWER(job.Status) IN (" . implode(', ', $statusPlaceholders) . ")";
+            $query .= " AND LOWER(TRIM(job.Status)) IN (" . implode(', ', $statusPlaceholders) . ")";
         }
 
         if ($search !== '') {
@@ -588,7 +592,7 @@ class Job
                 $statusPlaceholders[] = $key;
                 $countParams[$key] = $value;
             }
-            $countQuery .= " AND LOWER(job.Status) IN (" . implode(', ', $statusPlaceholders) . ")";
+            $countQuery .= " AND LOWER(TRIM(job.Status)) IN (" . implode(', ', $statusPlaceholders) . ")";
         }
 
         if ($search !== '') {

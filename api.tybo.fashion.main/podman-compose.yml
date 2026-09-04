@@ -3,7 +3,7 @@ version: '3.8'
 services:
   php:
     build: .
-    container_name:tybo_fashion_main
+    container_name: tybo_fashion_main
     volumes:
       - ./:/var/www/html
     ports:
@@ -13,7 +13,7 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name:tybo_fashion_main-container
+    container_name: tybo_fashion_main-container
     environment:
       MYSQL_ROOT_PASSWORD: root_password
       MYSQL_DATABASE: tybo_fashion
@@ -26,7 +26,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name:tybo_fashion_main-phpmyadmin-container
+    container_name: tybo_fashion_main-phpmyadmin-container
     environment:
       PMA_HOST: mysql  # Use correct MySQL service name
       MYSQL_ROOT_PASSWORD: root_password
