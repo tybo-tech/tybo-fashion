@@ -53,6 +53,7 @@ import { ImageGridComponent } from './image-grid/image-grid.component';
 import { FilterPanelComponent } from './filter-panel/filter-panel.component';
 import { AddJobComponent } from './add-job/add-job.component';
 import { CustomerListViewComponent } from './customer-list-view/customer-list-view.component';
+import { NewCustomerComponent } from './new-customer/new-customer.component';
 import { BackComponent } from './back/back.component';
 import { UserShiftsComponent } from './user-shifts/user-shifts.component';
 import { AddShiftComponent } from './add-shift/add-shift.component';
@@ -139,6 +140,7 @@ import { CategoryFormComponent } from './shared/category-form/category-form.comp
     FilterPanelComponent,
     AddJobComponent,
     CustomerListViewComponent,
+    NewCustomerComponent,
     BackComponent,
     UserShiftsComponent,
     AddShiftComponent,

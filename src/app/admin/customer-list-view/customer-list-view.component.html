@@ -1,5 +1,5 @@
 <!-- Lean, paginated customer picker (Sprint 3) -->
-<div class="picker-container" *ngIf="!show_add">
+<div class="picker-container">
   <!-- Search + persistent New Customer action -->
   <div class="row g-2 align-items-center mb-2">
     <div class="col">
@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="col-auto">
-      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="show_add = true; initCustomer()" [disabled]="busy">
+      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()" [disabled]="busy">
         <i class="bi bi-plus-lg"></i> New Customer
       </button>
     </div>
@@ -64,22 +64,5 @@
     <h6 class="mb-1">{{ emptyStateTitle }}</h6>
     <p class="small text-muted mb-3">{{ emptyStateHint }}</p>
     <button class="btn btn-primary btn-sm" (click)="emptyStateAction()">{{ emptyStateActionLabel }}</button>
-  </div>
-</div>
-
-<!-- Add Customer modal -->
-<div class="app-overlay" *ngIf="show_add && newCustomer">
-  <div class="my-modal cloud full-height">
-    <app-admin-modal-header (onClose)="show_add = false" title="Add Customer" />
-    <div class="actions">
-      <div class="p-1">
-        <app-customer-form
-          (onSave)="onCustomerSaved($event)"
-          [customer]="newCustomer"
-        />
-        <br />
-        <br />
-      </div>
-    </div>
   </div>
 </div>

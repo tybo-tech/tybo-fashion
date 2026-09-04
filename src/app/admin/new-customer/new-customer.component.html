@@ -1,0 +1,293 @@
+<div class="new-customer-wizard" *ngIf="customer">
+  <!-- Header: back + title + stepper -->
+  <div class="wizard-header">
+    <div class="d-flex align-items-center gap-2 mb-3">
+      <button class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" (click)="leave()" aria-label="Cancel and go back">
+        <i class="bi bi-arrow-left"></i> Cancel
+      </button>
+      <h1 class="h5 mb-0">New Customer</h1>
+    </div>
+
+    <ol class="wizard-stepper">
+      <li
+        *ngFor="let s of stepOrder; let i = index"
+        class="wizard-step"
+        [class.active]="i === stepIndex"
+        [class.done]="i < stepIndex"
+      >
+        <span class="step-dot">
+          <i *ngIf="i < stepIndex" class="bi bi-check"></i>
+          <span *ngIf="i >= stepIndex">{{ i + 1 }}</span>
+        </span>
+        <span class="step-label">{{ s === 'basic' ? 'Basic details' : s === 'address' ? 'Address' : 'Measurements' }}</span>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Step 1: Basic details -->
+  <section *ngIf="step === 'basic'" class="wizard-body">
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-person-circle"></i></div>
+        <h5 class="section-title">Contact Details</h5>
+        <button
+          *ngIf="isContactPickerSupported"
+          type="button"
+          class="btn btn-outline-primary btn-sm contact-import-btn"
+          (click)="importFromContacts()"
+          [disabled]="isContactPickerLoading"
+          [attr.aria-busy]="isContactPickerLoading"
+          title="Import name, phone, email & photo from device contacts"
+        >
+          <span *ngIf="isContactPickerLoading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          <i *ngIf="!isContactPickerLoading" class="bi bi-person-lines-fill"></i>
+          {{ isContactPickerLoading ? 'Opening…' : 'Import from contacts' }}
+        </button>
+      </div>
+
+      <div *ngIf="isContactPickerSupported" class="contact-picker-hint">
+        <i class="bi bi-lightning-charge"></i>
+        <span>Save time — pull name, phone, email & photo directly from your phone contacts. Works on Android Chrome/Edge (HTTPS).</span>
+      </div>
+
+      <div *ngIf="customer.Dp" class="contact-avatar-preview">
+        <img [src]="customer.Dp" alt="Contact photo" class="avatar-preview-img" />
+        <div class="avatar-preview-meta">
+          <span class="avatar-preview-label">Photo from contacts</span>
+          <button type="button" class="btn btn-link btn-sm p-0 text-danger" (click)="customer.Dp = ''">
+            <i class="bi bi-x-circle"></i> Remove
+          </button>
+        </div>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="customerName" class="form-label"><i class="bi bi-person"></i> Full Name</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            id="customerName"
+            placeholder="Enter customer's full name"
+            [(ngModel)]="customer.Name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="customerEmail" class="form-label"><i class="bi bi-envelope"></i> Email Address</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="email"
+            class="form-control"
+            id="customerEmail"
+            placeholder="customer@example.com"
+            [(ngModel)]="customer.Email"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="customerPhone" class="form-label"><i class="bi bi-telephone"></i> Phone Number</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="tel"
+            class="form-control"
+            id="customerPhone"
+            placeholder="+27 12 345 6789"
+            [(ngModel)]="customer.PhoneNumber"
+            required
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 2: Address (optional) -->
+  <section *ngIf="step === 'address'" class="wizard-body">
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-geo-alt"></i></div>
+        <h5 class="section-title">Address Information</h5>
+        <span class="optional-badge">Optional</span>
+      </div>
+
+      <div class="form-grid">
+        <div class="form-group full-width">
+          <label for="addressLine1" class="form-label">Address Line 1</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            id="addressLine1"
+            placeholder="Street number and name"
+            [(ngModel)]="customer.AddressLineHome"
+          />
+        </div>
+
+        <div class="form-group full-width">
+          <label for="addressLine2" class="form-label">Address Line 2 <span class="optional">(Optional)</span></label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            id="addressLine2"
+            placeholder="Apartment, suite, building, etc."
+            [(ngModel)]="customer.AddressLine2"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="customerCity" class="form-label">City</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            id="customerCity"
+            placeholder="Enter city"
+            [(ngModel)]="customer.City"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="postalCode" class="form-label">Postal Code</label>
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="text"
+            class="form-control"
+            id="postalCode"
+            placeholder="Enter postal code"
+            [(ngModel)]="customer.PostalCode"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Step 3: Measurements (optional) -->
+  <section *ngIf="step === 'measurements'" class="wizard-body">
+    <div class="form-section">
+      <div class="section-header">
+        <div class="section-icon"><i class="bi bi-rulers"></i></div>
+        <h5 class="section-title">Customer Measurements</h5>
+        <span class="optional-badge">Optional</span>
+        <button type="button" class="btn btn-outline-primary btn-sm ms-auto" (click)="add_measurement()">
+          <i class="bi bi-plus"></i> Add Measurement
+        </button>
+      </div>
+
+      <div class="measurements-container" *ngIf="customer.Measurements && customer.Measurements.length > 0">
+        <div class="measurements-grid">
+          <div class="measurement-item" *ngFor="let item of customer.Measurements; let i = index">
+            <div class="measurement-inputs">
+              <div class="measurement-name">
+                <label class="form-label">Measurement Name</label>
+                <input
+                  [ngModelOptions]="{ standalone: true }"
+                  type="text"
+                  class="form-control"
+                  placeholder="e.g., Waist, Chest, Hip"
+                  [(ngModel)]="item.Name"
+                  required
+                />
+              </div>
+              <div class="measurement-value">
+                <label class="form-label">Value</label>
+                <div class="value-input-group">
+                  <input
+                    [ngModelOptions]="{ standalone: true }"
+                    type="number"
+                    class="form-control"
+                    placeholder="0"
+                    [(ngModel)]="item.Value"
+                    min="0"
+                    step="0.1"
+                  />
+                  <select [(ngModel)]="item.Units" class="form-select units-select">
+                    <option value="">Units</option>
+                    <option value="CM">CM</option>
+                    <option value="INC">IN</option>
+                  </select>
+                  <button type="button" class="btn btn-outline-danger btn-sm delete-btn" (click)="delete_measurement(i)">
+                    <i class="bi bi-trash"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="measurements-empty" *ngIf="!customer.Measurements || customer.Measurements.length === 0">
+        <div class="empty-state">
+          <i class="bi bi-rulers"></i>
+          <h6>No measurements added yet</h6>
+          <p>Add customer measurements for better fitting — or skip and add them later.</p>
+          <button type="button" class="btn btn-primary" (click)="add_measurement()">
+            <i class="bi bi-plus-circle"></i> Add First Measurement
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sticky action bar: Next/Skip always visible without scrolling -->
+  <div class="wizard-footer">
+    <div class="wizard-footer-inner">
+      <button
+        type="button"
+        class="btn btn-outline-secondary"
+        (click)="goBack()"
+        [disabled]="saving"
+      >
+        <i class="bi bi-arrow-left me-1"></i>{{ stepIndex === 0 ? 'Cancel' : 'Back' }}
+      </button>
+
+      <div class="d-flex align-items-center gap-2">
+        <!-- Skip: offered only on the optional steps -->
+        <button
+          *ngIf="step === 'address' || (step === 'measurements' && !hasMeasurementInput)"
+          type="button"
+          class="btn btn-link text-decoration-none"
+          (click)="skip()"
+          [disabled]="saving"
+        >
+          {{ step === 'address' ? 'Skip for now' : 'Skip & create' }}
+        </button>
+
+        <button
+          *ngIf="step === 'address'"
+          type="button"
+          class="btn btn-primary d-inline-flex align-items-center gap-1"
+          (click)="next()"
+          [disabled]="saving"
+        >
+          Next<i class="bi bi-arrow-right"></i>
+        </button>
+
+        <button
+          *ngIf="step === 'basic'"
+          type="button"
+          class="btn btn-primary d-inline-flex align-items-center gap-1"
+          (click)="next()"
+          [disabled]="!canLeaveBasic || saving"
+        >
+          Next<i class="bi bi-arrow-right"></i>
+        </button>
+
+        <button
+          *ngIf="step === 'measurements' && hasMeasurementInput"
+          type="button"
+          class="btn btn-primary d-inline-flex align-items-center gap-1"
+          (click)="save()"
+          [disabled]="saving"
+          [attr.aria-busy]="saving"
+        >
+          <span *ngIf="saving" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+          <i *ngIf="!saving" class="bi bi-plus-circle"></i>
+          {{ saving ? 'Creating…' : 'Create Customer' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

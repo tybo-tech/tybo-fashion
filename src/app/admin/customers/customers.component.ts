@@ -2,7 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
-import { Customer, CustomerListItem, initCustomer } from 'src/models/Customer';
+import { CustomerListItem } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
 
@@ -12,7 +12,6 @@ import { UserService } from 'src/services/user.service';
   styleUrls: ['./customers.component.scss'],
 })
 export class CustomersComponent implements OnInit, OnDestroy {
-  show_add = false;
   // Text currently shown in the search box (updates instantly as the user types)
   query = '';
   loading = true;
@@ -27,9 +26,6 @@ export class CustomersComponent implements OnInit, OnDestroy {
     hasPrevious: false,
     hasNext: false,
   };
-
-  // New Customer form state
-  newCustomer?: Customer;
 
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; page: number; q: string };
@@ -280,17 +276,9 @@ export class CustomersComponent implements OnInit, OnDestroy {
   }
 
   openNewCustomer(): void {
-    this.newCustomer = initCustomer(this.user?.CompanyId || '');
-    this.show_add = true;
-  }
-
-  onCustomerSaved(saved: Customer): void {
-    this.show_add = false;
-    this.newCustomer = undefined;
-    // Refresh the active query/page safely: re-issue the current request so
-    // the newly added customer is reflected without losing the user's place.
-    const req = this.lastRequest;
-    if (req) this.request$.next({ ...req });
+    // Sprint 4: the add-customer modal is replaced by the URL-driven
+    // multi-step wizard page.
+    this.router.navigate(['/store/admin/customers/new']);
   }
 
   trackByCustomerId(_index: number, customer: CustomerListItem): string {

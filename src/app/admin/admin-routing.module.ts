@@ -9,6 +9,7 @@ import { ProductsComponent } from './products/products.component';
 import { InvoiceComponent } from './invoice/invoice.component';
 import { CustomersComponent } from './customers/customers.component';
 import { CustomerComponent } from './customer/customer.component';
+import { NewCustomerComponent } from './new-customer/new-customer.component';
 import { UsersComponent } from './users/users.component';
 import { UserComponent } from './user/user.component';
 import { CategoriesComponent } from './categories/categories.component';
@@ -100,6 +101,15 @@ const routes: Routes = [
       {
         path: 'customers',
         component: CustomersComponent,
+      },
+      {
+        path: 'customers/new',
+        redirectTo: 'customers/new/basic',
+        pathMatch: 'full',
+      },
+      {
+        path: 'customers/new/:step',
+        component: NewCustomerComponent,
       },
       {
         path: 'customer/:id',

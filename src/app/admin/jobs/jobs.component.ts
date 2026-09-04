@@ -13,6 +13,9 @@ import { UserService } from 'src/services/user.service';
 })
 export class JobsComponent implements OnInit, OnDestroy {
   show_add = false;
+  // Customer handed back by the New Customer wizard (?return=picker flow);
+  // passed to Add Job as a preselection requiring explicit confirmation.
+  preselectedCustomer?: { CustomerId: string; CustomerName: string; PhoneNumber: string; Email: string };
   // Text currently shown in the search box (updates instantly as the user types)
   query = '';
   // Canonical status slug in the URL ('' = all statuses)
@@ -70,6 +73,19 @@ export class JobsComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    // Sprint 4 return flow: the New Customer wizard navigates here with
+    // navigation state { addJobFor } after creating a customer from the
+    // Add Job picker. Reopen Add Job with that customer preselected — the
+    // preselected flow requires an explicit confirmation click, so no job
+    // is ever created without user intent.
+    const returnState = history.state?.addJobFor as
+      | { CustomerId: string; CustomerName: string; PhoneNumber: string; Email: string }
+      | undefined;
+    if (returnState?.CustomerId) {
+      this.preselectedCustomer = returnState;
+      this.show_add = true;
+    }
+
     // Wire the request pipeline FIRST: queryParamMap emits its current value
     // synchronously on subscribe, so a Subject subscriber must already exist
     // or that first emission is lost.

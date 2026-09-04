@@ -1,7 +1,8 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
+import { Router } from '@angular/router';
 import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
-import { Customer, CustomerListItem, initCustomer } from 'src/models/Customer';
+import { CustomerListItem } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
 
@@ -15,10 +16,8 @@ export class CustomerListViewComponent implements OnDestroy {
   @Output() onAdd = new EventEmitter<CustomerListItem>();
   // When true (a job is being created), all selection rows are disabled.
   @Input() busy = false;
-  newCustomer?: Customer;
   user = this.userService.getUser;
   query = '';
-  show_add = false;
   loading = true;
   error: string | null = null;
 
@@ -51,7 +50,8 @@ export class CustomerListViewComponent implements OnDestroy {
 
   constructor(
     private customerService: CustomerService,
-    private userService: UserService
+    private userService: UserService,
+    private router: Router
   ) {
     this.requestSub = this.request$
       .pipe(
@@ -112,9 +112,13 @@ export class CustomerListViewComponent implements OnDestroy {
     this.searchSub?.unsubscribe();
   }
 
-  initCustomer() {
-    this.newCustomer = initCustomer();
-    this.newCustomer.CompanyId = this.user?.CompanyId || '';
+  // Sprint 4: the inline add-customer modal is replaced by the URL-driven
+  // multi-step wizard page. ?return=picker routes the save back into the
+  // job flow (jobs page reopens Add Job with the new customer preselected).
+  openNewCustomer(): void {
+    this.router.navigate(['/store/admin/customers/new'], {
+      queryParams: { return: 'picker' },
+    });
   }
 
   load_customers() {
@@ -211,21 +215,8 @@ export class CustomerListViewComponent implements OnDestroy {
     } else if (this.hasActiveSearch) {
       this.resetSearch();
     } else {
-      this.show_add = true;
-      this.initCustomer();
+      this.openNewCustomer();
     }
-  }
-
-  onCustomerSaved(saved: Customer): void {
-    this.show_add = false;
-    this.newCustomer = undefined;
-    // Continue directly into the existing job-creation behavior.
-    this.onAdd.emit({
-      CustomerId: saved.CustomerId,
-      CustomerName: saved.FullName || saved.Name,
-      PhoneNumber: saved.PhoneNumber,
-      Email: saved.Email,
-    });
   }
 
   trackByCustomerId(_index: number, customer: CustomerListItem): string {
