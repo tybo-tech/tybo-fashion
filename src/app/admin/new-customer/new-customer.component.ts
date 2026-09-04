@@ -82,10 +82,18 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((params) => {
         const requested = params.get('step') as WizardStep | null;
-        if (!requested || !STEP_ORDER.includes(requested)) {
-          // Unknown/deep-linked-bad step: canonicalize to the first step.
+        // Optional steps require the basic details first: a deep link (or a
+        // refresh, which restarts the draft) landing directly on address or
+        // measurements would expose actions that silently do nothing. Route
+        // the user to the first step instead.
+        const needsBasicFirst =
+          (!requested || !STEP_ORDER.includes(requested)) ||
+          (requested !== 'basic' && !this.canLeaveBasic);
+        if (needsBasicFirst) {
           this.router.navigate(['/store/admin/customers/new', 'basic'], {
             replaceUrl: true,
+            // Keep ?return=picker so the origin survives the redirect.
+            queryParamsHandling: 'preserve',
           });
           return;
         }
@@ -163,7 +171,12 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
   }
 
   private goToStep(step: WizardStep): void {
-    this.router.navigate(['/store/admin/customers/new', step]);
+    // Preserve query params across steps so ?return=picker survives Next,
+    // Back and Skip — and a refresh on a later step still returns to the
+    // Add Job flow after saving.
+    this.router.navigate(['/store/admin/customers/new', step], {
+      queryParamsHandling: 'preserve',
+    });
   }
 
   save(): void {

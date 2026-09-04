@@ -1,4 +1,5 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
 import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
@@ -57,7 +58,8 @@ export class JobsComponent implements OnInit, OnDestroy {
     private jobService: JobService,
     private userService: UserService,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {
     if (!this.user) {
       this.router.navigate(['/sign-in']);
@@ -84,6 +86,9 @@ export class JobsComponent implements OnInit, OnDestroy {
     if (returnState?.CustomerId) {
       this.preselectedCustomer = returnState;
       this.show_add = true;
+      // Consume the one-shot state: without this, a later New Job click on
+      // the same history entry would re-open the preselected dialog.
+      this.location.replaceState(this.router.url);
     }
 
     // Wire the request pipeline FIRST: queryParamMap emits its current value
@@ -325,8 +330,22 @@ export class JobsComponent implements OnInit, OnDestroy {
     } else if (this.hasActiveFilters) {
       this.resetFilters();
     } else {
-      this.show_add = true;
+      this.openAddJob();
     }
+  }
+
+  // A normal New Job click must never inherit the wizard's preselection:
+  // clear any leftover preselected customer before opening the picker.
+  openAddJob(): void {
+    this.preselectedCustomer = undefined;
+    this.show_add = true;
+  }
+
+  closeAddJob(): void {
+    this.show_add = false;
+    // Clear the preselection on close so the next New Job opens the normal
+    // picker instead of staying locked to the wizard's customer.
+    this.preselectedCustomer = undefined;
   }
 
   trackByJobId(_index: number, job: JobListItem): string {

@@ -84,6 +84,38 @@ they did not want to fill just to finish — and the flow was not URL-addressed
 | Browser console errors | NONE |
 | Test data removed (2 test customers + 1 test job deleted) | PASS |
 
+## Reviewer edge-case fixes (2026-09-04)
+
+Three P2 findings from post-review, all fixed and re-verified:
+
+1. **Preselection lock** — closing the preselected Add Job dialog (or opening
+   a normal New Job) left `preselectedCustomer` set, so every later New Job
+   opened locked to the wizard's customer. Fixed: `closeAddJob()` clears the
+   preselection, `openAddJob()` clears it before opening, and the consumed
+   `history.state.addJobFor` is wiped with `Location.replaceState()` so a
+   refresh never re-opens the dialog.
+2. **`?return=picker` lost between steps** — step navigation now uses
+   `queryParamsHandling: 'preserve'` (Next, Back, Skip, and the invalid-step
+   canonicalization), so the picker origin survives refresh on any step.
+3. **Optional-step deep link with empty draft** — `/new/address` or
+   `/new/measurements` deep links (or refreshes) with no basic details now
+   redirect to `/new/basic` (params preserved) instead of showing an enabled
+   action that silently did nothing.
+
+### Re-verification (local, 2026-09-04)
+
+| Check | Result |
+|---|---|
+| Save → jobs page preselected → close → New Job again → normal picker | PASS |
+| Refresh after preselection consumed → no dialog re-opens | PASS |
+| `?return=picker` preserved through Next / Skip / redirect | PASS |
+| Refresh on `/new/address?return=picker` (empty draft) → `/new/basic?return=picker` | PASS |
+| Deep link `/new/measurements` and `/new/measurements?return=picker` with empty draft → redirect to `/new/basic` (param kept) | PASS |
+| Browser console errors | NONE |
+| Test data removed (Edge Case Ben customer deleted) | PASS |
+
+Production build: hash `04e1edb0f3bdd282`.
+
 ## Deployment note
 
 Frontend-only change (no backend files touched). Deploys with the next
