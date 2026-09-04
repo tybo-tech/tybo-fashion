@@ -1,6 +1,7 @@
 <?php
 // Read-only lean customers list for the admin Customers screen.
-// Additive endpoint: does not modify customer/list.php or any write contract.
+// Additive endpoint: does not alter the legacy customer/list.php response or
+// any write contract.
 // Returns exactly four display fields per row (CustomerId, CustomerName,
 // PhoneNumber, Email) plus pagination metadata. No job join, financial
 // calculation, JSON extraction/decoding, address, measurements, avatar or

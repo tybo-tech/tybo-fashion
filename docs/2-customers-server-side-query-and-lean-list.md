@@ -326,21 +326,29 @@ pagination/count agreement, deterministic ordering and generic failures.
 
 - [ ] Upload only the new endpoint, required `Customer.php` change and the
       surgical legacy logging cleanup. Never upload `Database.php` or secrets.
-- [x] Verify live default page, page 2, beyond-last page, name, full-name,
+- [ ] Verify live default page, page 2, beyond-last page, name, full-name,
       phone and email searches, missing `CompanyId`, clamped pagination and an
       empty result.
-- [x] Compare old vs new response bytes and duration using current production
+- [ ] Compare old vs new response bytes and duration using current production
       totals; do not log customer response bodies.
-- [x] Run and record `SHOW INDEX` plus the four `EXPLAIN` shapes.
-- [x] Test the candidate composite index only if justified. Keep it only when
+- [ ] Run and record `SHOW INDEX` plus the four `EXPLAIN` shapes.
+- [ ] Test the candidate composite index only if justified. Keep it only when
       the plan improves materially; otherwise remove/test rollback and record
       “no index added”.
-- [x] If retained, commit and apply a dated migration with rollback, then
+- [ ] If retained, commit and apply a dated migration with rollback, then
       repeat `SHOW INDEX` and all `EXPLAIN` checks.
 - [ ] Regression-test the legacy New Job customer picker after backend upload.
 
 **Exit:** live endpoint is stable; index decision is evidence-based; no
 frontend integration begins until the backend contract is proven.
+
+> **Local evidence (recorded, not production):** the endpoint, search,
+> pagination, clamps, missing-`CompanyId` 400, empty result, and the
+> `SHOW INDEX` + four `EXPLAIN` shapes were verified against the
+> production-shaped local snapshot (428 customer rows; main company 423
+> active). The candidate index eliminated the full scan + filesort on all
+> four shapes locally. These local results are recorded but do **not**
+> substitute for the production checks above, which remain outstanding.
 
 ### Phase 3 — Add typed Angular client support
 
@@ -447,7 +455,7 @@ docs/
 
 ## Definition of Done
 
-- [x] New live endpoint returns only `CustomerId`, `CustomerName`,
+- [ ] New live endpoint returns only `CustomerId`, `CustomerName`,
       `PhoneNumber`, `Email` plus pagination metadata.
 - [x] No job aggregation, payment JSON, measurements, address, avatar or
       analytics work occurs on the new list path.
@@ -457,9 +465,9 @@ docs/
       design, and open the existing customer dashboard.
 - [x] URL, refresh, Back/Forward, debounce/cancel, page boundaries, loading,
       empty, error and Retry behaviour all pass.
-- [x] New Customer and New Job customer selection both pass regression tests.
+- [ ] New Customer and New Job customer selection both pass regression tests.
 - [x] Full customer result logging is removed.
-- [x] Any retained database index is backed by before/after production
+- [ ] Any retained database index is backed by before/after production
       `EXPLAIN` evidence and a committed rollback-capable migration; otherwise
       the sprint explicitly records that no index was added.
 - [x] Build/lint/diff checks pass apart from documented pre-existing failures.

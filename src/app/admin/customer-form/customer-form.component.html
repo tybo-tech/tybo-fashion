@@ -233,9 +233,10 @@
 
   <!-- Form Actions -->
   <div class="form-actions">
-    <button type="submit" class="btn btn-primary btn-save" (click)="save()">
-      <i class="bi" [ngClass]="isNew ? 'bi-plus-circle' : 'bi-check-circle'"></i>
-      {{ isNew ? 'Create Customer' : 'Update Customer' }}
+    <button type="submit" class="btn btn-primary btn-save" (click)="save()" [disabled]="saving" [attr.aria-busy]="saving">
+      <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+      <i *ngIf="!saving" class="bi" [ngClass]="isNew ? 'bi-plus-circle' : 'bi-check-circle'"></i>
+      {{ saving ? 'Saving…' : (isNew ? 'Create Customer' : 'Update Customer') }}
     </button>
   </div>
 </div>

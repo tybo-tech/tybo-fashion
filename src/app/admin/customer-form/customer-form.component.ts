@@ -1,4 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { finalize } from 'rxjs/operators';
 import { Customer, sanitizePhoneNumber } from 'src/models/Customer';
 import { initMeasurements } from 'src/models/measurement.model';
 import { loading, stop_loading } from 'src/models/ux.model';
@@ -191,19 +192,34 @@ export class CustomerFormComponent implements OnInit {
       loading();
       if(this.customer.PhoneNumber)
       this.customer.PhoneNumber = sanitizePhoneNumber(this.customer.PhoneNumber);
-      this.cus.save(this.customer).subscribe((data) => {
-        stop_loading();
-        this.saving = false;
-        if (data && data.CustomerId) {
-          !this.isNew &&
-            this.ux.show_toast('Customer updated successfully', 'Success');
-          this.isNew &&
-            this.ux.show_toast('Customer created successfully', 'Success');
-          this.onSave.emit(data);
-        }else{
-          this.ux.show_toast('Failed to save customer', 'Error', ['bg-danger']);
-        }
-      });
+      this.cus
+        .save(this.customer)
+        .pipe(
+          finalize(() => {
+            // Always release the guard and the global loading overlay, whether
+            // the request succeeds, fails at HTTP/network level, or is
+            // cancelled. Without this, a failed save would leave `saving`
+            // true and the overlay attached, permanently blocking later saves.
+            stop_loading();
+            this.saving = false;
+          })
+        )
+        .subscribe({
+          next: (data) => {
+            if (data && data.CustomerId) {
+              !this.isNew &&
+                this.ux.show_toast('Customer updated successfully', 'Success');
+              this.isNew &&
+                this.ux.show_toast('Customer created successfully', 'Success');
+              this.onSave.emit(data);
+            } else {
+              this.ux.show_toast('Failed to save customer', 'Error', ['bg-danger']);
+            }
+          },
+          error: () => {
+            this.ux.show_toast('Failed to save customer', 'Error', ['bg-danger']);
+          },
+        });
     }
   }
   add_measurement() {
