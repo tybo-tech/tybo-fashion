@@ -162,6 +162,28 @@ try {
     check_num('update: totals.itemsSubtotal', 200.0, $body['totals']['itemsSubtotal'] ?? null);
     check_num('update: job TotalCost persisted', 250.0, (float) readJob($db, $JobId)['TotalCost']);
 
+    // ── 2b. Scoped read (Sprint 5 §6) ────────────────────────────────────
+    require_once __DIR__ . '/../models/JobItem.php';
+    $jobItemModel = new JobItem($db);
+    $scoped = $jobItemModel->getScopedById($addedJobItemId, $JobId, $CompanyId);
+    check('scoped read: garment returned', 'Mini skirt', $scoped['ItemName'] ?? null);
+    check('scoped read: does not embed the parent job', false, array_key_exists('Job', $scoped ?? array()));
+    check(
+        'scoped read: cross-company rejected',
+        null,
+        $jobItemModel->getScopedById($addedJobItemId, $JobId, $otherCompanyId)
+    );
+    check(
+        'scoped read: cross-job rejected',
+        null,
+        $jobItemModel->getScopedById($addedJobItemId, $otherJobId, $CompanyId)
+    );
+    check(
+        'scoped read: unknown id rejected',
+        null,
+        $jobItemModel->getScopedById('no-such-item', $JobId, $CompanyId)
+    );
+
     // ── 3. Cross-job / cross-company rejection ───────────────────────────
     list($status, $body) = $transaction->update($otherCompanyId, $otherJobId, $addedJobItemId, $model);
     check('cross-company garment rejected: 404', 404, $status);

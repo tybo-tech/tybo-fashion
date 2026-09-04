@@ -152,6 +152,33 @@ class JobItem
             return $item;
         }
     }
+
+    /**
+     * Sprint 5 §6 — scoped garment-detail read. Returns the garment only
+     * when all three identifiers match its stored row (garment belongs to
+     * the job, job belongs to the company); null otherwise. Cross-job and
+     * cross-company garment IDs can never be read. Unlike getById() this
+     * does NOT embed the whole parent job.
+     * Additive: getById() and its callers are unchanged.
+     */
+    public function getScopedById($JobItemId, $JobId, $CompanyId)
+    {
+        $query = "
+            SELECT * FROM jobitem
+            WHERE JobItemId = ? AND JobId = ? AND CompanyId = ?
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(array($JobItemId, $JobId, $CompanyId));
+
+        if ($stmt->rowCount()) {
+            $item = $stmt->fetch(PDO::FETCH_ASSOC);
+            $item["Measurements"] = json_decode($item["Measurements"]);
+            $item["Metadata"] = json_decode($item["Metadata"]);
+            return $item;
+        }
+        return null;
+    }
     public function getByJobId($JobId)
     {
         $query = "SELECT * FROM jobitem WHERE JobId =?";
