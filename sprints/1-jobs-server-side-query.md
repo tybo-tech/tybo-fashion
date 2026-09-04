@@ -375,7 +375,10 @@ Replace browser-side filtering/pagination with server-driven state.
       navigation (URL is the single source of truth).
 - [ ] **4.6** Keep the legacy `/jobs/:status` redirect and the Reset action
       (navigates to canonical route, page 1, cleared filters).
-- [ ] **4.7** Render status badges from `JobListItem.Status` with the existing
+- [ ] **4.7** Align the status filter dropdown with the canonical set: one
+      `Completed` option (server matches both `Completed` and legacy
+      `Complete`), plus `Paused`; remove the separate `Complete` option.
+      Render status badges from `JobListItem.Status` with the existing
       case-insensitive badge-class mapping; normalize `Complete` →
       `Completed` for display.
 - [ ] **4.8** Retry must re-issue the HTTP request even when URL parameters
@@ -514,16 +517,23 @@ The implementation is complete when:
 
 - [ ] All five phases are complete with every Exit Criterion satisfied.
 - [ ] `get-admin-jobs.php` is live on production and verified against all
-      parameter, search, status, and boundary cases.
+      parameter, search, status, and boundary cases, including the error
+      contract (400s, generic 500) and the canonical status set with the
+      `Complete` alias.
 - [ ] `get-jobs.php` and all job add/edit payload contracts are unchanged.
 - [ ] `/store/admin/jobs` performs server-side pagination, search and status
       filtering with zero full-collection downloads; URL restores full state
       on refresh and back navigation.
 - [ ] Debounced, cancelable search verified; pagination driven by API
-      metadata; loading/empty/failure/Retry states present.
-- [ ] Index changes applied only after `SHOW INDEX` review, recorded, with
-      `Database.php` never uploaded.
+      metadata; loading/empty/failure/Retry states present; Retry re-issues
+      the request even with unchanged URL parameters.
+- [ ] Schema changes shipped as a committed migration SQL with named indexes
+      and rollback statements; every added index traces to a recorded
+      `SHOW INDEX`/`EXPLAIN` result; `php -l` clean on all changed PHP files.
+- [ ] `Database.php`, credentials, and secrets appear in no upload manifest,
+      commit, diff, or log; totals quoted as the verified production total.
 - [ ] `npm run build` passes; `tsc` spec failure is limited to the known
       `AppComponent.title` baseline; `git diff --check` clean.
 - [ ] Playwright matrix (Phase 5.5) passes with zero console errors.
-- [ ] Docs updated; the security-hardening concern is recorded, not ignored.
+- [ ] Docs updated (patterns, baseline, error contract, status set); the
+      security-hardening concern is recorded, not ignored.
