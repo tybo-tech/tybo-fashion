@@ -1,1 +1,37 @@
 :host { display: block; }
+
+/* Sprint 5 §4 — plain row: separators only (no cards, no shadows).
+   The bottom border doubles as between-row and bottom separator. */
+.garment-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0.25rem;
+  min-height: 44px; // touch target
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+
+  &:focus-visible {
+    outline: 2px solid var(--admin-primary, #0d6efd);
+    outline-offset: -2px;
+    border-radius: 0.25rem;
+  }
+
+  &:hover .fw-semibold.text-dark {
+    text-decoration: underline;
+  }
+}
+
+.garment-thumb {
+  width: 48px;
+  height: 48px;
+  display: block;
+
+  img,
+  span {
+    display: block;
+  }
+}
+
+.min-w-0 {
+  min-width: 0;
+}

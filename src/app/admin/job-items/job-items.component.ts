@@ -35,10 +35,11 @@ export class JobItemsComponent implements OnInit {
     return this.jobItems.reduce((sum, item) => sum + (Number(item.Quantity) || 0), 0);
   }
 
-  // Complex editing happens on dedicated routed pages
+  // Complex editing happens on the dedicated garment details page
   addItem(): void {
     if (this.job) {
-      this.router.navigate(['/store/admin/job', this.job.JobId, 'items', 'new']);
+      // Sprint 5 §1 canonical route.
+      this.router.navigate(['/store/admin/jobs', this.job.JobId, 'garments', 'new']);
     }
   }
 }

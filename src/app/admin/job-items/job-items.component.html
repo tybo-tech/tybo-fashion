@@ -1,24 +1,26 @@
 <div *ngIf="job">
-  <div class="d-flex align-items-center justify-content-between mb-3">
+  <div class="d-flex align-items-center justify-content-between mb-2">
     <div class="d-flex gap-2 small">
-      <span *ngIf="hasItems" class="badge bg-light text-dark border">{{ totalItems }} item{{ totalItems !== 1 ? 's' : '' }}</span>
+      <span *ngIf="hasItems" class="badge bg-light text-dark border">{{ totalItems }} garment{{ totalItems !== 1 ? 's' : '' }}</span>
       <span *ngIf="hasItems" class="badge bg-light text-dark border">{{ totalQuantity }} qty</span>
     </div>
     <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="addItem()">
-      <i class="bi bi-plus-lg"></i> Add item
+      <i class="bi bi-plus-lg"></i> Add garment
     </button>
   </div>
 
-  <div *ngIf="hasItems" class="d-flex flex-column gap-3">
-    <div *ngFor="let item of jobItems" class="border rounded-3 bg-white">
-      <app-job-item [jobItem]="item" [user]="user" [job]="job"></app-job-item>
-    </div>
+  <!-- Sprint 5 §4 — plain list, no section box, no row cards. Separators
+       only: each row carries a bottom border (serving as the between-row
+       and bottom separator). -->
+  <div *ngIf="hasItems" class="d-flex flex-column">
+    <app-job-item *ngFor="let item of jobItems" [jobItem]="item" [user]="user" [job]="job"></app-job-item>
   </div>
 
-  <div *ngIf="!hasItems" class="text-center py-4 border rounded-3 bg-light">
-    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-white border mb-2 icon-40"><i class="bi bi-bag"></i></div>
-    <h6 class="mb-1">No items yet</h6>
+  <!-- Empty state -->
+  <div *ngIf="!hasItems" class="text-center py-4">
+    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-2 icon-40"><i class="bi bi-bag"></i></div>
+    <h6 class="mb-1">No garments yet</h6>
     <p class="small text-muted mb-3">Add garments to this job.</p>
-    <button class="btn btn-primary btn-sm" (click)="addItem()"><i class="bi bi-plus-lg me-1"></i> Add first item</button>
+    <button class="btn btn-primary btn-sm" (click)="addItem()"><i class="bi bi-plus-lg me-1"></i> Add garment</button>
   </div>
 </div>

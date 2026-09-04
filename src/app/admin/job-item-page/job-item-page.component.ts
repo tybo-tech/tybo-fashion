@@ -8,16 +8,20 @@ import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
 /**
- * Routed page for creating and editing a job item.
+ * Sprint 5 §5 — Garment details: the ONLY editing surface for a garment.
  *
- * Routes:
- *   /store/admin/job/:jobId/items/new
- *   /store/admin/job/:jobId/items/:jobItemId/edit
+ * Route: /store/admin/jobs/:jobId/garments/:garmentId
+ * (legacy /job/:jobId/items/... links arrive via redirect).
  *
- * Owns loading, persistence, errors and navigation. Form presentation lives
- * in JobItemFormComponent. Replaces the former overlay/modal workflow while
- * preserving the existing service payloads and totals recalculation
- * (see docs/job-workflow-baseline.md).
+ * - Edit mode reads the garment through the scoped item endpoint
+ *   (CompanyId + JobId + JobItemId) — no full-job load with client-side
+ *   lookup. New mode still needs the job record for context only.
+ * - Save/remove use the transactional endpoints (Sprint 5 §6): the server
+ *   persists the item mutation and job totals in one transaction and
+ *   returns both, so the client never chains a parent-totals update and
+ *   never reports false success.
+ * - Remove from job is a quiet danger action at the bottom, with a
+ *   confirmation naming the garment; duplicate submissions are blocked.
  */
 @Component({
   selector: 'app-job-item-page',
@@ -33,8 +37,8 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   user?: User;
   loading = true;
   saving = false;
+  removing = false;
   error: string | null = null;
-  backTo = 'jobs';
 
   private userSub?: { unsubscribe(): void };
 
@@ -69,41 +73,59 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     this.loading = true;
     this.error = null;
 
-    this.jobService.getjob(this.jobId).subscribe({
-      next: (job) => {
-        if (!job || !job.JobId) {
-          this.fail('Job not found.');
-          return;
-        }
-        this.job = job;
-
-        if (this.mode === 'new') {
+    if (this.mode === 'new') {
+      // Context only: the job supplies CompanyId/JobId for the new garment.
+      this.jobService.getjob(this.jobId).subscribe({
+        next: (job) => {
+          if (!job || !job.JobId) {
+            this.fail('Job not found.');
+            return;
+          }
+          this.job = job;
           this.jobItem = this.jobService.initJobItem(
             job.JobId,
             job.CompanyId,
             job.CreateUserId || this.user?.UserId || ''
           );
           this.loading = false;
-          return;
-        }
+        },
+        error: () => {
+          this.fail('Failed to load this job. Please try again.');
+        },
+      });
+      return;
+    }
 
-        // Edit: parent-child validation — confirm the item belongs to the
-        // loaded job. (Client-side only; the PHP endpoints do not enforce
-        // authenticated tenant authorization.)
-        const item = (job.JobItems || []).find(
-          (x) => x.JobItemId === this.jobItemId
-        );
-        if (!item) {
-          this.fail('This item does not belong to this job.');
+    // Edit: scoped read — the server enforces that the garment belongs to
+    // this job and this company. (Identifier scoping per Sprint 5 §7;
+    // authentication is a separate security sprint.)
+    const companyId = this.user?.CompanyId || '';
+    if (!companyId) {
+      this.fail('Your session is missing company information. Please sign in again.');
+      return;
+    }
+    this.jobService.getJobItemScoped(companyId, this.jobId, this.jobItemId).subscribe({
+      next: (res) => {
+        const garment = res?.garment;
+        if (!garment || !garment.JobItemId) {
+          this.fail('This garment was not found in this job.');
           return;
         }
-        this.jobItem = item;
+        this.jobItem = garment;
         this.loading = false;
       },
-      error: () => {
-        this.fail('Failed to load this job item.');
+      error: (err) => {
+        if (err?.status === 404) {
+          this.fail('This garment was not found in this job.');
+        } else {
+          this.fail('Failed to load this garment. Please try again.');
+        }
       },
     });
+  }
+
+  retry(): void {
+    this.load();
   }
 
   private fail(message: string): void {
@@ -112,7 +134,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   get jobNo(): string {
-    return this.job?.JobNo || '';
+    return this.job?.JobNo || this.jobItem?.JobId || '';
   }
 
   get jobDetailsLink(): string {
@@ -120,8 +142,20 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     return `/store/admin/jobs/${this.jobId}`;
   }
 
-  get pageTitle(): string {
-    return this.mode === 'new' ? 'Add item' : 'Edit item';
+  get contextLabel(): string {
+    return this.mode === 'new' ? 'Add garment' : 'Garment details';
+  }
+
+  get garmentName(): string {
+    return this.jobItem?.ItemName || 'Unnamed garment';
+  }
+
+  get removeConfirmMessage(): string {
+    const lastNote =
+      this.mode === 'edit'
+        ? ' If this is the last garment, the invoice, payments and shipping are kept and the total becomes the remaining shipping charge.'
+        : '';
+    return `Remove "${this.garmentName}" from this job? The job totals will be recalculated.${lastNote}`;
   }
 
   cancel(): void {
@@ -129,85 +163,84 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   save(item: JobItem): void {
-    if (!this.job || !item || this.saving) return; // duplicate-submission guard
+    if (!item || this.saving || this.removing) return; // duplicate-submission guard
+    const companyId = this.user?.CompanyId || '';
+    if (!companyId) {
+      this.fail('Your session is missing company information. Please sign in again.');
+      return;
+    }
+
     this.saving = true;
     this.error = null;
 
-    const done = (updated: Job) => {
+    const handle = (res: { garment: JobItem | null; totals?: unknown }) => {
+      // The server returns the saved garment plus recalculated totals only
+      // when the whole transaction committed (Sprint 5 §6).
+      if (!res || (!res.garment && !('totals' in res))) {
+        this.saving = false;
+        this.fail('The change was not saved as expected. Please try again.');
+        return;
+      }
       this.saving = false;
       this.uxService.show_toast(
-        this.mode === 'new' ? 'Job item created successfully' : 'Item updated successfully',
+        this.mode === 'new' ? 'Garment added successfully' : 'Garment saved successfully',
         'success'
       );
       this.router.navigate([this.jobDetailsLink]);
     };
 
-    const persistTotals = (failMsg: string) => {
-      // Recalculate and persist parent totals (same contract as the
-      // previous modal workflow's add path; edit now also persists).
-      this.job!.TotalCost = this.jobService.cart_total(this.job!);
-      if (this.job!.Metadata) {
-        this.job!.Metadata.paidAmount = this.jobService.calculatePaidAmount(this.job!);
-        this.job!.Metadata.dueAmount = this.jobService.calculateDueAmount(this.job!);
-      }
-      this.jobService.update(this.job!).subscribe({
-        next: () => done(this.job!),
-        error: () => {
-          this.saving = false;
-          this.uxService.show_toast(failMsg, 'warning');
-          this.router.navigate([this.jobDetailsLink]);
-        },
-      });
-    };
+    const request =
+      this.mode === 'new'
+        ? this.jobService.addJobItemTransactional(companyId, this.jobId, item)
+        : this.jobService.updateJobItemTransactional(
+            companyId,
+            this.jobId,
+            this.jobItemId,
+            item
+          );
 
-    if (this.mode === 'new') {
-      this.jobService.addJobItem(item).subscribe({
-        next: (saved) => {
-          // The API must confirm creation with a new item ID.
-          if (!saved || !saved.JobItemId) {
-            this.saving = false;
-            this.fail('Failed to create the item. Please try again.');
-            return;
-          }
-          this.job!.JobItems = this.job!.JobItems || [];
-          this.job!.JobItems.push(saved);
-          persistTotals('Item created but job update failed');
-        },
-        error: () => {
-          this.saving = false;
-          this.fail('Failed to create the item. Please try again.');
-        },
-      });
-      return;
-    }
-
-    // Edit: parent-child validation, replace in the collection, persist.
-    const index = (this.job!.JobItems || []).findIndex(
-      (x) => x.JobItemId === item.JobItemId
-    );
-    if (index === -1) {
-      this.saving = false;
-      this.fail('This item does not belong to this job.');
-      return;
-    }
-    this.jobService.updateJobItem(item).subscribe({
-      next: (saved) => {
-        // Only treat the edit as successful when the API confirms it by
-        // echoing the edited item's ID; otherwise surface a failure.
-        if (!saved || !saved.JobItemId || saved.JobItemId !== item.JobItemId) {
-          this.saving = false;
-          this.fail('The change was not saved as expected. Please try again.');
-          return;
-        }
-        if (this.job!.JobItems) {
-          this.job!.JobItems[index] = saved;
-        }
-        persistTotals('Item updated but job update failed');
-      },
+    request.subscribe({
+      next: handle,
       error: () => {
         this.saving = false;
-        this.fail('Failed to update the item. Please try again.');
+        this.uxService.show_toast(
+          'Failed to save the garment. Please try again.',
+          'error'
+        );
       },
     });
+  }
+
+  removeFromJob(): void {
+    if (!this.jobItem?.JobItemId || this.removing || this.saving) return;
+    if (!this.user?.CompanyId) {
+      this.fail('Your session is missing company information. Please sign in again.');
+      return;
+    }
+    if (!confirm(this.removeConfirmMessage)) return;
+
+    this.removing = true;
+    this.jobService
+      .removeJobItemTransactional(this.user.CompanyId, this.jobId, this.jobItem.JobItemId)
+      .subscribe({
+        next: (res) => {
+          // Success only when the transaction (removal + totals) committed.
+          if (!res || !res.removedJobItemId) {
+            this.removing = false;
+            this.fail('The garment was not removed as expected. Please try again.');
+            return;
+          }
+          this.removing = false;
+          this.uxService.show_toast('Garment removed from job', 'success');
+          this.router.navigate([this.jobDetailsLink]);
+        },
+        error: () => {
+          this.removing = false;
+          this.uxService.show_toast(
+            'Failed to remove the garment. Please try again.',
+            'error'
+          );
+        },
+      });
   }
 }

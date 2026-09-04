@@ -1,20 +1,20 @@
-<div class="p-3 d-flex gap-3" *ngIf="jobItem && job">
-  <button type="button" class="border-0 bg-transparent p-0 flex-shrink-0 thumb-96" (click)="editItem()" [attr.aria-label]="'Edit ' + itemName">
+<!-- Sprint 5 §4 — plain garment row. The whole row is one clickable,
+     keyboard-focusable target (native anchor). No qty stepper, no inline
+     delete: editing and removal live on the garment details page. -->
+<a *ngIf="jobItem && job" class="garment-row text-decoration-none" [routerLink]="garmentLink">
+  <span class="garment-thumb flex-shrink-0">
     <img *ngIf="featuredImageUrl" [src]="featuredImageUrl" [alt]="itemName" class="w-100 h-100 object-fit-cover rounded-2 border">
     <span *ngIf="!featuredImageUrl" class="w-100 h-100 d-flex align-items-center justify-content-center rounded-2 border bg-light"><i class="bi bi-image text-muted"></i></span>
-  </button>
-  <div class="flex-grow-1 d-flex flex-column gap-1 min-w-0">
-    <div class="d-flex justify-content-between gap-2">
-      <button type="button" class="btn btn-link p-0 text-start fw-semibold text-dark text-truncate" (click)="editItem()">{{ itemName }}</button>
-      <span class="fw-semibold small text-success flex-shrink-0">{{ itemTotal | currency:'ZAR':'symbol':'1.2-2' }}</span>
-    </div>
-    <div *ngIf="assignedTo" class="small text-muted d-flex align-items-center gap-1"><i class="bi bi-person-circle"></i> {{ assignedTo | userPipe }}</div>
-    <div class="d-flex align-items-center gap-2">
-      <span class="badge bg-light text-dark border small"><i class="bi bi-rulers me-1"></i>{{ itemSize }}</span>
-    </div>
-    <div class="d-flex align-items-center justify-content-between gap-2 mt-1">
-      <app-admin-qty [qty]="itemQuantity" (qtyChange)="update_qty($event, jobItem)"></app-admin-qty>
-      <button (click)="delete_from_cart(jobItem)" class="btn btn-sm btn-outline-danger" [attr.aria-label]="'Remove ' + itemName"><i class="bi bi-trash3"></i></button>
-    </div>
-  </div>
-</div>
+  </span>
+
+  <span class="flex-grow-1 min-w-0 d-flex flex-column gap-1">
+    <span class="fw-semibold text-dark text-truncate">{{ itemName }}</span>
+    <span class="small text-muted text-truncate">{{ itemSize }}<ng-container *ngIf="itemColour"> · {{ itemColour }}</ng-container> · Qty {{ itemQuantity }}</span>
+    <span *ngIf="assignedTo" class="small text-muted d-flex align-items-center gap-1"><i class="bi bi-person-circle"></i> {{ assignedTo | userPipe }}</span>
+  </span>
+
+  <span class="flex-shrink-0 d-flex align-items-center gap-2">
+    <span class="fw-semibold small text-success">{{ itemTotal | currency:'ZAR':'symbol':'1.2-2' }}</span>
+    <i class="bi bi-chevron-right text-muted small" aria-hidden="true"></i>
+  </span>
+</a>

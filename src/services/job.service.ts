@@ -16,6 +16,27 @@ import { UX_MODALS } from 'src/models/ux.model';
 import { OtherInfo } from 'src/models/other-info.model';
 import { Discount, DiscountService } from './discounts.service';
 
+/**
+ * Sprint 5 §6 — response contract for every transactional garment
+ * mutation. `garment` is null on removal, `removedJobItemId` is null on
+ * add/update. `totals` is the authoritative server-side recalculation.
+ */
+export interface JobGarmentMutationResponse {
+  garment: JobItem | null;
+  removedJobItemId: string | null;
+  totals: {
+    itemsSubtotal: number;
+    discountAmount: number;
+    amountBeforeDiscount: number;
+    amountAfterDiscount: number;
+    hasDiscount: boolean;
+    shippingPrice: number;
+    totalCost: number;
+    paidAmount: number;
+    dueAmount: number;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -177,6 +198,78 @@ export class JobService {
   getJobItemById(jobItemId: string) {
     return this.http.get<JobItem>(
       `${this.url}/job-item/get-job-item.php?JobItemId=${jobItemId}`
+    );
+  }
+
+  // ── Sprint 5 §6 — scoped read + transactional mutations ────────────────
+  // Additive: the legacy methods above remain untouched for rollback.
+
+  /** Scoped garment-detail read (CompanyId + JobId + JobItemId). */
+  getJobItemScoped(companyId: string, jobId: string, jobItemId: string) {
+    const params = new HttpParams()
+      .set('CompanyId', companyId)
+      .set('JobId', jobId)
+      .set('JobItemId', jobItemId);
+    return this.http.get<{ garment: JobItem }>(
+      `${this.url}/job-item/get-job-item-scoped.php`,
+      { params }
+    );
+  }
+
+  /**
+   * Add a garment. One server-side transaction persists the item AND the
+   * parent job totals; the response carries both (never a false success).
+   */
+  addJobItemTransactional(
+    companyId: string,
+    jobId: string,
+    jobItem: JobItem
+  ) {
+    return this.http.post<JobGarmentMutationResponse>(
+      `${this.url}/job-item/add-job-item-transactional.php`,
+      {
+        CompanyId: companyId,
+        JobId: jobId,
+        JobItem: jobItem,
+      }
+    );
+  }
+
+  /** Update a garment — same transactional contract as add. */
+  updateJobItemTransactional(
+    companyId: string,
+    jobId: string,
+    jobItemId: string,
+    jobItem: JobItem
+  ) {
+    return this.http.post<JobGarmentMutationResponse>(
+      `${this.url}/job-item/update-job-item-transactional.php`,
+      {
+        CompanyId: companyId,
+        JobId: jobId,
+        JobItemId: jobItemId,
+        JobItem: jobItem,
+      }
+    );
+  }
+
+  /**
+   * Remove a garment (POST — never a state-changing GET). The server
+   * recalculates totals atomically; last-garment removal preserves
+   * invoice/payments/proof and keeps the remaining shipping as the total.
+   */
+  removeJobItemTransactional(
+    companyId: string,
+    jobId: string,
+    jobItemId: string
+  ) {
+    return this.http.post<JobGarmentMutationResponse>(
+      `${this.url}/job-item/delete-job-item-transactional.php`,
+      {
+        CompanyId: companyId,
+        JobId: jobId,
+        JobItemId: jobItemId,
+      }
     );
   }
 

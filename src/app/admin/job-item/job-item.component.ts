@@ -3,9 +3,13 @@ import { Router } from '@angular/router';
 import { JobItem } from 'src/models/job-item.model';
 import { Job } from 'src/models/job.model';
 import { User } from 'src/models/user.model';
-import { JobService } from 'src/services/job.service';
-import { UxService } from 'src/services/ux.service';
 
+/**
+ * Sprint 5 §4 — plain garment row for the job overview list.
+ * Read-only: the entire row navigates to the garment details page, the
+ * only editing surface (Sprint 5 §5). No quantity stepper and no inline
+ * delete here.
+ */
 @Component({
   selector: 'app-job-item',
   templateUrl: './job-item.component.html',
@@ -16,15 +20,11 @@ export class JobItemComponent {
   @Input() job?: Job;
   @Input({required: true}) user!: User;
 
-  constructor(
-    private jobService: JobService,
-    private uxService: UxService,
-    private router: Router
-  ) {}
+  constructor(private router: Router) {}
 
   // Safe getters for better null handling
   get itemName(): string {
-    return this.jobItem?.ItemName || 'Unnamed Item';
+    return this.jobItem?.ItemName || 'Unnamed garment';
   }
 
   get featuredImageUrl(): string | null {
@@ -33,6 +33,10 @@ export class JobItemComponent {
 
   get itemSize(): string {
     return this.jobItem?.Size || 'One Size';
+  }
+
+  get itemColour(): string {
+    return this.jobItem?.Colour || '';
   }
 
   get assignedTo(): string | null {
@@ -48,63 +52,9 @@ export class JobItemComponent {
     return this.jobItem?.Quantity || 1;
   }
 
-  // Complex editing happens on the dedicated routed page
-  editItem(): void {
-    if (this.job && this.jobItem?.JobItemId) {
-      this.router.navigate([
-        '/store/admin/job', this.job.JobId, 'items', this.jobItem.JobItemId, 'edit',
-      ]);
-    }
-  }
-
-  delete_from_cart(jobItem: JobItem): void {
-    if (!this.job || !jobItem?.JobItemId) return;
-
-    if (!confirm('Are you sure you want to remove this item?')) return;
-
-    this.jobService.deleteJobItem(jobItem.JobItemId).subscribe({
-      next: (is_deleted) => {
-        if (is_deleted && this.job) {
-          this.jobService.delete_from_cart(this.job, jobItem);
-          this.updateJobTotals();
-          this.jobService.update(this.job).subscribe();
-          this.uxService.show_toast('Item removed successfully', 'success');
-        }
-      },
-      error: (error) => {
-        console.error('Error deleting job item:', error);
-        this.uxService.show_toast('Failed to remove item', 'error');
-      }
-    });
-  }
-
-  update_qty(qty: number, item: JobItem): void {
-    if (!this.job || !item || qty < 1) return;
-
-    this.jobService.update_qty(this.job, qty, item);
-    this.jobService.updateJobItem(item).subscribe({
-      next: (data) => {
-        if (data?.JobItemId && this.job) {
-          this.jobItem = data;
-          this.uxService.show_toast('Quantity updated', 'success');
-          this.updateJobTotals();
-          this.jobService.update(this.job).subscribe();
-        }
-      },
-      error: (error) => {
-        console.error('Error updating quantity:', error);
-        this.uxService.show_toast('Failed to update quantity', 'error');
-      }
-    });
-  }
-
-  private updateJobTotals(): void {
-    if (!this.job) return;
-
-    this.job.TotalCost = this.jobService.cart_total(this.job);
-    if (this.job.Metadata) {
-      this.job.Metadata.paidAmount = this.jobService.calculatePaidAmount(this.job);
-      this.job.Metadata.dueAmount = this.jobService.calculateDueAmount(this.job);
-    }
+  get garmentLink(): string | null {
+    if (!this.job || !this.jobItem?.JobItemId) return null;
+    // Sprint 5 §1 canonical route.
+    return `/store/admin/jobs/${this.job.JobId}/garments/${this.jobItem.JobItemId}`;
   }
 }

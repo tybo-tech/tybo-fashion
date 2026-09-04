@@ -6,14 +6,16 @@
       <li class="breadcrumb-item">
         <a [routerLink]="jobDetailsLink">{{ jobNo || 'Job' }}</a>
       </li>
-      <li class="breadcrumb-item active" aria-current="page">{{ pageTitle }}</li>
+      <li class="breadcrumb-item active" aria-current="page">{{ contextLabel }}</li>
     </ol>
   </nav>
   <div class="d-flex align-items-center gap-2 mb-3">
     <a class="btn btn-sm btn-light border" [routerLink]="jobDetailsLink" aria-label="Back to job"><i class="bi bi-arrow-left"></i></a>
     <div class="min-w-0">
-      <span class="fw-semibold small d-block text-truncate">{{ pageTitle }}</span>
-      <span class="small text-muted d-block text-truncate" *ngIf="jobNo">{{ jobNo }}</span>
+      <!-- Sprint 5 §5: "Garment details" is the context label; the garment
+           name is the final page heading below. -->
+      <span class="small text-muted d-block text-truncate">{{ contextLabel }}</span>
+      <h1 class="h6 fw-semibold mb-0 text-truncate" *ngIf="!loading && mode === 'edit'">{{ garmentName }}</h1>
     </div>
   </div>
 
@@ -27,11 +29,12 @@
   <div *ngIf="!loading && error" class="alert alert-danger">
     <div class="fw-semibold small mb-1">{{ error }}</div>
     <div class="small text-muted mb-3">You can safely go back to the job details.</div>
-    <a class="btn btn-sm btn-outline-secondary" [routerLink]="jobDetailsLink"><i class="bi bi-arrow-left me-1"></i> Back to job</a>
+    <button type="button" class="btn btn-sm btn-outline-danger" (click)="retry()"><i class="bi bi-arrow-clockwise me-1"></i> Retry</button>
+    <a class="btn btn-sm btn-outline-secondary ms-2" [routerLink]="jobDetailsLink"><i class="bi bi-arrow-left me-1"></i> Back to job</a>
   </div>
 
   <!-- Form -->
-  <div *ngIf="!loading && !error && job && jobItem">
+  <div *ngIf="!loading && !error && jobItem">
     <app-job-item-form
       [jobItem]="jobItem"
       [user]="user!"
@@ -39,5 +42,14 @@
       (save)="save($event)"
       (cancel)="cancel()">
     </app-job-item-form>
+
+    <!-- Sprint 5 §5 — quiet danger action, bottom of the only editing
+         surface. Never present in the parent list. -->
+    <div class="text-center py-4" *ngIf="mode === 'edit'">
+      <button type="button" class="btn btn-link btn-sm text-danger text-decoration-none" [disabled]="removing || saving" (click)="removeFromJob()">
+        <span *ngIf="removing" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>
+        {{ removing ? 'Removing…' : 'Remove from job' }}
+      </button>
+    </div>
   </div>
 </div>
