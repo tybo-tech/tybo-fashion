@@ -293,7 +293,7 @@ proven by `EXPLAIN` are added.
       customer-name search. Record the output alongside the `SHOW INDEX`
       baseline.
 - [ ] **2.3** Commit a migration artifact before touching production schema:
-      `multi-vendor-api/database/migrations/20260904_admin_jobs_query_indexes.sql`
+      `api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`
       containing the named indexes proven useful by 2.2 (expected baseline:
       `CREATE INDEX idx_job_company_status_date ON job (CompanyId, StatusId,
       CreateDate)` — the only presumptive index), plus rollback statements
@@ -462,7 +462,7 @@ endpoint is verified, keeping the old client call available for rollback.
 ## Target File Structure
 
 ```
-multi-vendor-api/                      # backend repo (deploys via FileZilla)
+api.tybo.fashion.main/                 # backend repo (deploys via FileZilla)
 ├── api/job/
 │   ├── get-admin-jobs.php             # new read-only endpoint
 │   └── get-jobs.php                   # UNCHANGED (storefront contract)
