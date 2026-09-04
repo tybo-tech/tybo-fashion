@@ -1,7 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NavigationEnd, Router } from '@angular/router';
+import { Subscription } from 'rxjs';
 import { UxModel } from 'src/models/ux.model';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
+import { isAdminHome, isCustomersArea, isJobsArea } from './nav-routes';
 
 declare global {
   interface Window {
@@ -18,7 +21,7 @@ declare global {
   templateUrl: './admin.component.html',
   styleUrls: ['./admin.component.scss'],
 })
-export class AdminComponent implements OnInit {
+export class AdminComponent implements OnInit, OnDestroy {
   menu: IMenuGroup[] = [
     {
       name: 'Overview',
@@ -99,18 +102,29 @@ export class AdminComponent implements OnInit {
     },
   ];
   user = this.userService.getUser;
-  current_url: any;
   ux?: UxModel;
   defaultConfirm = 'Are you sure you want to continue?';
+  currentUrl = '';
+  private navSub?: Subscription;
 
-  constructor(private userService: UserService, public uxService: UxService) {
-    this.current_url = window.location.pathname;
+  constructor(
+    private userService: UserService,
+    public uxService: UxService,
+    private router: Router
+  ) {
     uxService.$ux.subscribe((data) => {
       this.ux = data;
       this.ux.Toast && console.log(this.ux?.Toast);
     });
+    this.navSub = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        this.currentUrl = event.urlAfterRedirects;
+        this.closeOffcanvas();
+      }
+    });
   }
   ngOnInit(): void {
+    this.currentUrl = this.router.url;
     const slug = this.user?.Company?.Slug || this.user?.Company?.CompanyId;
     if (slug)
       this.menu[0].items.push({
@@ -133,6 +147,34 @@ export class AdminComponent implements OnInit {
       const instance = window.bootstrap.Offcanvas.getInstance(el);
       if (instance) instance.hide();
     }
+  }
+
+  // Shared route matching keeps desktop sidebar, offcanvas and bottom nav
+  // in agreement. Jobs stays active through job/job-item routes (but not
+  // job-cards); Customers through customer routes; Home is exact.
+  isBottomActive(key: 'home' | 'jobs' | 'customers'): boolean {
+    if (key === 'home') return isAdminHome(this.currentUrl);
+    if (key === 'jobs') return isJobsArea(this.currentUrl);
+    return isCustomersArea(this.currentUrl);
+  }
+
+  isMenuActive(url: string): boolean {
+    if (url === '/store/admin') return isAdminHome(this.currentUrl);
+    if (url === '/store/admin/jobs') return isJobsArea(this.currentUrl);
+    if (url === '/store/admin/customers') return isCustomersArea(this.currentUrl);
+    return this.currentUrl === url || this.currentUrl.startsWith(url + '/');
+  }
+
+  goBottom(key: 'home' | 'jobs' | 'customers'): void {
+    const targets: Record<'home' | 'jobs' | 'customers', string> = {
+      home: '/store/admin',
+      jobs: '/store/admin/jobs',
+      customers: '/store/admin/customers',
+    };
+    this.router.navigate([targets[key]]);
+  }
+  ngOnDestroy(): void {
+    this.navSub?.unsubscribe();
   }
   logout() {
     const slug = this.user?.Company?.Slug;

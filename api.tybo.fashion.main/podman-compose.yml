@@ -3,7 +3,7 @@ version: '3.8'
 services:
   php:
     build: .
-    container_name: multi-vendor
+    container_name: tybo_fashion_main
     volumes:
       - ./:/var/www/html
     ports:
@@ -13,10 +13,10 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: multi-vendor-container
+    container_name: tybo_fashion_main-container
     environment:
       MYSQL_ROOT_PASSWORD: root_password
-      MYSQL_DATABASE: docker
+      MYSQL_DATABASE: tybo_fashion
       MYSQL_USER: docker
       MYSQL_PASSWORD: docker
     ports:
@@ -26,12 +26,17 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: multi-vendor-phpmyadmin-container
+    container_name: tybo_fashion_main-phpmyadmin-container
     environment:
       PMA_HOST: mysql  # Use correct MySQL service name
       MYSQL_ROOT_PASSWORD: root_password
+      UPLOAD_LIMIT: 1G
+      MEMORY_LIMIT: 1G
+      MAX_EXECUTION_TIME: 3000
     ports:
       - "8081:80"  # Changed port mapping to avoid conflict
+    volumes:
+      - ./custom.ini:/usr/local/etc/php/conf.d/custom.ini
 
 volumes:
   mysql_data:

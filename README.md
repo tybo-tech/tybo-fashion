@@ -2,6 +2,13 @@
 
 This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.0.4.
 
+## Admin UI
+
+The admin workspace follows the patterns documented in
+[`docs/admin-ui-patterns.md`](docs/admin-ui-patterns.md) (neutral theme with
+yellow accent, unboxed list pattern, mobile bottom navigation, routed
+complex editors).
+
 ## Development server
 
 Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.

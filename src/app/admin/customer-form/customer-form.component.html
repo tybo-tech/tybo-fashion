@@ -6,6 +6,42 @@
         <i class="bi bi-person-circle"></i>
       </div>
       <h5 class="section-title">Contact Details</h5>
+      <!-- Contact Picker — progressive enhancement: only on supported browsers (Chrome/Edge Android) + secure context + user gesture -->
+      <button
+        *ngIf="isContactPickerSupported"
+        type="button"
+        class="btn btn-outline-primary btn-sm contact-import-btn"
+        (click)="importFromContacts()"
+        [disabled]="isContactPickerLoading"
+        [attr.aria-busy]="isContactPickerLoading"
+        title="Import name, phone, email & photo from device contacts"
+      >
+        <span
+          *ngIf="isContactPickerLoading"
+          class="spinner-border spinner-border-sm me-1"
+          role="status"
+          aria-hidden="true"
+        ></span>
+        <i *ngIf="!isContactPickerLoading" class="bi bi-person-lines-fill"></i>
+        {{ isContactPickerLoading ? 'Opening…' : 'Import from contacts' }}
+      </button>
+    </div>
+
+    <!-- Avatar preview when Dp is set via contact icon or existing customer -->
+    <div *ngIf="customer.Dp" class="contact-avatar-preview">
+      <img [src]="customer.Dp" alt="Contact photo" class="avatar-preview-img" />
+      <div class="avatar-preview-meta">
+        <span class="avatar-preview-label">Photo from contacts</span>
+        <button type="button" class="btn btn-link btn-sm p-0 text-danger" (click)="customer.Dp = ''">
+          <i class="bi bi-x-circle"></i> Remove
+        </button>
+      </div>
+    </div>
+
+    <!-- Helper hint — only shown when picker is available, nudges first-time users -->
+    <div *ngIf="isContactPickerSupported && isNew" class="contact-picker-hint">
+      <i class="bi bi-lightning-charge"></i>
+      <span>Save time — pull name, phone, email & photo directly from your phone contacts. Works on Android Chrome/Edge (HTTPS).</span>
     </div>
 
     <div class="form-grid">

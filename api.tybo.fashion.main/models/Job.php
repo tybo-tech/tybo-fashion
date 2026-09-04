@@ -498,4 +498,126 @@ class Job
             return array("ERROR", $e);
         }
     }
+
+    /**
+     * Lean, paginated admin jobs page.
+     * Returns { items: [{JobId, JobNo, CustomerName, Status}], total } or ERROR array.
+     * Filters/search run against job.Status (never StatusId); StatusId = 1
+     * remains the active-record condition only.
+     * $statusValues must already be normalized LOWERCASE stored values.
+     */
+    public function GetAdminJobsPage($CompanyId, $statusValues, $search, $limit, $offset)
+    {
+        $query = "SELECT
+            job.JobId,
+            job.JobNo,
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ', customer.Name, customer.Surname)), ''),
+                NULLIF(job.CustomerName, ''),
+                '—'
+            ) AS CustomerName,
+            CASE LOWER(TRIM(job.Status))
+                WHEN 'not started' THEN 'Not started'
+                WHEN 'in progress' THEN 'In Progress'
+                WHEN 'working on it' THEN 'In Progress'
+                WHEN 'completed' THEN 'Completed'
+                WHEN 'complete' THEN 'Completed'
+                WHEN 'done' THEN 'Completed'
+                WHEN 'stuck' THEN 'Stuck'
+                WHEN 'terminated' THEN 'Terminated'
+                WHEN 'paused' THEN 'Paused'
+                ELSE COALESCE(NULLIF(TRIM(job.Status), ''), 'Not started')
+            END AS Status
+        FROM job
+        LEFT JOIN customer
+            ON customer.CustomerId = job.CustomerId
+            AND customer.CompanyId = job.CompanyId
+        WHERE job.CompanyId = :CompanyId
+            AND job.StatusId = 1";
+
+        $params = array(':CompanyId' => $CompanyId);
+
+        if (!empty($statusValues)) {
+            $statusPlaceholders = array();
+            foreach ($statusValues as $i => $value) {
+                $key = ':status' . $i;
+                $statusPlaceholders[] = $key;
+                $params[$key] = $value;
+            }
+            $query .= " AND LOWER(TRIM(job.Status)) IN (" . implode(', ', $statusPlaceholders) . ")";
+        }
+
+        if ($search !== '') {
+            $query .= " AND (
+                job.JobNo LIKE :search
+                OR job.CustomerName LIKE :search
+                OR customer.Name LIKE :search
+                OR customer.Surname LIKE :search
+                OR CONCAT_WS(' ', customer.Name, customer.Surname) LIKE :search
+                OR customer.PhoneNumber LIKE :search
+            )";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $query .= " ORDER BY job.CreateDate DESC, job.JobId DESC
+        LIMIT :limit OFFSET :offset";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return array("ERROR" => "Unable to load jobs.");
+        }
+
+        $countQuery = "SELECT COUNT(*) AS total
+        FROM job
+        LEFT JOIN customer
+            ON customer.CustomerId = job.CustomerId
+            AND customer.CompanyId = job.CompanyId
+        WHERE job.CompanyId = :CompanyId
+            AND job.StatusId = 1";
+
+        $countParams = array(':CompanyId' => $CompanyId);
+
+        if (!empty($statusValues)) {
+            $statusPlaceholders = array();
+            foreach ($statusValues as $i => $value) {
+                $key = ':status' . $i;
+                $statusPlaceholders[] = $key;
+                $countParams[$key] = $value;
+            }
+            $countQuery .= " AND LOWER(TRIM(job.Status)) IN (" . implode(', ', $statusPlaceholders) . ")";
+        }
+
+        if ($search !== '') {
+            $countQuery .= " AND (
+                job.JobNo LIKE :search
+                OR job.CustomerName LIKE :search
+                OR customer.Name LIKE :search
+                OR customer.Surname LIKE :search
+                OR CONCAT_WS(' ', customer.Name, customer.Surname) LIKE :search
+                OR customer.PhoneNumber LIKE :search
+            )";
+            $countParams[':search'] = '%' . $search . '%';
+        }
+
+        try {
+            $stmt = $this->conn->prepare($countQuery);
+            foreach ($countParams as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            $stmt->execute();
+            $total = (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        } catch (Exception $e) {
+            return array("ERROR" => "Unable to load jobs.");
+        }
+
+        return array('items' => $items, 'total' => $total);
+    }
 }

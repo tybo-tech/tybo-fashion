@@ -3,7 +3,7 @@
   <header class="admin-topbar border-bottom bg-white sticky-top">
     <div class="container-fluid px-3 px-lg-4 py-2 d-flex align-items-center justify-content-between gap-2">
       <div class="d-flex align-items-center gap-2 flex-shrink-1 min-w-0">
-        <a class="d-flex align-items-center gap-2 text-decoration-none text-dark" href="/store/admin">
+        <a class="d-flex align-items-center gap-2 text-decoration-none text-dark" routerLink="/store/admin">
           <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white flex-shrink-0 icon-32 bg-admin-primary">
             <i class="bi bi-shop"></i>
           </span>
@@ -18,9 +18,6 @@
         <a class="btn btn-sm btn-outline-secondary d-none d-md-inline-flex align-items-center gap-1" [href]="'/' + (user.Company.Slug || user.Company.CompanyId)">
           <i class="bi bi-box-arrow-up-right"></i> Store
         </a>
-        <button class="btn btn-sm btn-outline-secondary d-lg-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas" aria-label="Open navigation">
-          <i class="bi bi-list"></i>
-        </button>
         <button class="btn btn-sm btn-outline-secondary d-none d-lg-inline-flex" type="button" (click)="logout()">
           <i class="bi bi-box-arrow-right me-1"></i> Logout
         </button>
@@ -36,12 +33,19 @@
           <div *ngFor="let group of menu" class="mb-4">
             <div class="admin-kicker mb-2 px-2">{{ group.name }}</div>
             <div class="d-flex flex-column gap-1">
-              <a *ngFor="let item of group.items" class="btn btn-sm text-start d-flex align-items-center gap-2"
-                 [ngClass]="item.url === current_url ? 'btn-primary' : 'btn-light border'"
-                 [href]="item.url">
-                <i [ngClass]="item.icon"></i>
-                <span class="text-truncate">{{ item.name }}</span>
-              </a>
+              <ng-container *ngFor="let item of group.items">
+                <a *ngIf="item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
+                   [class.active]="isMenuActive(item.url)"
+                   [routerLink]="item.url">
+                  <i [ngClass]="item.icon"></i>
+                  <span class="text-truncate">{{ item.name }}</span>
+                </a>
+                <a *ngIf="!item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
+                   [href]="item.url">
+                  <i [ngClass]="item.icon"></i>
+                  <span class="text-truncate">{{ item.name }}</span>
+                </a>
+              </ng-container>
             </div>
           </div>
           <div class="pt-3 border-top">
@@ -65,11 +69,19 @@
           <div *ngFor="let group of menu" class="mb-4">
             <div class="admin-kicker mb-2">{{ group.name }}</div>
             <div class="d-flex flex-column gap-1">
-              <a *ngFor="let item of group.items" class="btn btn-sm text-start d-flex align-items-center gap-2"
-                 [ngClass]="item.url === current_url ? 'btn-primary' : 'btn-light border'"
-                 [href]="item.url" (click)="closeOffcanvas()">
-                <i [ngClass]="item.icon"></i> {{ item.name }}
-              </a>
+              <ng-container *ngFor="let item of group.items">
+                <a *ngIf="item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
+                   [class.active]="isMenuActive(item.url)"
+                   [routerLink]="item.url">
+                  <i [ngClass]="item.icon"></i>
+                  <span class="text-truncate">{{ item.name }}</span>
+                </a>
+                <a *ngIf="!item.url.startsWith('/store/admin')" class="admin-nav-item btn btn-sm text-start d-flex align-items-center gap-2"
+                   [href]="item.url">
+                  <i [ngClass]="item.icon"></i>
+                  <span class="text-truncate">{{ item.name }}</span>
+                </a>
+              </ng-container>
             </div>
           </div>
           <a class="btn btn-sm btn-outline-secondary w-100 mb-2 d-flex align-items-center justify-content-center gap-1" [href]="'/' + (user.Company.Slug || user.Company.CompanyId)">
@@ -81,12 +93,30 @@
 
       <!-- Main -->
       <main class="col-12 col-lg-10">
-        <div class="p-3 p-md-4">
+        <div class="admin-content p-3 p-md-4">
           <router-outlet></router-outlet>
         </div>
       </main>
     </div>
   </div>
+
+  <!-- Mobile bottom navigation (Home / Jobs / Customers / More) -->
+  <nav class="admin-bottom-nav d-lg-none" aria-label="Primary">
+    <div class="d-grid grid-4">
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('home')" (click)="goBottom('home')">
+        <span class="active-pill"><i class="bi bi-house"></i><span>Home</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('jobs')" (click)="goBottom('jobs')">
+        <span class="active-pill"><i class="bi bi-briefcase"></i><span>Jobs</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" [class.active]="isBottomActive('customers')" (click)="goBottom('customers')">
+        <span class="active-pill"><i class="bi bi-people"></i><span>Customers</span></span>
+      </button>
+      <button type="button" class="nav-item-btn" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas">
+        <span class="active-pill"><i class="bi bi-list"></i><span>More</span></span>
+      </button>
+    </div>
+  </nav>
 
   <!-- Toast -->
   <div class="position-fixed top-0 end-0 p-3 toast-admin" *ngIf="ux && ux.Toast && ux.Toast.Message">

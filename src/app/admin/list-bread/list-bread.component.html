@@ -1,7 +1,7 @@
 <nav aria-label="breadcrumb" class="mb-2">
   <ol class="breadcrumb small mb-2">
-    <li class="breadcrumb-item"><a href="/store/admin/">Dashboard</a></li>
-    <li class="breadcrumb-item" *ngIf="prevPage && prevLink"><a [href]="prevLink">{{ prevPage }}</a></li>
+    <li class="breadcrumb-item"><a routerLink="/store/admin" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Dashboard</a></li>
+    <li class="breadcrumb-item" *ngIf="prevPage && prevLink"><a [routerLink]="prevLink">{{ prevPage }}</a></li>
     <li class="breadcrumb-item active" aria-current="page">{{ currentPage }}</li>
   </ol>
 </nav>
