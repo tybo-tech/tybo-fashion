@@ -21,13 +21,13 @@ returns 500 for unknown IDs).
 > exposes only the canonical set (one `Completed` option, plus `Paused`); the
 > server still accepts `complete` as a compatibility alias.
 >
-> **Outstanding Phase 2 operational task:** production `SHOW INDEX` and
-> `EXPLAIN` analysis for the new endpoint's query shapes could not be
-> performed (no production DB access from this environment). No index
-> migration has been committed or executed; the migration artifact
+> **Phase 2 index work (complete):** production `SHOW INDEX` confirmed PRIMARY
+> only on `job` and `customer`; `EXPLAIN` on the four query shapes showed a
+> full scan + filesort on `job`. The evidence-based migration
 > (`api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`)
-> must be created and committed only after that evidence is recorded on
-> production.
+> added `idx_job_company_status_date ON job (CompanyId, StatusId, CreateDate)`,
+> which eliminated the full scan and filesort. No redundant customer or
+> `job (CompanyId, JobNo)` index was added.
 
 ## Service methods (src/services/job.service.ts)
 

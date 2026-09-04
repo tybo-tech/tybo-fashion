@@ -2,7 +2,8 @@
 -- Migration: 20260904_admin_jobs_query_indexes.sql
 -- Sprint 1 — Jobs server-side query path (get-admin-jobs.php)
 --
--- Evidence (recorded against the production-shaped local snapshot, 677 jobs):
+-- Evidence (recorded against the production-shaped local snapshot, 677 jobs,
+-- and confirmed on production):
 --   SHOW INDEX FROM job;      -> PRIMARY only
 --   SHOW INDEX FROM customer; -> PRIMARY only
 --
@@ -16,6 +17,11 @@
 --                 Extra="Using index condition; Backward index scan"
 --                 (full scan + filesort eliminated on all four shapes)
 --     customer -> still eq_ref on PRIMARY
+--
+--   Production confirmation (2026-09-04): SHOW INDEX showed PRIMARY only on
+--   both tables; after CREATE INDEX, EXPLAIN on the default paginated shape
+--   returned type=range, key=idx_job_company_status_date, key_len=232,
+--   rows=627, Extra="Using where" (no filesort).
 --
 --   EXPLAIN AFTER adding idx_customer_company_customer (CompanyId, CustomerId):
 --     customer -> possible_keys=PRIMARY,idx_customer_company_customer,

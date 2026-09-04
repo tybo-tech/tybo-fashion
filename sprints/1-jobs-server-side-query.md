@@ -285,14 +285,14 @@ proven by `EXPLAIN` are added.
 
 #### Tasks
 
-- [ ] **2.1** Run on production and record the full output:
+- [x] **2.1** Run on production and record the full output:
       `SHOW INDEX FROM job;` and `SHOW INDEX FROM customer;` — this baseline
       decides everything that follows; no index is added on assumption.
-- [ ] **2.2** Run `EXPLAIN` on production for the four query shapes: default
+- [x] **2.2** Run `EXPLAIN` on production for the four query shapes: default
       paginated query, status-filtered query, job-number search, and
       customer-name search. Record the output alongside the `SHOW INDEX`
       baseline.
-- [ ] **2.3** Commit a migration artifact before touching production schema:
+- [x] **2.3** Commit a migration artifact before touching production schema:
       `api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`
       containing the named indexes proven useful by 2.2 (expected baseline:
       `CREATE INDEX idx_job_company_status_date ON job (CompanyId, StatusId,
@@ -301,7 +301,7 @@ proven by `EXPLAIN` are added.
       `customer (CompanyId, CustomerId)` (redundant — `CustomerId` is the PK)
       and `job (CompanyId, JobNo)` (does not serve `LIKE '%term%'`; only
       justified if `EXPLAIN` shows exact/prefix job-number lookups matter).
-- [ ] **2.4** Execute only the proven migration on production (phpMyAdmin or
+- [x] **2.4** Execute only the proven migration on production (phpMyAdmin or
       equivalent), then re-run `SHOW INDEX` and the four `EXPLAIN` queries to
       record the improvement.
 - [x] **2.5** Upload via FileZilla: the new endpoint file and required model
@@ -322,9 +322,9 @@ proven by `EXPLAIN` are added.
 - [x] Live `get-admin-jobs.php` passes every Phase 1 verification against
       production data, with totals quoted as **the verified production total**
       (no assumed job counts).
-- [ ] `SHOW INDEX` baseline + four `EXPLAIN` outputs recorded before and after
+- [x] `SHOW INDEX` baseline + four `EXPLAIN` outputs recorded before and after
       index changes; every index addition traces to an `EXPLAIN` result.
-- [ ] Migration SQL committed with named indexes and rollback statements;
+- [x] Migration SQL committed with named indexes and rollback statements;
       `phpMyAdmin` execution is not the only record of the schema change.
 - [x] Upload manifest recorded; `Database.php` and credentials absent from it,
       from commit output, and from any logs.
