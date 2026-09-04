@@ -37,6 +37,59 @@ export interface JobGarmentMutationResponse {
   };
 }
 
+/** Every field of the totals contract must be present and correctly typed. */
+const TOTALS_FIELDS: ReadonlyArray<{ key: keyof JobGarmentMutationResponse['totals']; type: 'number' | 'boolean' }> = [
+  { key: 'itemsSubtotal', type: 'number' },
+  { key: 'discountAmount', type: 'number' },
+  { key: 'amountBeforeDiscount', type: 'number' },
+  { key: 'amountAfterDiscount', type: 'number' },
+  { key: 'hasDiscount', type: 'boolean' },
+  { key: 'shippingPrice', type: 'number' },
+  { key: 'totalCost', type: 'number' },
+  { key: 'paidAmount', type: 'number' },
+  { key: 'dueAmount', type: 'number' },
+];
+
+export function isCompleteTotals(totals: unknown): boolean {
+  if (!totals || typeof totals !== 'object') return false;
+  const t = totals as Record<string, unknown>;
+  return TOTALS_FIELDS.every(({ key, type }) => {
+    const value = t[key];
+    if (type === 'boolean') return typeof value === 'boolean';
+    return typeof value === 'number' && isFinite(value);
+  });
+}
+
+/**
+ * Sprint 5 §6 — the ONLY way a mutation response is treated as success.
+ * Enforces the operation-specific invariants on top of complete totals:
+ *  - add/edit: garment non-null with a valid (and, on edit, matching)
+ *    JobItemId, removedJobItemId null;
+ *  - remove: garment null, removedJobItemId equals the removed garment,
+ *    complete totals.
+ */
+export function isValidGarmentMutationResponse(
+  res: JobGarmentMutationResponse | null | undefined,
+  operation: 'add' | 'edit' | 'remove',
+  expectedJobItemId?: string
+): boolean {
+  if (!res || !isCompleteTotals(res.totals)) return false;
+
+  if (operation === 'remove') {
+    return (
+      res.garment === null &&
+      !!res.removedJobItemId &&
+      res.removedJobItemId === expectedJobItemId
+    );
+  }
+
+  const garmentOk =
+    !!res.garment &&
+    !!res.garment.JobItemId &&
+    (operation === 'add' || res.garment.JobItemId === expectedJobItemId);
+  return garmentOk && res.removedJobItemId === null;
+}
+
 @Injectable({
   providedIn: 'root',
 })

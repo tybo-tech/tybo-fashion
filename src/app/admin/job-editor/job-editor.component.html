@@ -47,7 +47,7 @@
           <span class="small fw-semibold">Choose a customer</span>
           <button type="button" class="btn btn-sm btn-light border" (click)="closeCustomerPicker()" aria-label="Close customer picker"><i class="bi bi-x-lg"></i></button>
         </div>
-        <app-customer-list-view (onSelect)="onCustomerPicked($event)"></app-customer-list-view>
+        <app-customer-list-view [allowAdd]="false" (onSelect)="onCustomerPicked($event)"></app-customer-list-view>
       </div>
     </div>
   </div>

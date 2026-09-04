@@ -8,7 +8,7 @@
         <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers" [disabled]="busy">
       </div>
     </div>
-    <div class="col-auto">
+    <div class="col-auto" *ngIf="allowAdd">
       <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()" [disabled]="busy">
         <i class="bi bi-plus-lg"></i> New Customer
       </button>
@@ -63,6 +63,6 @@
     <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-3 icon-48"><i class="bi bi-people"></i></div>
     <h6 class="mb-1">{{ emptyStateTitle }}</h6>
     <p class="small text-muted mb-3">{{ emptyStateHint }}</p>
-    <button class="btn btn-primary btn-sm" (click)="emptyStateAction()">{{ emptyStateActionLabel }}</button>
+    <button *ngIf="emptyStateHasAction" class="btn btn-primary btn-sm" (click)="emptyStateAction()">{{ emptyStateActionLabel }}</button>
   </div>
 </div>

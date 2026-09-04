@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Job } from 'src/models/job.model';
 import { JobItem } from 'src/models/job-item.model';
 import { User } from 'src/models/user.model';
-import { JobService } from 'src/services/job.service';
+import { JobService, isValidGarmentMutationResponse } from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
@@ -193,7 +193,8 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   cancel(): void {
-    if (this.isDirty && !confirm('Discard unsaved changes?')) return;
+    // Navigate directly — the canDeactivate route guard owns the single
+    // discard confirmation (avoids double prompting).
     this.router.navigate([this.jobDetailsLink]);
   }
 
@@ -210,37 +211,6 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     this.saving = true;
     this.error = null;
 
-    // Success requires the complete contract: non-null garment with the
-    // right ID (on edit) AND the totals object. A partial response is a
-    // failure (Sprint 5 §6).
-    const handle = (res: {
-      garment: JobItem | null;
-      totals?: Record<string, unknown>;
-    }) => {
-      const totalsComplete =
-        !!res?.totals && typeof res.totals === 'object' && 'totalCost' in res.totals;
-      const garmentValid =
-        !!res?.garment &&
-        !!res.garment.JobItemId &&
-        (this.mode === 'new' || res.garment.JobItemId === this.jobItemId);
-
-      if (!garmentValid || !totalsComplete) {
-        this.saving = false;
-        this.fail('The change was not saved as expected. Please try again.');
-        return;
-      }
-
-      // Saved: align the snapshot so the route guard lets us leave.
-      this.jobItem = res.garment || undefined;
-      this.savedSnapshot = this.snapshot();
-      this.saving = false;
-      this.uxService.show_toast(
-        this.mode === 'new' ? 'Garment added successfully' : 'Garment saved successfully',
-        'success'
-      );
-      this.router.navigate([this.jobDetailsLink]);
-    };
-
     const request =
       this.mode === 'new'
         ? this.jobService.addJobItemTransactional(companyId, this.jobId, item)
@@ -252,7 +222,25 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
           );
 
     request.subscribe({
-      next: handle,
+      next: (res) => {
+        // Success only for the complete contract: garment (+ matching ID
+        // on edit), removedJobItemId null and every totals field present
+        // (Sprint 5 §6).
+        if (!isValidGarmentMutationResponse(res, this.mode === 'new' ? 'add' : 'edit', this.jobItemId)) {
+          this.saving = false;
+          this.fail('The change was not saved as expected. Please try again.');
+          return;
+        }
+        // Saved: align the snapshot so the route guard lets us leave.
+        this.jobItem = res.garment || undefined;
+        this.savedSnapshot = this.snapshot();
+        this.saving = false;
+        this.uxService.show_toast(
+          this.mode === 'new' ? 'Garment added successfully' : 'Garment saved successfully',
+          'success'
+        );
+        this.router.navigate([this.jobDetailsLink]);
+      },
       error: () => {
         this.saving = false;
         this.uxService.show_toast(
@@ -276,8 +264,9 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       .removeJobItemTransactional(this.user.CompanyId, this.jobId, this.jobItem.JobItemId)
       .subscribe({
         next: (res) => {
-          // Success only when the transaction (removal + totals) committed.
-          if (!res || !res.removedJobItemId || !res.totals) {
+          // Success only for the complete remove contract: garment null,
+          // the removed ID matching the requested garment, complete totals.
+          if (!isValidGarmentMutationResponse(res, 'remove', this.jobItem?.JobItemId)) {
             this.removing = false;
             this.fail('The garment was not removed as expected. Please try again.');
             return;

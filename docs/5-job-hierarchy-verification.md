@@ -8,6 +8,11 @@ Sprint spec: `sprints/5-job-hierarchy-overview-plain-garment-list-garment-detail
 > inside the editor, missing garment unsaved-change protection, lenient
 > mutation-success validation). All four blockers plus the hardening items
 > are fixed and re-verified below.
+>
+> Revision 3: closes the final three frontend edge cases — single discard
+> confirmation (guards own it), New Customer exits hidden in the embedded
+> customer picker (`allowAdd`), and one shared complete-response validator
+> enforcing every totals field plus operation-specific invariants.
 
 ## Construction commits
 
@@ -81,10 +86,22 @@ Sprint spec: `sprints/5-job-hierarchy-overview-plain-garment-list-garment-detail
   add/update/remove; loading/404/error+Retry states; duplicate submit/remove
   protection; **Remove from job** as quiet bottom danger action with a
   confirmation naming the garment and explaining totals recalculation.
-- **Mutation-success validation is strict**: add requires a non-null garment
-  with a `JobItemId` and a complete totals object; edit additionally requires
-  the returned `JobItemId` to match the edited one; removal requires
-  `removedJobItemId` + totals. Partial responses surface as failure states.
+- **Mutation-success validation is strict and shared**:
+  `isValidGarmentMutationResponse()` (in `job.service.ts`) requires EVERY
+  totals field (`itemsSubtotal`, `discountAmount`, `amountBeforeDiscount`,
+  `amountAfterDiscount`, `hasDiscount`, `shippingPrice`, `totalCost`,
+  `paidAmount`, `dueAmount`) present and correctly typed (finite numbers /
+  boolean), plus the operation-specific invariants: add — garment non-null
+  with a `JobItemId`, `removedJobItemId` null; edit — additionally matching
+  `JobItemId`; remove — garment null, `removedJobItemId` equal to the
+  requested garment, complete totals. Anything else is a failure state.
+- **Single discard confirmation**: `cancel()` in both editors navigates
+  directly; the `canDeactivate` route guards own the one and only
+  confirmation prompt.
+- **No New Customer exit from the job editor's picker**:
+  `CustomerListViewComponent` takes `[allowAdd]="false"` and hides its New
+  Customer header button and empty-state action when embedded in the editor,
+  preventing the `?return=picker` wizard from landing on the Add Job dialog.
 - **Unsaved-change protection on garment routes**: snapshot/dirty tracking,
   `canDeactivate` guard on both `/garments/new` and `/garments/:garmentId`,
   and a `beforeunload` handler. Successful save/remove aligns the snapshot

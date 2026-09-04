@@ -16,6 +16,11 @@ export class CustomerListViewComponent implements OnDestroy {
   @Output() onAdd = new EventEmitter<CustomerListItem>();
   // When true (a job is being created), all selection rows are disabled.
   @Input() busy = false;
+  // Sprint 5: when false (embedded in the job editor), the New Customer
+  // exits are hidden — the wizard's ?return=picker flow lands on the Jobs
+  // page's Add Job dialog, which is the wrong workflow from the editor. A
+  // dedicated return-to-editor creation flow can be added later.
+  @Input() allowAdd = true;
   user = this.userService.getUser;
   query = '';
   loading = true;
@@ -207,6 +212,11 @@ export class CustomerListViewComponent implements OnDestroy {
     if (this.isPageBeyondEnd) return 'Go to page 1';
     if (this.hasActiveSearch) return 'Clear search';
     return 'New Customer';
+  }
+
+  /** Whether the empty state has any action at all. */
+  get emptyStateHasAction(): boolean {
+    return this.allowAdd || this.isPageBeyondEnd || this.hasActiveSearch;
   }
 
   emptyStateAction(): void {

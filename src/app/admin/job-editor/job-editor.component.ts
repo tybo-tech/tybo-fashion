@@ -145,7 +145,8 @@ export class JobEditorComponent {
   }
 
   cancel(): void {
-    if (this.isDirty && !confirm('Discard unsaved changes?')) return;
+    // Navigate directly — the canDeactivate route guard owns the single
+    // discard confirmation (avoids double prompting).
     this.router.navigate([this.overviewLink]);
   }
 
