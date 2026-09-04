@@ -160,6 +160,11 @@ EXPLAIN SELECT ... FROM customer c LEFT JOIN job j ON c.CustomerId = j.CustomerI
   improvement.** If the detail lookup is already `type=const`/`type=eq_ref`
   on `PRIMARY`, no index is needed. Record the evidence and close.
 
+> **Status (2026-09-04):** the endpoint is live and verified (sections 3a–3f
+> pass). The `SHOW INDEX`/`EXPLAIN` checks require production DB access,
+> which is not available to the automation. Run the SQL above in the hosting
+> panel and record the output here before the frontend gate is lifted.
+
 ---
 
 ## 5. Hard gate
@@ -269,3 +274,49 @@ After the backend passes and the frontend is deployed, update
 - Record rollback files and any index decision (added or "no index added").
 - Keep the local matrix evidence clearly labelled as local, and add a separate
   production-evidence section.
+
+---
+
+## 9. Production evidence (2026-09-04, backend)
+
+The two-file backend manifest was uploaded and verified live. All checks
+below passed.
+
+### Endpoint responses
+
+- **200** — `get-admin-customer-detail.php?CompanyId&CustomerId=9fae761b-…`
+  returned the full `customer` + `analytics` contract.
+- **400** — missing `CompanyId` → `{"error":"CompanyId is required."}`.
+- **400** — missing `CustomerId` → `{"error":"CustomerId is required."}`.
+- **404** — unknown `CustomerId` → `{"error":"Customer not found."}`.
+
+### Security / contract
+
+- Response contains **neither** `"Password"` **nor** `"UserToken"`.
+- No `Undefined` / `Warning` text in the raw body (no PHP warnings).
+
+### Analytics (Fie-Fie, `9fae761b-a2ce-11eb-bcb8-ac1f6bd0427e`)
+
+```json
+{
+  "TotalJobs": 32, "ActiveJobs": 0, "CompletedJobs": 22,
+  "CustomerLifetimeValue": 82215, "OutstandingBalance": 77365,
+  "PaymentCompletionRate": 5.9, "ProfileCompleteness": 67,
+  "LastActivityDate": "2025-10-01 09:03:38"
+}
+```
+
+### Legacy regression
+
+- `get.php?CustomerId=9fae761b-…` → `200`, size 21126 (unchanged).
+- `list.php?CustomerType=Customer&CompanyId=…` → `200`, size 659298
+  (unchanged).
+- New Job picker (current production build) still calls `list.php` → `200`
+  and renders the customer list (legacy path intact).
+
+### Pending
+
+- `SHOW INDEX` / `EXPLAIN` (requires production DB access — run the SQL in
+  section 4 and record).
+- Angular bundle deployment (blocked by the hard gate until the above is
+  recorded).
