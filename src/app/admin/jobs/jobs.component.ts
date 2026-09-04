@@ -1,6 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Job } from 'src/models/job.model';
+import { BehaviorSubject, EMPTY, Subject, Subscription } from 'rxjs';
+import { catchError, debounceTime, switchMap } from 'rxjs/operators';
+import { JobListItem } from 'src/models/job.model';
 import { JobService } from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
 
@@ -9,19 +11,43 @@ import { UserService } from 'src/services/user.service';
   templateUrl: './jobs.component.html',
   styleUrls: ['./jobs.component.scss'],
 })
-export class JobsComponent implements OnInit {
+export class JobsComponent implements OnInit, OnDestroy {
   show_add = false;
+  // Text currently shown in the search box (updates instantly as the user types)
   query = '';
+  // Canonical status slug in the URL ('' = all statuses)
   selectedStatus = '';
   loading = true;
   error: string | null = null;
   user = this.userService.getUser;
-  jobs?: Job[];
-  all_jobs: Job[] | undefined;
-  Math = Math;
+  jobs: JobListItem[] = [];
+  pagination = {
+    page: 1,
+    pageSize: 20,
+    totalItems: 0,
+    totalPages: 1,
+    hasPrevious: false,
+    hasNext: false,
+  };
+
+  // Last request parameters — Retry re-issues exactly these
+  private lastRequest?: { companyId: string; page: number; q: string; status: string };
+  private pendingRequest?: { companyId: string; page: number; q: string; status: string };
+
+  // Search debounce: ngModel pushes here; the URL (and thus the request)
+  // updates only after ~300ms of settled input.
+  private searchInput$ = new Subject<string>();
+  // Request driver: every URL change emits here; switchMap cancels obsolete
+  // requests so an older response can never replace a newer one.
+  private request$ = new Subject<{ companyId: string; page: number; q: string; status: string }>();
+  private requestSub?: Subscription;
+  private searchSub?: Subscription;
+  // Guard: a navigation triggered by this component (URL sync) must not be
+  // treated as new state to fetch again.
+  private suppressNextParamSync = false;
+  private userSub?: Subscription;
 
   pageSize = 20;
-  currentPage = 1;
 
   constructor(
     private jobService: JobService,
@@ -34,178 +60,200 @@ export class JobsComponent implements OnInit {
       return;
     }
 
-    this.jobService.getJobs(this.user.CompanyId).subscribe({
-      next: (data) => {
-        this.jobs = data || [];
-        this.all_jobs = data || [];
-        this.loading = false;
-        this.error = null;
-        this.applyRouteState();
-      },
-      error: (error) => {
-        console.error('Error loading jobs:', error);
-        this.error = 'Failed to load jobs. Please try again.';
-        this.jobs = [];
-        this.all_jobs = [];
-        this.loading = false;
-      },
-    });
-  }
-
-  ngOnInit(): void {
-    // Canonical interactive filter URL: /store/admin/jobs?status=&q=
-    // Legacy /store/admin/jobs/:status links redirect here.
-    this.route.queryParamMap.subscribe((params) => {
-      this.selectedStatus = this.normalizeStatus(params.get('status') || '');
-      this.query = params.get('q') || '';
-      if (this.all_jobs) this.filter(false);
-    });
-
-    this.route.paramMap.subscribe((params) => {
-      // Migrate legacy /jobs/:status path to the canonical query-param URL
-      const legacy = params.get('status');
-      if (legacy) {
-        this.router.navigate(['/store/admin/jobs'], {
-          queryParams: { status: this.slugify(legacy) },
-          queryParamsHandling: 'merge',
-          replaceUrl: true,
-        });
+    this.userSub = this.userService.userObservable?.subscribe((user) => {
+      if (!user) {
+        this.router.navigate(['/sign-in']);
+        return;
       }
     });
   }
 
-  private normalizeStatus(raw: string): string {
-    if (!raw) return '';
-    const m: Record<string, string> = {
-      'not-started': 'Not Started',
-      'in-progress': 'In Progress',
-      'stuck': 'Stuck',
-      'complete': 'Complete',
-      'completed': 'Completed',
-      'terminated': 'Terminated',
-    };
-    const key = raw.toLowerCase().trim();
-    return m[key] || raw;
+  ngOnInit(): void {
+    // Wire the request pipeline FIRST: queryParamMap emits its current value
+    // synchronously on subscribe, so a Subject subscriber must already exist
+    // or that first emission is lost.
+    //
+    // One in-flight request at a time; a newer emission cancels the older
+    // HTTP request and its response can never overwrite newer state.
+    //
+    // HTTP errors are caught INSIDE switchMap: an erroring inner observable
+    // would otherwise terminate the whole stream, making Retry (a new
+    // emission on request$) a silent no-op. With the inner catchError the
+    // stream survives every failure and Retry re-issues the request.
+    this.requestSub = this.request$
+      .pipe(
+        switchMap((req) => {
+          this.lastRequest = req;
+          this.loading = true;
+          this.error = null;
+          return this.jobService
+            .getAdminJobsPage(
+              req.companyId,
+              req.page,
+              this.pageSize,
+              req.q,
+              req.status
+            )
+            .pipe(
+              catchError((err) => {
+                this.loading = false;
+                // HTTP 400/500 is a failure, never "No jobs found".
+                this.error =
+                  err?.status === 400
+                    ? 'This request is not valid. Please adjust the filters.'
+                    : 'Failed to load jobs. Please try again.';
+                return EMPTY;
+              })
+            );
+        })
+      )
+      .subscribe({
+        next: (res) => {
+          this.jobs = res?.items || [];
+          if (res?.pagination) {
+            this.pagination = res.pagination;
+          }
+          this.loading = false;
+          this.error = null;
+        },
+      });
+
+    // Canonical interactive filter URL: /store/admin/jobs?page=&q=&status=
+    // Legacy /store/admin/jobs/:status links redirect here.
+    this.route.paramMap.subscribe((params) => {
+      const legacy = params.get('status');
+      if (legacy) {
+        const mergedQuery = this.route.snapshot.queryParamMap.get('q') || '';
+        this.router.navigate(['/store/admin/jobs'], {
+          queryParams: { status: this.slugify(legacy), q: mergedQuery || null },
+          replaceUrl: true,
+        });
+      }
+    });
+
+    // URL is the single source of truth: every query-param change drives one
+    // request through switchMap.
+    this.route.queryParamMap.subscribe((params) => {
+      if (this.suppressNextParamSync) {
+        this.suppressNextParamSync = false;
+        return;
+      }
+      this.selectedStatus = params.get('status') || '';
+      // Show the restored query instantly (no debounce on restore).
+      this.query = params.get('q') || '';
+
+      // The URL carries the page. Search/status handlers strip `page` from
+      // the URL when filters change, so a fresh URL with ?page=2&q=…&status=…
+      // restores exactly that page (refresh/back), while in-app filter
+      // changes reset to page 1 by removing `page`.
+      this.requestNext(Math.max(1, parseInt(params.get('page') || '1', 10) || 1));
+    });
+
+    // Debounced search: URL updates only after the input settles. No
+    // distinctUntilChanged here — the URL cycle can legitimately repeat a
+    // query (type → reset → type the same text again), and debounceTime
+    // already collapses rapid typing into one emission.
+    this.searchSub = this.searchInput$
+      .pipe(debounceTime(300))
+      .subscribe((value) => {
+        this.suppressNextParamSync = false;
+        this.router.navigate([], {
+          relativeTo: this.route,
+          queryParams: { q: value || null, page: null },
+          queryParamsHandling: 'merge',
+        });
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.requestSub?.unsubscribe();
+    this.searchSub?.unsubscribe();
+    this.userSub?.unsubscribe();
   }
 
   private slugify(status: string): string {
     return status.toLowerCase().replace(/\s+/g, '-');
   }
 
-  // Sync current search + status into the URL; refresh restores filters.
-  private syncUrl(): void {
-    this.router.navigate([], {
-      relativeTo: this.route,
-      queryParams: { status: this.selectedStatus ? this.slugify(this.selectedStatus) : null, q: this.query || null },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-
-  private applyRouteState(): void {
-    // Apply filters once data has arrived (queryParamMap subscription also fires)
-    this.filter(false);
-  }
-
-  // Enhanced filtering; writeUrl controls whether the URL is updated
-  filter(writeUrl = true) {
-    this.currentPage = 1;
-    if (!this.query && !this.selectedStatus) {
-      this.jobs = this.all_jobs;
-      if (writeUrl) this.syncUrl();
-      return;
-    }
-
-    let filteredJobs = this.all_jobs || [];
-
-    // Filter by search query
-    if (this.query) {
-      filteredJobs = filteredJobs.filter((job) => {
-        const searchTerm = this.query.toLowerCase();
-        return (
-          job.Customer?.Name?.toLowerCase().includes(searchTerm) ||
-          job.Customer?.PhoneNumber?.includes(this.query) ||
-          job.JobNo?.toLowerCase().includes(searchTerm) ||
-          job.Metadata?.InvoiceNo?.toLowerCase().includes(searchTerm) ||
-          job.Tittle?.toLowerCase().includes(searchTerm)
-        );
-      });
-    }
-
-    // Filter by status — compare case-insensitively because the database
-    // and Job Details use "Not started" while the filter options use
-    // "Not Started".
-    if (this.selectedStatus) {
-      const wanted = this.selectedStatus.toLowerCase();
-      filteredJobs = filteredJobs.filter(
-        (job) =>
-          (job.Status || '').toLowerCase() === wanted ||
-          (job.StatusDisplay || '').toLowerCase() === wanted
-      );
-    }
-
-    this.jobs = filteredJobs;
-    if (writeUrl) this.syncUrl();
+  // Queue the next request; emissions replace each other via switchMap.
+  private requestNext(page: number): void {
+    const user = this.userService.getUser;
+    if (!user?.CompanyId) return;
+    const q = (this.query || '').trim();
+    const req = { companyId: user.CompanyId, page, q, status: this.selectedStatus };
+    this.pendingRequest = req;
+    this.request$.next(req);
   }
 
   onSearchInput() {
-    this.filter();
+    this.searchInput$.next(this.query);
   }
 
   onStatusChange() {
-    this.filter();
+    // Dropdown holds slugs; write straight to the URL (resets to page 1 via
+    // the queryParamMap handler because the status value changes).
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { status: this.selectedStatus || null, page: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   resetFilters(): void {
     this.query = '';
     this.selectedStatus = '';
-    // Clear path status + query params by returning to the canonical URL
-    this.router.navigate(['/store/admin/jobs'], { replaceUrl: true });
-    this.filter(false);
-  }
-
-  // Pagination over the filtered collection
-  get totalPages(): number {
-    return Math.max(1, Math.ceil((this.jobs?.length || 0) / this.pageSize));
-  }
-
-  get pagedJobs(): Job[] {
-    const start = (this.currentPage - 1) * this.pageSize;
-    return (this.jobs || []).slice(start, start + this.pageSize);
-  }
-
-  get pageStart(): number {
-    if (!this.jobs || this.jobs.length === 0) return 0;
-    return (this.currentPage - 1) * this.pageSize + 1;
-  }
-
-  get pageEnd(): number {
-    if (!this.jobs || this.jobs.length === 0) return 0;
-    return Math.min(this.currentPage * this.pageSize, this.jobs.length);
-  }
-
-  get hasPreviousPage(): boolean {
-    return this.currentPage > 1;
-  }
-
-  get hasNextPage(): boolean {
-    return this.currentPage < this.totalPages;
+    // Clean canonical URL: no page, q or status params.
+    this.router.navigate(['/store/admin/jobs']);
   }
 
   prevPage() {
-    if (this.hasPreviousPage) this.currentPage--;
+    if (this.pagination.hasPrevious) this.goToPage(this.pagination.page - 1);
   }
 
   nextPage() {
-    if (this.hasNextPage) this.currentPage++;
+    if (this.pagination.hasNext) this.goToPage(this.pagination.page + 1);
   }
 
-  trackByJobId(_index: number, job: Job): string {
+  private goToPage(page: number): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { page: page > 1 ? String(page) : null },
+      queryParamsHandling: 'merge',
+    });
+  }
+
+  retry(): void {
+    const req = this.lastRequest;
+    if (!req) return;
+    // Explicit user action: re-issue the identical request even though the
+    // URL has not changed.
+    this.request$.next({ ...req });
+  }
+
+  get pageStart(): number {
+    if (!this.jobs.length) return 0;
+    return (this.pagination.page - 1) * this.pagination.pageSize + 1;
+  }
+
+  get pageEnd(): number {
+    if (!this.jobs.length) return 0;
+    return (this.pagination.page - 1) * this.pagination.pageSize + this.jobs.length;
+  }
+
+  get totalPages(): number {
+    return Math.max(1, this.pagination.totalPages);
+  }
+
+  get currentPage(): number {
+    return this.pagination.page;
+  }
+
+  trackByJobId(_index: number, job: JobListItem): string {
     return job.JobId;
   }
 
   statusBadgeClass(status: string): string {
-    // Case-insensitive: the database uses "Not started", the UI "Not Started".
+    // Case-insensitive over the canonical set returned by the API.
     const map: Record<string, string> = {
       'not started': 'bg-light text-dark',
       'in progress': 'bg-dark-subtle text-dark',
@@ -213,6 +261,7 @@ export class JobsComponent implements OnInit {
       'complete': 'bg-success-subtle text-success',
       'terminated': 'bg-danger-subtle text-danger',
       'stuck': 'bg-warning-subtle text-dark',
+      'paused': 'bg-secondary-subtle text-dark',
     };
     return map[(status || '').toLowerCase()] || 'bg-light text-dark';
   }

@@ -18,12 +18,12 @@
     <div class="col-auto">
       <select class="form-select form-select-sm" [(ngModel)]="selectedStatus" (change)="onStatusChange()" aria-label="Filter by status">
         <option value="">All statuses</option>
-        <option value="Not Started">Not Started</option>
-        <option value="In Progress">In Progress</option>
-        <option value="Completed">Completed</option>
-        <option value="Complete">Complete</option>
-        <option value="Stuck">Stuck</option>
-        <option value="Terminated">Terminated</option>
+        <option value="not-started">Not started</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="stuck">Stuck</option>
+        <option value="terminated">Terminated</option>
+        <option value="paused">Paused</option>
       </select>
     </div>
     <div class="col-auto" *ngIf="query || selectedStatus">
@@ -35,38 +35,41 @@
     <div class="spinner-border spinner-border-sm"></div>
     <div class="small text-muted mt-2">Loading jobs…</div>
   </div>
-  <div *ngIf="error && !loading" class="alert alert-danger py-2 small">{{ error }}</div>
+  <div *ngIf="error && !loading" class="alert alert-danger py-2 small" role="alert">
+    <div>{{ error }}</div>
+    <button class="btn btn-outline-secondary btn-sm mt-2" type="button" (click)="retry()">Retry</button>
+  </div>
 
   <!-- Jobs list: unboxed on mobile, same structure on desktop -->
-  <div *ngIf="!loading && !error && jobs && jobs.length > 0">
+  <div *ngIf="!loading && !error && jobs.length > 0">
     <ul class="list-group list-group-flush jobs-list">
-      <li *ngFor="let job of pagedJobs; trackBy: trackByJobId" class="list-group-item jobs-list-item">
+      <li *ngFor="let job of jobs; trackBy: trackByJobId" class="list-group-item jobs-list-item">
         <a class="job-row-link" [routerLink]="['/store/admin/job', job.JobId, 'jobs']" [attr.aria-label]="'Open job ' + job.JobNo">
           <span class="job-row-main min-w-0">
             <span class="job-no text-truncate">{{ job.JobNo }}</span>
-            <span class="job-customer text-truncate">{{ job.Customer?.Name || job.CustomerName || '—' }}</span>
+            <span class="job-customer text-truncate">{{ job.CustomerName }}</span>
           </span>
           <span class="job-row-side flex-shrink-0">
-            <span class="badge border fw-semibold" [ngClass]="statusBadgeClass(job.Status)">{{ job.StatusDisplay || job.Status }}</span>
+            <span class="badge border fw-semibold" [ngClass]="statusBadgeClass(job.Status)">{{ job.Status }}</span>
             <i class="bi bi-chevron-right text-muted small d-none d-sm-inline"></i>
           </span>
         </a>
       </li>
     </ul>
 
-    <!-- Pagination -->
+    <!-- Pagination: driven by API metadata -->
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
-      <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ jobs.length }}</span>
+      <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
       <nav class="d-flex align-items-center gap-1" aria-label="Jobs pagination">
-        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!hasPreviousPage" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
-        <span class="small text-muted px-1">Page {{ currentPage }} of {{ totalPages }}</span>
-        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!hasNextPage" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
+        <span class="small text-muted px-1">Page {{ pagination.page }} of {{ totalPages }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!pagination.hasNext" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
       </nav>
     </div>
   </div>
 
-  <!-- Empty state -->
-  <div *ngIf="!loading && !error && jobs && jobs.length === 0" class="text-center py-5">
+  <!-- Empty state (unfiltered: no jobs at all; filtered/search: adjust filters) -->
+  <div *ngIf="!loading && !error && jobs.length === 0" class="text-center py-5">
     <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-3 icon-48"><i class="bi bi-briefcase"></i></div>
     <h6 class="mb-1">No jobs found</h6>
     <p class="small text-muted mb-3"><span *ngIf="query || selectedStatus">Try adjusting search or reset filters.</span><span *ngIf="!query && !selectedStatus">Create your first job to get started.</span></p>
