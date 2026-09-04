@@ -514,7 +514,7 @@ class Job
             COALESCE(
                 NULLIF(TRIM(CONCAT_WS(' ', customer.Name, customer.Surname)), ''),
                 NULLIF(job.CustomerName, ''),
-                'â€”'
+                '—'
             ) AS CustomerName,
             CASE LOWER(TRIM(job.Status))
                 WHEN 'not started' THEN 'Not started'
