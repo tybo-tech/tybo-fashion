@@ -3,6 +3,8 @@
 // Additive endpoint: does not modify get-jobs.php or any write contract.
 // StatusId = 1 is the active-record condition only; workflow state is read
 // from and filtered on job.Status. No order/payment data is fetched.
+// Database connection failures are absorbed here (Database.php unmodified)
+// and reported as a generic 500.
 
 include_once '../../config/Database.php';
 include_once '../../models/Job.php';
@@ -40,15 +42,16 @@ if (mb_strlen($q) > 100) {
 }
 
 // ── Status: slug → canonical stored value(s); unknown slug → 400 ─────────
-// Canonical set: Not started, In Progress, Completed, Stuck, Terminated,
-// Paused. Legacy 'Complete' is an alias of 'Completed' (a completed filter
-// matches both). Empty status = all statuses. Matching is case-insensitive
-// because DB casing varies ('Not started' vs 'Not Started').
+// Canonical display set: Not started, In Progress, Completed, Stuck,
+// Terminated, Paused. Filter aliases: legacy 'Complete' and 'Done' map to
+// Completed; 'Working on it' maps to In Progress. Empty status = all
+// statuses. Matching is case-insensitive because DB casing varies
+// ('Not started' vs 'Not Started').
 $statusSlugToValues = array(
   'not-started' => array('not started'),
-  'in-progress' => array('in progress'),
-  'completed' => array('completed', 'complete'),
-  'complete' => array('completed', 'complete'),
+  'in-progress' => array('in progress', 'working on it'),
+  'completed' => array('completed', 'complete', 'done'),
+  'complete' => array('completed', 'complete', 'done'),
   'stuck' => array('stuck'),
   'terminated' => array('terminated'),
   'paused' => array('paused'),
@@ -60,11 +63,32 @@ if ($rawStatus !== '' && !array_key_exists($rawStatus, $statusSlugToValues)) {
 }
 $statusValues = $rawStatus !== '' ? $statusSlugToValues[$rawStatus] : array();
 
+// ── Connection guard: Database::connect() may echo a driver error and
+// return null. Never surface it; validate the handle; fail generically. ───
 $database = new Database();
-$db = $database->connect();
+$db = null;
+try {
+  ob_start();
+  $db = $database->connect();
+  $connectionOutput = ob_get_clean();
+} catch (Throwable $connectionError) {
+  ob_end_clean();
+  $connectionOutput = null;
+  $db = null;
+}
+if (!($db instanceof PDO)) {
+  error_log('get-admin-jobs: database connection unavailable.');
+  get_admin_jobs_respond(array('error' => 'Unable to load jobs.'), 500);
+}
 
 $job = new Job($db);
-$result = $job->GetAdminJobsPage($CompanyId, $statusValues, $q, $pageSize, ($page - 1) * $pageSize);
+$result = null;
+try {
+  $result = $job->GetAdminJobsPage($CompanyId, $statusValues, $q, $pageSize, ($page - 1) * $pageSize);
+} catch (Throwable $queryError) {
+  error_log('get-admin-jobs: query failed.');
+  get_admin_jobs_respond(array('error' => 'Unable to load jobs.'), 500);
+}
 
 if (is_array($result) && isset($result['ERROR'])) {
   get_admin_jobs_respond(array('error' => 'Unable to load jobs.'), 500);

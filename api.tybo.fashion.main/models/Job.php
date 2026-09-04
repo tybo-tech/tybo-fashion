@@ -504,6 +504,7 @@ class Job
      * Returns { items: [{JobId, JobNo, CustomerName, Status}], total } or ERROR array.
      * Filters/search run against job.Status (never StatusId); StatusId = 1
      * remains the active-record condition only.
+     * $statusValues must already be normalized LOWERCASE stored values.
      */
     public function GetAdminJobsPage($CompanyId, $statusValues, $search, $limit, $offset)
     {
@@ -515,7 +516,14 @@ class Job
                 NULLIF(job.CustomerName, ''),
                 '—'
             ) AS CustomerName,
-            job.Status
+            CASE LOWER(job.Status)
+                WHEN 'completed' THEN 'Completed'
+                WHEN 'complete' THEN 'Completed'
+                WHEN 'done' THEN 'Completed'
+                WHEN 'in progress' THEN 'In Progress'
+                WHEN 'working on it' THEN 'In Progress'
+                ELSE 'Not started'
+            END AS Status
         FROM job
         LEFT JOIN customer
             ON customer.CustomerId = job.CustomerId
