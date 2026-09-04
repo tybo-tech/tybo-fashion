@@ -389,18 +389,40 @@ state and no legacy analytics/card content is rendered or requested.
       cancellation, pagination boundaries, refresh, Back/Forward, reset,
       empty states, beyond-last page, simulated 400/500 and Retry.
 - [x] Playwright: open a row and verify the correct Customer dashboard loads.
-- [ ] Playwright: add a customer, return/refresh correctly and open it.
-- [x] Regression: New Job picker still lists, adds and selects a customer and
-      creates a job with the selected `CustomerId`.
-- [x] Regression: customer detail analytics, measurements and edit/save remain
-      available and unchanged.
+- [ ] Playwright: add a customer, return/refresh correctly and open it
+      (embedded Add Customer form opened with contact/address/measurement
+      fields; did not submit, so no production record created).
+- [~] Regression: New Job picker lists customers (all 423 rendered) and opens
+      the embedded Add Customer form; still wired to legacy `customer/list.php`
+      via `CustomerService.getCustomers()`. Selection + job creation was **not
+      exercised**: `AddJobComponent.selected()` immediately calls
+      `jobService.add()`, which would create a real production job.
+- [~] Regression: customer detail analytics, job statistics, insights, contact
+      and measurements all loaded with stored values; Edit Customer opened
+      prefilled with an enabled Update action. Update was **not submitted**
+      because it would mutate a real record.
 - [x] Confirm Network shows no Customer list request to legacy `list.php` on
       the standalone page and no full-collection scan in browser code.
-- [x] Confirm server/application logs contain no complete customer payloads.
+- [ ] Confirm server/application logs contain no complete customer payloads.
+      Browser console had no such logging, but the PHP/server log files are
+      not exposed through the admin app and could not be verified via
+      Playwright; read-only log access was not provided.
 - [x] Run `npm run build`, the project’s spec TypeScript check, `php -l` and
       `git diff --check`; document only pre-existing baseline failures.
 - [x] Update `docs/admin-ui-patterns.md` with the Customer list pattern and
       `docs/customer-workflow-baseline.md` with the list/detail/picker boundary.
+
+> **Step 6 production status (2026-09-04) — partial pass:** genuine login
+> succeeded through the production sign-in form (dashboard showed “Welcome
+> back, sibahle.”); the New Job picker, embedded Add Customer form, customer
+> dashboard (financial analytics, job stats, insights, contact, measurements)
+> and prefilled Edit Customer all rendered. The two write paths are **deferred**
+> so no real production record is created/mutated: (1) customer selection in
+> New Job (calls `jobService.add()`), and (2) Update Customer submit. Server-log
+> verification is also deferred because the log files are not exposed through
+> the app and no read-only log access was provided. These three lines remain
+> unchecked and close only once a disposable test target / read-only log view
+> is authorized.
 
 **Exit:** functional matrix passes with zero console errors and measured
 payload/query evidence is recorded.
@@ -468,7 +490,8 @@ docs/
 - [x] URL, refresh, Back/Forward, debounce/cancel, page boundaries, loading,
       empty, error and Retry behaviour all pass.
 - [ ] New Customer and New Job customer selection both pass regression tests.
-- [x] Full customer result logging is removed.
+- [ ] Full customer result logging is removed (removal is in code, but server-
+      log verification deferred for lack of read-only log access).
 - [x] Any retained database index is backed by before/after production
       `EXPLAIN` evidence and a committed rollback-capable migration; otherwise
       the sprint explicitly records that no index was added.
