@@ -338,19 +338,19 @@ Introduce the client contract without changing list behaviour yet.
 
 #### Tasks
 
-- [ ] **3.1** Add `JobListItem` (`JobId`, `JobNo`, `CustomerName`, `Status`)
+- [x] **3.1** Add `JobListItem` (`JobId`, `JobNo`, `CustomerName`, `Status`)
       and `JobsPageResponse` (`items`, `pagination`) interfaces.
-- [ ] **3.2** Add a jobs-list service method building the request with
+- [x] **3.2** Add a jobs-list service method building the request with
       Angular `HttpParams` (`CompanyId`, `page`, `pageSize`, `q`, `status`)
       returning `Observable<JobsPageResponse>`.
-- [ ] **3.3** Keep the legacy `getJobs()` call intact for rollback; do not
+- [x] **3.3** Keep the legacy `getJobs()` call intact for rollback; do not
       remove `all_jobs` in this phase.
 
 #### Exit Criteria
 
-- [ ] Service method compiles and, against the live endpoint, returns typed
+- [x] Service method compiles and, against the live endpoint, returns typed
       `items` + `pagination`.
-- [ ] Existing jobs component behaviour is unchanged (regression check on
+- [x] Existing jobs component behaviour is unchanged (regression check on
       `/store/admin/jobs`).
 
 ---
@@ -361,40 +361,40 @@ Replace browser-side filtering/pagination with server-driven state.
 
 #### Tasks
 
-- [ ] **4.1** Remove `all_jobs`, browser `filter()` scanning and array
+- [x] **4.1** Remove `all_jobs`, browser `filter()` scanning and array
       `slice()` pagination from `jobs.component.ts`.
-- [ ] **4.2** Drive the list from URL query params `page`, `q`, `status`;
+- [x] **4.2** Drive the list from URL query params `page`, `q`, `status`;
       write every change back to the URL via the Router (no reload).
-- [ ] **4.3** Debounce text search ~300ms; use `switchMap` so obsolete
+- [x] **4.3** Debounce text search ~300ms; use `switchMap` so obsolete
       requests are cancelled; reset to `page=1` whenever `q` or `status`
       changes.
-- [ ] **4.4** Use API `totalItems`/`totalPages`/`hasPrevious`/`hasNext` for
+- [x] **4.4** Use API `totalItems`/`totalPages`/`hasPrevious`/`hasNext` for
       pagination controls and the "Showing X–Y of Z" line; keep the existing
       minimal row markup and `trackByJobId`.
-- [ ] **4.5** Preserve page, search and status across refresh and back
+- [x] **4.5** Preserve page, search and status across refresh and back
       navigation (URL is the single source of truth).
-- [ ] **4.6** Keep the legacy `/jobs/:status` redirect and the Reset action
+- [x] **4.6** Keep the legacy `/jobs/:status` redirect and the Reset action
       (navigates to canonical route, page 1, cleared filters).
-- [ ] **4.7** Align the status filter dropdown with the canonical set: one
+- [x] **4.7** Align the status filter dropdown with the canonical set: one
       `Completed` option (server matches both `Completed` and legacy
       `Complete`), plus `Paused`; remove the separate `Complete` option.
       Render status badges from `JobListItem.Status` with the existing
       case-insensitive badge-class mapping; normalize `Complete` →
       `Completed` for display.
-- [ ] **4.8** Retry must re-issue the HTTP request even when URL parameters
+- [x] **4.8** Retry must re-issue the HTTP request even when URL parameters
       have not changed (retry is an explicit user action, never a no-op).
 
 #### Exit Criteria
 
-- [ ] Network tab shows one lean request per page/filter/search change — no
+- [x] Network tab shows one lean request per page/filter/search change — no
       full-collection download.
-- [ ] URL reflects `page`, `q`, `status`; refresh restores the exact page.
-- [ ] Rapid typing issues exactly one request per settled input (debounce +
+- [x] URL reflects `page`, `q`, `status`; refresh restores the exact page.
+- [x] Rapid typing issues exactly one request per settled input (debounce +
       `switchMap` verified).
-- [ ] Pagination metadata comes from the API, not client arithmetic; a page
+- [x] Pagination metadata comes from the API, not client arithmetic; a page
       beyond `totalPages` renders the empty state while keeping accurate
       metadata.
-- [ ] Retry triggers a new network request with identical parameters.
+- [x] Retry triggers a new network request with identical parameters.
 
 ---
 
@@ -404,34 +404,34 @@ Finish the list UX and prove no regressions.
 
 #### Tasks
 
-- [ ] **5.1** Add loading, empty (per filter/search), and failure states with
+- [x] **5.1** Add loading, empty (per filter/search), and failure states with
       a Retry control that repeats the failed request even when URL parameters
       have not changed.
-- [ ] **5.2** Verify Previous/Next disable correctly at page boundaries per
+- [x] **5.2** Verify Previous/Next disable correctly at page boundaries per
       API metadata.
-- [ ] **5.3** Regression-check the untouched flows: job detail, routed item
+- [x] **5.3** Regression-check the untouched flows: job detail, routed item
       add/edit (payloads byte-identical to `docs/job-workflow-baseline.md`),
       bottom-nav active states, brand colour, single More control.
-- [ ] **5.4** Run `php -l` on any PHP files changed since Phase 1, plus
+- [x] **5.4** Run `php -l` on any PHP files changed since Phase 1, plus
       `npm run build`, `npx tsc -p tsconfig.spec.json --noEmit`
       (document the known baseline `AppComponent.title` exit-2), and
       `git diff --check`.
-- [ ] **5.5** Playwright verification of the full matrix: search, every status
+- [x] **5.5** Playwright verification of the full matrix: search, every status
       slug (`not-started`, `in-progress`, `completed`, `complete`, `terminated`,
       `stuck`, `paused`), pagination boundaries, refresh/back restore,
       debounce/cancel, failure + Retry (request re-issued with unchanged URL),
       empty states, and the HTTP 400 unknown-status path rendered as an error
       (not as "No jobs found").
-- [ ] **5.6** Update `docs/admin-ui-patterns.md` and
+- [x] **5.6** Update `docs/admin-ui-patterns.md` and
       `docs/job-workflow-baseline.md` for the server-driven list, including
       the error contract and the canonical status set.
 
 #### Exit Criteria
 
-- [ ] All Phase 4 criteria still pass with the new states present.
-- [ ] Build passes; spec tsc failure limited to the known baseline.
-- [ ] No regression in job detail or item editor payloads.
-- [ ] Docs updated.
+- [x] All Phase 4 criteria still pass with the new states present.
+- [x] Build passes; spec tsc failure limited to the known baseline.
+- [x] No regression in job detail or item editor payloads.
+- [x] Docs updated.
 
 ---
 

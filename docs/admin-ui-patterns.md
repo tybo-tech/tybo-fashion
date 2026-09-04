@@ -87,7 +87,55 @@ Used by Jobs (later: Products with a thumbnail).
 - Rows: ~56–72px tall, minimum 44px touch target, safe truncation, visible
   `:focus-visible` outline, subtle hover.
 
-Reference: `src/app/admin/jobs/jobs.component.{html,ts,scss}`.
+### Server-driven list state (Jobs)
+
+The Jobs list is server-paginated, searched and filtered — the browser never
+downloads or scans the full collection:
+
+- **Endpoint contract** — `GET /job/get-admin-jobs.php` returns the lean
+  object `{"items":[{JobId, JobNo, CustomerName, Status}],
+  "pagination":{page, pageSize, totalItems, totalPages, hasPrevious,
+  hasNext}}`. Items carry exactly the four rendered fields; no nested
+  `Customer`, no `StatusDisplay`, no invoice metadata, no full `Job` payload.
+  The legacy `get-jobs.php` raw-array contract remains untouched for the
+  storefront profile-orders caller.
+- **URL is the single source of truth** — canonical
+  `/store/admin/jobs?page=&q=&status=`; the component renders from
+  `queryParamMap` and writes changes back through the Router (no reloads,
+  no `location.href`). Search/status handlers strip `page` so in-app filter
+  changes reset to page 1, while a deep link like `?page=2&q=…&status=…`
+  restores exactly that page on refresh or Back/Forward. Legacy
+  `/jobs/:status` paths redirect into the canonical query-param URL.
+  Reset navigates to the clean canonical URL.
+- **Status slugs** — the URL and request carry canonical slugs (`not-started`,
+  `in-progress`, `completed`, `stuck`, `terminated`, `paused`). One
+  `Completed` option only — the server aliases legacy `Complete` into
+  `Completed` (never a separate dropdown entry). Unknown slugs → HTTP 400
+  rendered as an error, never as "No jobs found".
+- **Debounced, cancelable search** — text input debounces ~300 ms before
+  touching the URL; every request flows through one `switchMap` so a newer
+  request cancels the older one and stale responses can never replace
+  current state. Errors are caught inside the `switchMap` (an inner
+  `catchError`) so a failed request cannot terminate the pipeline — Retry
+  must keep working after a failure.
+- **Pagination from metadata only** — "Showing X–Y of Z" is computed from
+  the current page, page size, returned item count and API `totalItems`;
+  Previous/Next disable from `hasPrevious`/`hasNext`; totals are never
+  inferred from the rendered array length. A page beyond `totalPages`
+  renders the filtered empty state while keeping accurate metadata.
+- **States** — initial loading spinner; loading on every page/filter/search
+  change; distinct unfiltered vs filtered/search empty states; HTTP failure
+  state with a Retry control that re-issues the identical request (same URL
+  parameters) even though the URL has not changed. A 400/500 is never
+  misrepresented as "No jobs found".
+- **Status badges** — rendered from the API's normalized `Status` with the
+  case-insensitive class map covering the canonical set (`Not started`,
+  `In Progress`, `Completed`, `Stuck`, `Terminated`, `Paused`); status text
+  stays visible so meaning never depends on colour alone.
+
+Reference: `src/app/admin/jobs/jobs.component.{html,ts,scss}`,
+`src/services/job.service.ts` (`getAdminJobsPage`), and
+`sprints/1-jobs-server-side-query.md`.
 
 ## Mobile navigation pattern
 

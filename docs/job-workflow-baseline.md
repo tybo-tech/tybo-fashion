@@ -6,6 +6,23 @@ API contracts with Playwright using mocked payloads (test account has 0 jobs;
 real `get-jobs.php?CompanyId=c1` returns `[]`, real `get-job.php?JobId=JOB1`
 returns 500 for unknown IDs).
 
+> **Sprint 1 update (server-side Jobs list).** The admin Jobs *list* no longer
+> consumes `get-jobs.php`; it paginates/searches/filters server-side through
+> `get-admin-jobs.php` (lean `{items, pagination}` contract; canonical status
+> set `Not started`, `In Progress`, `Completed`, `Stuck`, `Terminated`,
+> `Paused` with legacy `Complete` aliased server-side; URL-driven
+> `?page=&q=&status=`; ~300 ms debounced, `switchMap`-canceled search;
+> loading/empty/error/Retry states; Retry re-issues identical parameters).
+> Everything below about job detail, job-item add/edit and `get-jobs.php`
+> remains byte-identical to the original baseline.
+>
+> **Outstanding Phase 2 operational task:** production `SHOW INDEX` and
+> `EXPLAIN` analysis for the new endpoint's query shapes could not be
+> performed (no production DB access from this environment). The committed
+> migration artifact
+> `api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`
+> must only be executed after that evidence is recorded on production.
+
 ## Service methods (src/services/job.service.ts)
 
 | Method | Endpoint | Notes |
