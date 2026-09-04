@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { Job } from 'src/models/job.model';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { Job, JobsPageResponse } from 'src/models/job.model';
 import { JobCard, JobItem } from 'src/models/job-item.model';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { Product } from 'src/models/Product';
@@ -120,6 +120,31 @@ export class JobService {
   getJobs(companyId: string, key = 'CompanyId') {
     return this.http.get<Job[]>(
       `${this.url}/job/get-jobs.php?${key}=${companyId}`
+    );
+  }
+
+  /**
+   * One lean, server-paginated page of admin jobs from
+   * /job/get-admin-jobs.php (Sprint 1). Optional parameters are omitted
+   * from the request when empty. getJobs() above remains untouched for the
+   * storefront profile-orders caller and rollback.
+   */
+  getAdminJobsPage(
+    companyId: string,
+    page = 1,
+    pageSize = 20,
+    q = '',
+    status = ''
+  ): Observable<JobsPageResponse> {
+    let params = new HttpParams()
+      .set('CompanyId', companyId)
+      .set('page', String(page))
+      .set('pageSize', String(pageSize));
+    if (q && q.trim()) params = params.set('q', q.trim());
+    if (status) params = params.set('status', status);
+    return this.http.get<JobsPageResponse>(
+      `${this.url}/job/get-admin-jobs.php`,
+      { params }
     );
   }
 

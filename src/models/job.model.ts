@@ -75,3 +75,29 @@ export interface Job {
   PaymentStatus?: string;
   PercentagePaid?: number;
 }
+
+/**
+ * Lean jobs-list row returned by /job/get-admin-jobs.php.
+ * The admin Jobs list renders exactly these four fields; no full Job payload
+ * is downloaded on that path. See sprints/1-jobs-server-side-query.md.
+ */
+export interface JobListItem {
+  JobId: string;
+  JobNo: string;
+  CustomerName: string;
+  Status: string;
+}
+
+export interface JobsPagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
+
+export interface JobsPageResponse {
+  items: JobListItem[];
+  pagination: JobsPagination;
+}
