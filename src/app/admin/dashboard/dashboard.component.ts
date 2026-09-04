@@ -20,7 +20,8 @@ export class DashboardComponent {
   }[] = [];
 
   shortcuts = [
-    { label: 'Add Job', route: '/store/admin/job/add' },
+    // Add Job lives on the Jobs page (customer-picked modal flow).
+    { label: 'Add Job', route: '/store/admin/jobs' },
     { label: 'Add Product', route: '/store/admin/product/add' },
     { label: 'Add Customer', route: '/store/admin/customer/add' },
   ];
