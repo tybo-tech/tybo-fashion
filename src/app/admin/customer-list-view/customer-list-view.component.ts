@@ -123,7 +123,12 @@ export class CustomerListViewComponent implements OnDestroy {
 
   private requestNext(page: number): void {
     const user = this.userService.getUser;
-    if (!user?.CompanyId) return;
+    if (!user?.CompanyId) {
+      // No session/company: never spin forever. Route through the sign-in flow.
+      this.loading = false;
+      this.error = 'Your session has expired. Please sign in again.';
+      return;
+    }
     const q = (this.query || '').trim();
     const req = { companyId: user.CompanyId, page, q };
     this.request$.next(req);

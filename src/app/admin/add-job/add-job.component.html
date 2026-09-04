@@ -1,13 +1,29 @@
 <div class="app-overlay" *ngIf="job">
   <div class="my-modal cloud full-height">
-    <app-admin-modal-header (onClose)="onClose.emit()" title="Add job" />
+    <app-admin-modal-header (onClose)="close()" title="Add job" />
     <div class="actions">
-      <h3>Select or add a customer</h3>
-      <app-customer-list-view
-        (onSelect)="selected($event)"
-        (onAdd)="selected($event)"
-        [busy]="creatingJob"
-      />
+      <!-- Preselected customer: intentional confirmation before creating the job -->
+      <div *ngIf="preselectedCustomer && !creatingJob" class="preselect-confirm">
+        <h3>Create a job for {{ preselectedCustomer.CustomerName }}?</h3>
+        <p class="small text-muted mb-3">A new job will be created for this customer.</p>
+        <div class="d-flex gap-2 flex-wrap">
+          <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="selected(preselectedCustomer)">
+            <i class="bi bi-plus-circle"></i> Create Job
+          </button>
+          <button class="btn btn-outline-secondary btn-sm" (click)="close()">Cancel</button>
+        </div>
+      </div>
+
+      <!-- Normal picker flow -->
+      <ng-container *ngIf="!preselectedCustomer">
+        <h3>Select or add a customer</h3>
+        <app-customer-list-view
+          (onSelect)="selected($event)"
+          (onAdd)="selected($event)"
+          [busy]="creatingJob"
+        />
+      </ng-container>
+
       <!-- Visible busy state while a job is being created -->
       <div *ngIf="creatingJob" class="creating-job d-flex align-items-center gap-2 text-muted small mt-2">
         <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
 import { finalize } from 'rxjs/operators';
 import { CustomerListItem } from 'src/models/Customer';
@@ -18,8 +18,13 @@ export class AddJobComponent implements OnInit {
   @Output() jobAdded = new EventEmitter<Job>();
   @Output() onClose = new EventEmitter<any>();
 
-  // Busy state: true from the first selection until the job request settles.
-  // Disables all customer rows and prevents duplicate job creation.
+  // When a customer is preselected (e.g. from the Customer Detail Create Job
+  // action), the picker is skipped and an intentional confirmation is shown
+  // before the job is created.
+  @Input() preselectedCustomer?: CustomerListItem;
+
+  // Busy state: true from the first confirmation until the job request
+  // settles. Disables all controls and prevents duplicate job creation.
   creatingJob = false;
 
   constructor(
@@ -63,5 +68,12 @@ export class AddJobComponent implements OnInit {
           this.uxService.show_toast('Failed to create job', 'Error', ['bg-danger']);
         },
       });
+  }
+
+  close() {
+    // Prevent closing while a job creation is in flight so a close/reopen
+    // cannot spawn a second request.
+    if (this.creatingJob) return;
+    this.onClose.emit();
   }
 }

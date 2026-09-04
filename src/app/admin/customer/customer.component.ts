@@ -20,6 +20,7 @@ export class CustomerComponent implements OnDestroy {
   error: string | null = null;
   notFound = false;
   showEditForm = false;
+  showAddJob = false;
 
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; customerId: string };
@@ -82,7 +83,12 @@ export class CustomerComponent implements OnDestroy {
   get() {
     if (!this.id) return;
     const user = this.userService.getUser;
-    if (!user?.CompanyId) return;
+    if (!user?.CompanyId) {
+      // No session/company: never spin forever. Route through the sign-in flow.
+      this.loading = false;
+      this.router.navigate(['/sign-in']);
+      return;
+    }
     this.request$.next({ companyId: user.CompanyId, customerId: this.id });
   }
 
@@ -99,10 +105,14 @@ export class CustomerComponent implements OnDestroy {
   // Action Methods
   createJob() {
     if (this.customer) {
-      this.router.navigate(['/store/admin/jobs/new'], {
-        queryParams: { customerId: this.customer.CustomerId },
-      });
+      // Open the Add Job modal with this customer preselected. The modal
+      // requires an intentional confirmation before creating the job.
+      this.showAddJob = true;
     }
+  }
+
+  onAddJobClose() {
+    this.showAddJob = false;
   }
 
   editCustomer() {

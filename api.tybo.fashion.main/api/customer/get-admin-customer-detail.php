@@ -66,6 +66,20 @@ if ($result === null) {
   get_admin_customer_detail_respond(array('error' => 'Customer not found.'), 404);
 }
 
+// Build the analytics group FIRST from the computed columns, then strip those
+// columns out of the `customer` group. Reading the keys after unsetting them
+// would emit undefined-key warnings and corrupt the JSON response.
+$analytics = array(
+  'TotalJobs' => (int) $result['TotalJobs'],
+  'ActiveJobs' => (int) $result['ActiveJobs'],
+  'CompletedJobs' => (int) $result['CompletedJobs'],
+  'CustomerLifetimeValue' => floatval($result['CustomerLifetimeValue']),
+  'OutstandingBalance' => floatval($result['OutstandingBalance']),
+  'PaymentCompletionRate' => $result['PaymentCompletionRate'],
+  'ProfileCompleteness' => $result['ProfileCompleteness'],
+  'LastActivityDate' => $result['LastActivityDate'],
+);
+
 // The `customer` group carries only the editable fields the form round-trips;
 // the `analytics` group is the single source for the computed metrics. Strip
 // the computed columns out of `customer` so the contract stays clean.
@@ -78,16 +92,12 @@ foreach ($analyticsKeys as $key) {
   unset($result[$key]);
 }
 
+// Never return the password hash or UserToken to the browser. update() now
+// preserves these server-side when the incoming model omits them.
+unset($result['Password']);
+unset($result['UserToken']);
+
 get_admin_customer_detail_respond(array(
   'customer' => $result,
-  'analytics' => array(
-    'TotalJobs' => (int) $result['TotalJobs'],
-    'ActiveJobs' => (int) $result['ActiveJobs'],
-    'CompletedJobs' => (int) $result['CompletedJobs'],
-    'CustomerLifetimeValue' => floatval($result['CustomerLifetimeValue']),
-    'OutstandingBalance' => floatval($result['OutstandingBalance']),
-    'PaymentCompletionRate' => $result['PaymentCompletionRate'],
-    'ProfileCompleteness' => $result['ProfileCompleteness'],
-    'LastActivityDate' => $result['LastActivityDate'],
-  ),
+  'analytics' => $analytics,
 ));

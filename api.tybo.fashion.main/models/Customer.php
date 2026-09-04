@@ -504,6 +504,25 @@ class Customer
 
     public function update($model)
     {
+        // Preserve sensitive/audit columns when the incoming model does not
+        // carry them. The focused detail endpoint never returns the password
+        // hash or UserToken to the browser, so an edit/save from that flow
+        // must not overwrite them with empty values. Existing callers that
+        // send a password/token still work unchanged.
+        $existing = $this->loadExistingAuthFields($model->CustomerId);
+        $password = !empty($model->Password)
+            ? password_hash($model->Password, PASSWORD_BCRYPT)
+            : $existing['Password'];
+        $userToken = !empty($model->UserToken)
+            ? $model->UserToken
+            : $existing['UserToken'];
+        $createUserId = !empty($model->CreateUserId)
+            ? $model->CreateUserId
+            : $existing['CreateUserId'];
+        $modifyUserId = !empty($model->ModifyUserId)
+            ? $model->ModifyUserId
+            : $existing['ModifyUserId'];
+
         $query = "UPDATE customer SET
             CompanyId = ?, CustomerType = ?, Name = ?, Surname = ?, Email = ?, PhoneNumber = ?,
             Password = ?, Dp = ?, AddressLineHome = ?, Measurements = ?, Metadata = ?, AddressUrlHome = ?,
@@ -521,7 +540,7 @@ class Customer
                 $model->Surname,
                 $model->Email,
                 $model->PhoneNumber,
-                password_hash($model->Password, PASSWORD_BCRYPT),
+                $password,
                 $model->Dp,
                 $model->AddressLineHome,
                 json_encode($model->Measurements),
@@ -536,14 +555,14 @@ class Customer
                 $model->PostalCode,
                 $model->CompanyName,
                 $model->UserId,
-                $model->CreateUserId,
-                $model->ModifyUserId,
+                $createUserId,
+                $modifyUserId,
                 $model->StatusId,
-                $model->UserToken,
+                $userToken,
                 $model->CustomerId
             ]);
 
-            $this->updateUser($model);
+            $this->updateUser($model, $modifyUserId);
             $data = $this->getCustomerById($model->CustomerId);
             $data["UserUpdate"] = true;
             return $data;
@@ -553,7 +572,35 @@ class Customer
         }
     }
 
-    public function updateUser($model)
+    /**
+     * Loads the current Password, UserToken, CreateUserId and ModifyUserId for
+     * a customer so update() can preserve them when the incoming model omits
+     * them. Returns empty strings when the row is missing so update() still
+     * behaves predictably.
+     */
+    private function loadExistingAuthFields($customerId)
+    {
+        $query = "SELECT Password, UserToken, CreateUserId, ModifyUserId
+            FROM customer WHERE CustomerId = ? LIMIT 1";
+        try {
+            $stmt = $this->conn->prepare($query);
+            $stmt->execute([$customerId]);
+            $row = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!$row) {
+                return array('Password' => '', 'UserToken' => '', 'CreateUserId' => '', 'ModifyUserId' => '');
+            }
+            return array(
+                'Password' => $row['Password'] ?? '',
+                'UserToken' => $row['UserToken'] ?? '',
+                'CreateUserId' => $row['CreateUserId'] ?? '',
+                'ModifyUserId' => $row['ModifyUserId'] ?? '',
+            );
+        } catch (Exception $e) {
+            return array('Password' => '', 'UserToken' => '', 'CreateUserId' => '', 'ModifyUserId' => '');
+        }
+    }
+
+    public function updateUser($model, $modifyUserId = null)
     {
         $query = "UPDATE user SET
             Name = ?, Surname = ?, Email = ?, PhoneNumber = ?, Dp = ?, AddressLineHome = ?,
@@ -576,7 +623,7 @@ class Customer
                 $model->AddressUrlHome,
                 $model->AddressLineWork,
                 $model->AddressUrlWork,
-                $model->ModifyUserId,
+                $modifyUserId !== null ? $modifyUserId : $model->ModifyUserId,
                 $model->AddressLine2,
                 $model->BuildingType,
                 $model->City,

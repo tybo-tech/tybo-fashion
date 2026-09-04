@@ -176,3 +176,15 @@
     </div>
   </div>
 </div>
+
+<!-- Create Job modal (customer preselected) -->
+<app-add-job
+  *ngIf="showAddJob && customer"
+  (onClose)="onAddJobClose()"
+  [preselectedCustomer]="{
+    CustomerId: customer.CustomerId,
+    CustomerName: customer.FullName || customer.Name,
+    PhoneNumber: customer.PhoneNumber,
+    Email: customer.Email
+  }"
+></app-add-job>

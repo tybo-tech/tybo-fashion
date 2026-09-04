@@ -1,15 +1,20 @@
 <!-- Lean, paginated customer picker (Sprint 3) -->
 <div class="picker-container" *ngIf="!show_add">
-  <!-- Search -->
+  <!-- Search + persistent New Customer action -->
   <div class="row g-2 align-items-center mb-2">
     <div class="col">
       <div class="input-group input-group-sm">
         <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers">
+        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers" [disabled]="busy">
       </div>
     </div>
+    <div class="col-auto">
+      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="show_add = true; initCustomer()" [disabled]="busy">
+        <i class="bi bi-plus-lg"></i> New Customer
+      </button>
+    </div>
     <div class="col-auto" *ngIf="query">
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetSearch()">Reset</button>
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetSearch()" [disabled]="busy">Reset</button>
     </div>
   </div>
 
@@ -46,9 +51,9 @@
     <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
       <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
       <nav class="d-flex align-items-center gap-1" aria-label="Customers pagination">
-        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious || busy" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
         <span class="small text-muted px-1">Page {{ pagination.page }} of {{ totalPages }}</span>
-        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!pagination.hasNext" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!pagination.hasNext || busy" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
       </nav>
     </div>
   </div>
