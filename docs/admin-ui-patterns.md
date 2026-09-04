@@ -146,6 +146,59 @@ Reference: `src/app/admin/jobs/jobs.component.{html,ts,scss}`,
 `src/services/job.service.ts` (`getAdminJobsPage`), and
 `sprints/1-jobs-server-side-query.md`.
 
+### Server-driven list state (Customers)
+
+The Customers list follows the same server-paginated, URL-driven pattern as
+Jobs, but renders exactly four fields and never downloads the full customer
+collection:
+
+- **Endpoint contract** — `GET /customer/get-admin-customers.php` returns the
+  lean object `{"items":[{CustomerId, CustomerName, PhoneNumber, Email}],
+  "pagination":{page, pageSize, totalItems, totalPages, hasPrevious,
+  hasNext}}`. Items carry exactly the four rendered fields; no job
+  aggregation, financial calculation, JSON extraction/decoding, address,
+  measurements, avatar or analytics work happens on this path. The legacy
+  `customer/list.php` raw-array contract remains untouched for the New Job
+  embedded picker.
+- **URL is the single source of truth** — canonical
+  `/store/admin/customers?page=&q=`; the component renders from
+  `queryParamMap` and writes changes back through the Router. Search strips
+  `page` so in-app changes reset to page 1, while a deep link like
+  `?page=2&q=…` restores exactly that page on refresh or Back/Forward. Reset
+  navigates to the clean canonical URL.
+- **Debounced, cancelable search** — text input debounces ~300 ms before
+  touching the URL; every request flows through one `switchMap` so a newer
+  request cancels the older one and stale responses can never replace current
+  state. A pending debounce is cancelled on Reset and on any URL change
+  (Back/Forward). Errors are caught inside the `switchMap` (an inner
+  `catchError`) so a failed request cannot terminate the pipeline — Retry must
+  keep working after a failure.
+- **Pagination from metadata only** — "Showing X–Y of Z" is computed from the
+  current page, page size, returned item count and API `totalItems`;
+  Previous/Next disable from `hasPrevious`/`hasNext`. A page beyond
+  `totalPages` renders the "No customers on this page" empty state with a safe
+  return to page 1 / Previous.
+- **States** — initial loading spinner; loading on every page/search change;
+  three distinct empty states (no customers at all → "Add your first customer";
+  search empty → "Try adjusting your search"; page beyond the last → "No
+  customers on this page"); HTTP failure state with a Retry control that
+  re-issues the identical request. A 400/500 is never misrepresented as "No
+  customers found".
+- **Row content** — strong primary line (full name), muted secondary line
+  (phone and email, each safely truncated, joined by a separator), chevron at
+  the right. The whole row is one semantic `routerLink` to
+  `/store/admin/customer/:CustomerId`; no call/email buttons are nested in the
+  link. Missing values render as an em dash (`—`) from the API, and the UI
+  hides the placeholder so a row with no email shows only the phone.
+- **New Customer** — opens the existing customer form in a modal; duplicate
+  submissions are guarded (a second save is blocked while one is in flight);
+  after a successful save the modal closes and the active query/page is
+  refreshed safely.
+
+Reference: `src/app/admin/customers/customers.component.{html,ts,scss}`,
+`src/services/customer.service.ts` (`getAdminCustomersPage`), and
+`docs/2-customers-server-side-query-and-lean-list.md`.
+
 ## Mobile navigation pattern
 
 - Bottom navigation on mobile only (`d-lg-none`): **Home** (`/store/admin`),

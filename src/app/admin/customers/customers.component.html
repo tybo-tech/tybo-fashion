@@ -1,3 +1,87 @@
-<app-list-bread currentPage="Customers" />
+<div class="container-fluid p-0">
+  <!-- Header -->
+  <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+    <h1 class="h5 mb-0">Customers</h1>
+    <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()">
+      <i class="bi bi-plus-lg"></i> New Customer
+    </button>
+  </div>
 
-<app-customer-list-view (onSelect)="selected($event)"/>
+  <!-- Search -->
+  <div class="row g-2 align-items-center mb-2">
+    <div class="col">
+      <div class="input-group input-group-sm">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers">
+      </div>
+    </div>
+    <div class="col-auto" *ngIf="query">
+      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetFilters()">Reset</button>
+    </div>
+  </div>
+
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border spinner-border-sm"></div>
+    <div class="small text-muted mt-2">Loading customers…</div>
+  </div>
+  <div *ngIf="error && !loading" class="alert alert-danger py-2 small" role="alert">
+    <div>{{ error }}</div>
+    <button class="btn btn-outline-secondary btn-sm mt-2" type="button" (click)="retry()">Retry</button>
+  </div>
+
+  <!-- Customers list: unboxed on mobile, same structure on desktop -->
+  <div *ngIf="!loading && !error && customers.length > 0">
+    <ul class="list-group list-group-flush customers-list">
+      <li *ngFor="let customer of customers; trackBy: trackByCustomerId" class="list-group-item customers-list-item">
+        <a class="customer-row-link" [routerLink]="['/store/admin/customer', customer.CustomerId]" [attr.aria-label]="'Open customer ' + customer.CustomerName">
+          <span class="customer-row-main min-w-0">
+            <span class="customer-name text-truncate">{{ customer.CustomerName }}</span>
+            <span class="customer-contact text-truncate">
+              <span *ngIf="customer.PhoneNumber !== '—'">{{ customer.PhoneNumber }}</span>
+              <span *ngIf="customer.PhoneNumber !== '—' && customer.Email !== '—'" class="contact-sep">·</span>
+              <span *ngIf="customer.Email !== '—'">{{ customer.Email }}</span>
+            </span>
+          </span>
+          <span class="customer-row-side flex-shrink-0">
+            <i class="bi bi-chevron-right text-muted small d-none d-sm-inline"></i>
+          </span>
+        </a>
+      </li>
+    </ul>
+
+    <!-- Pagination: driven by API metadata -->
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
+      <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
+      <nav class="d-flex align-items-center gap-1" aria-label="Customers pagination">
+        <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
+        <span class="small text-muted px-1">Page {{ pagination.page }} of {{ totalPages }}</span>
+        <button class="btn btn-sm btn-outline-secondary" (click)="nextPage()" [disabled]="!pagination.hasNext" aria-label="Next page"><i class="bi bi-chevron-right"></i></button>
+      </nav>
+    </div>
+  </div>
+
+  <!-- Empty state: distinguish no-customers-at-all, filtered-empty, and page-beyond-end -->
+  <div *ngIf="!loading && !error && customers.length === 0" class="text-center py-5">
+    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-3 icon-48"><i class="bi bi-people"></i></div>
+    <h6 class="mb-1">{{ emptyStateTitle }}</h6>
+    <p class="small text-muted mb-3">{{ emptyStateHint }}</p>
+    <button class="btn btn-primary btn-sm" (click)="emptyStateAction()">{{ emptyStateActionLabel }}</button>
+  </div>
+</div>
+
+<!-- New Customer modal -->
+<div class="app-overlay" *ngIf="show_add && newCustomer">
+  <div class="my-modal cloud full-height">
+    <app-admin-modal-header (onClose)="show_add = false" title="Add Customer" />
+    <div class="actions">
+      <div class="p-1">
+        <app-customer-form
+          (onSave)="onCustomerSaved($event)"
+          [customer]="newCustomer"
+        />
+        <br />
+        <br />
+      </div>
+    </div>
+  </div>
+</div>

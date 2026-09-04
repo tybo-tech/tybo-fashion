@@ -20,6 +20,9 @@ export class CustomerFormComponent implements OnInit {
   @Input() customer?: Customer;
   @Output() onSave = new EventEmitter<Customer>();
 
+  // Duplicate-submit guard: prevents a second save while one is in flight.
+  saving = false;
+
   // Contact Picker state — service drives capability, component drives UI state
   isContactPickerSupported = false;
   isContactPickerLoading = false;
@@ -183,12 +186,14 @@ export class CustomerFormComponent implements OnInit {
     }
   }
   save() {
-    if (this.customer) {
+    if (this.customer && !this.saving) {
+      this.saving = true;
       loading();
       if(this.customer.PhoneNumber)
       this.customer.PhoneNumber = sanitizePhoneNumber(this.customer.PhoneNumber);
       this.cus.save(this.customer).subscribe((data) => {
         stop_loading();
+        this.saving = false;
         if (data && data.CustomerId) {
           !this.isNew &&
             this.ux.show_toast('Customer updated successfully', 'Success');

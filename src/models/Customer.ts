@@ -60,6 +60,33 @@ export interface Customer extends UiModel {
   LastActivityFormatted?: string;
 }
 
+/**
+ * Lean customers-list row returned by /customer/get-admin-customers.php.
+ * The admin Customers list renders exactly these four fields; no full
+ * Customer payload is downloaded on that path. See
+ * docs/2-customers-server-side-query-and-lean-list.md.
+ */
+export interface CustomerListItem {
+  CustomerId: string;
+  CustomerName: string;
+  PhoneNumber: string;
+  Email: string;
+}
+
+export interface CustomersPagination {
+  page: number;
+  pageSize: number;
+  totalItems: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+}
+
+export interface CustomersPageResponse {
+  items: CustomerListItem[];
+  pagination: CustomersPagination;
+}
+
 export function initUserDependant(): CustomerDependant {
   return {
     Id: '',

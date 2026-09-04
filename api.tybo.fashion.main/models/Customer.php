@@ -814,6 +814,101 @@ class Customer
     }
 
 
+    /**
+     * One lean, server-paginated page of admin customers for
+     * /customer/get-admin-customers.php (Sprint 2).
+     *
+     * Returns exactly four display fields per row (CustomerId, CustomerName,
+     * PhoneNumber, Email) plus a matching total. No job join, financial
+     * calculation, JSON extraction/decoding, address, measurements, avatar
+     * or analytics work happens on this path. getCustomers() above remains
+     * untouched for the New Job embedded picker and rollback.
+     *
+     * Search is server-side and case-insensitive under the DB collation,
+     * covering name, surname, combined full name, phone and email, via
+     * parameterized LIKE '%term%'. Pagination is deterministic:
+     * ModifyDate DESC, CreateDate DESC, CustomerId DESC.
+     */
+    public function GetAdminCustomersPage($companyId, $search, $limit, $offset)
+    {
+        $query = "SELECT
+            c.CustomerId,
+            COALESCE(
+                NULLIF(TRIM(CONCAT_WS(' ', c.Name, c.Surname)), ''),
+                '—'
+            ) AS CustomerName,
+            COALESCE(NULLIF(TRIM(c.PhoneNumber), ''), '—') AS PhoneNumber,
+            COALESCE(
+                NULLIF(NULLIF(TRIM(c.Email), ''), 'Na'),
+                '—'
+            ) AS Email
+        FROM customer c
+        WHERE c.CompanyId = :CompanyId
+            AND c.CustomerType = 'Customer'
+            AND c.StatusId = 1";
+
+        $params = array(':CompanyId' => $companyId);
+
+        if ($search !== '') {
+            $query .= " AND (
+                c.Name LIKE :search
+                OR c.Surname LIKE :search
+                OR CONCAT_WS(' ', c.Name, c.Surname) LIKE :search
+                OR c.PhoneNumber LIKE :search
+                OR c.Email LIKE :search
+            )";
+            $params[':search'] = '%' . $search . '%';
+        }
+
+        $query .= " ORDER BY c.ModifyDate DESC, c.CreateDate DESC, c.CustomerId DESC
+        LIMIT :limit OFFSET :offset";
+
+        try {
+            $stmt = $this->conn->prepare($query);
+            foreach ($params as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+            $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+            $stmt->execute();
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (Exception $e) {
+            return array("ERROR" => "Unable to load customers.");
+        }
+
+        $countQuery = "SELECT COUNT(*) AS total
+        FROM customer c
+        WHERE c.CompanyId = :CompanyId
+            AND c.CustomerType = 'Customer'
+            AND c.StatusId = 1";
+
+        $countParams = array(':CompanyId' => $companyId);
+
+        if ($search !== '') {
+            $countQuery .= " AND (
+                c.Name LIKE :search
+                OR c.Surname LIKE :search
+                OR CONCAT_WS(' ', c.Name, c.Surname) LIKE :search
+                OR c.PhoneNumber LIKE :search
+                OR c.Email LIKE :search
+            )";
+            $countParams[':search'] = '%' . $search . '%';
+        }
+
+        try {
+            $stmt = $this->conn->prepare($countQuery);
+            foreach ($countParams as $key => $value) {
+                $stmt->bindValue($key, $value, is_int($value) ? PDO::PARAM_INT : PDO::PARAM_STR);
+            }
+            $stmt->execute();
+            $total = (int) $stmt->fetch(PDO::FETCH_ASSOC)['total'];
+        } catch (Exception $e) {
+            return array("ERROR" => "Unable to load customers.");
+        }
+
+        return array('items' => $items, 'total' => $total);
+    }
+
     public function getCustomersByUser($userId)
     {
         $query = "SELECT * FROM customer WHERE UserId = ? ORDER BY ModifyDate DESC";
