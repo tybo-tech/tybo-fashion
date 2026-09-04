@@ -272,7 +272,7 @@
   }
 
   // ── Mobile bottom navigation ──────────────────────────────────────────────
-  // Near-black bar, white inactive icons, yellow active shape with ink icon.
+  // Near-black bar, white inactive icons, accent-colored active icon + label.
   // Hidden on ≥992px where the sidebar takes over. Fixed above safe area.
   .admin-bottom-nav {
     position: fixed;
@@ -300,11 +300,10 @@
     i { font-size: 1.15rem; line-height: 1; }
   }
   .admin-bottom-nav .nav-item-btn.active {
-    color: #fff;
+    color: var(--admin-accent);
+    font-weight: 700;
     .active-pill {
-      background: var(--admin-accent);
-      color: var(--admin-accent-ink);
-      border-radius: 999px;
+      color: var(--admin-accent);
     }
   }
   .admin-bottom-nav .active-pill {
