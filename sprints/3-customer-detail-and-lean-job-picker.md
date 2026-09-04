@@ -288,3 +288,40 @@ warnings were emitted.
 - `git diff --check` clean.
 - No customer payloads or credentials entered logs/artifacts; all disposable
   test data was removed.
+
+## Production deployment (2026-09-04) — verified
+
+Full evidence trail: `docs/3-customer-detail-and-lean-job-picker-deployment.md`.
+
+### Backend (uploaded and verified live)
+
+- `get-admin-customer-detail.php` → 200 full contract; 400 (missing
+  CompanyId / CustomerId, exact error bodies); 404 unknown customer.
+- Response contains neither `Password` nor `UserToken`; no PHP warnings.
+- Analytics verified live on Fie-Fie: 32/22 jobs, CLV 82215, Outstanding
+  77365, PaymentRate 5.9, Profile 67, LastActivity 2025-10-01.
+- Legacy `get.php` (200) and `list.php` (200) unchanged; New Job picker still
+  served by `list.php`.
+- `SHOW INDEX` recorded; **no index added** (customer resolved by
+  `PRIMARY(CustomerId)`, single-customer job join bounded).
+
+### Frontend (uploaded and verified live)
+
+- Build from `7166c47` (Sprint 3 + Sprint 4), hash `04e1edb0f3bdd282`.
+- Production `index.html` serves `main.e5c2f1ced014034c.js` /
+  `styles.81cc6f1c82641653.css`; `ngsw.json` references the new bundles
+  (single main hash, no stale references).
+- Customer Detail page renders live (created smoke customer landed on it with
+  analytics served by the new detail endpoint).
+- Picker: lean rows, search + one-request job creation verified (exactly one
+  `add-job.php` POST → 200, navigated to the created job).
+- Browser console: zero errors across all smoke flows.
+
+### Cleanup note
+
+Two production smoke customers (`Prod Smoke Zinhle`
+`b7dcdcab-a86f-11f1-81aa-ac1f6b7f619a`, `Prod Smoke Sipho`
+`ed17584a-a86f-11f1-81aa-ac1f6b7f619a`) and the smoke job
+(`11461818-a870-11f1-81aa-ac1f6b7f619a`) were created during verification.
+The app has no delete endpoints; remove them in phpMyAdmin (SQL handed to
+the owner).

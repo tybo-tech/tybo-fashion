@@ -116,6 +116,28 @@ Three P2 findings from post-review, all fixed and re-verified:
 
 Production build: hash `04e1edb0f3bdd282`.
 
+## Production verification (2026-09-04) — deployed and passing
+
+Bundle deployed from `7166c47` together with the Sprint 3 frontend.
+Production `index.html` and `ngsw.json` both reference the new hashes
+(`main.e5c2f1ced014034c.js`, `styles.81cc6f1c82641653.css`).
+
+| Check (live on https://tybofashion.co.za) | Result |
+|---|---|
+| Customers → New Customer → `/customers/new/basic`; Next enabled after filling required fields | PASS |
+| Next → address (param preserved) → Skip for now → measurements → Skip & create | PASS |
+| Save → customer created → lands on Customer Detail page with analytics | PASS |
+| Picker → New Customer → `/customers/new/basic?return=picker` | PASS |
+| Save → jobs page reopens Add Job preselected ("Create a job for Prod Smoke Sipho?") | PASS |
+| Close preselected dialog → New Job again → normal picker (no lock) | PASS |
+| Picker search + selection → exactly one `add-job.php` POST (200) → job page | PASS |
+| Deep-link `/new/measurements` (fresh) → redirected to `/new/basic` | PASS |
+| Browser console errors across all flows | NONE |
+
+Smoke records created during verification (removed in phpMyAdmin by the
+owner — see Sprint 3 doc cleanup note): `Prod Smoke Zinhle`,
+`Prod Smoke Sipho`, one smoke job.
+
 ## Deployment note
 
 Frontend-only change (no backend files touched). Deploys with the next
