@@ -363,3 +363,12 @@ Verification
   tests (§6).
 - Clarified that the Garments section itself is unboxed, not just the
   rows (§4).
+
+## Approved construction order (Revision 3 sign-off)
+
+1. Transactional backend endpoints and calculation tests.
+2. Scoped garment-detail endpoint.
+3. Route matcher and legacy redirects.
+4. Job overview and dedicated editor.
+5. Plain garment list and garment details.
+6. Full regression, build, deployment and production verification.
