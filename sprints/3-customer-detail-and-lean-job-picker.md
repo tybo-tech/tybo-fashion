@@ -210,3 +210,81 @@ Response groups:
 - Loading, error, empty, not-found, busy, and Retry states pass.
 - Mobile and desktop match the established Jobs/Customers admin UI.
 - Production evidence and rollback instructions are documented.
+
+## Local functional matrix (2026-09-04)
+
+Run against the local podman stack (PHP :8080, MySQL :3306) with the dev
+Angular server (:4200). All checks passed; no console errors and no PHP
+warnings were emitted.
+
+### Detail endpoint (HTTP)
+
+- `GET get-admin-customer-detail.php?CompanyId&CustomerId` → 200, clean JSON.
+- Missing `CompanyId` → 400 `{"error":"CompanyId is required."}`.
+- Missing `CustomerId` → 400 `{"error":"CustomerId is required."}`.
+- Unknown `CustomerId` → 404 `{"error":"Customer not found."}`.
+- Response contains **neither** `Password` **nor** `UserToken`.
+- No undefined-key warnings; analytics survive the response split.
+
+### Analytics against a known customer (Fie-Fie, 32 jobs)
+
+- `TotalJobs=32`, `ActiveJobs=0`, `CompletedJobs=22`,
+  `CustomerLifetimeValue=82215`, `OutstandingBalance=77365`,
+  `PaymentCompletionRate=5.9`, `ProfileCompleteness=67`,
+  `LastActivityDate=2025-10-01 09:03:38`.
+- `customer` group keys are exactly the editable fields + `FullName`; no
+  computed columns leak into it.
+
+### Edit/save preservation
+
+- Created a disposable customer, snapshotted `Password`, `UserToken`,
+  `CreateUserId`, `ModifyUserId`, then edit-saved omitting all four. All four
+  were preserved byte-for-byte.
+- UI edit-save (change name on Fie-Fie) preserved `Password=notset`,
+  `UserToken`, `CreateUserId`, `ModifyUserId`; the detail read model refreshed
+  to show the new name.
+- **Fail-closed**: update on a nonexistent `CustomerId` returned
+  `{"error":true,"message":"Could not preserve protected fields."}`; no
+  customer row and no linked user row were created.
+
+### Customer Detail UI
+
+- Complete-data customer renders all metrics and sections.
+- Missing phone/email/address customer hides Call/Email buttons and the Address
+  section; metrics show real values.
+- Measurements render only real recorded values; a customer with no
+  measurements shows the "No measurements recorded" empty state with an
+  Add Measurements action.
+- Not-found state ("Customer not found" + Back to Customers) on an invalid ID.
+- HTTP 500 → error + Retry; Retry recovers to the loaded customer.
+- Create Job opens the Add Job modal with the customer preselected and an
+  intentional confirmation ("Create a job for X?"); confirming sends exactly
+  one `add-job.php` request and navigates to the created job.
+
+### Customer Picker
+
+- First page renders lean rows (name, phone, email only) — no analytics/card
+  content; "Showing 1–20 of 423", Page 1 of 22.
+- Persistent New Customer button beside search (reachable with 423 customers);
+  opens the Add Customer modal.
+- Search by name (Thabang) filters via `q=Thabang` on the lean endpoint.
+- Pagination Next → Page 2 of 22; URL stays `/store/admin/jobs` (local state).
+- Empty-search state ("No customers found" + Clear search).
+- Beyond-last-page state ("No customers on this page" + Go to page 1).
+- HTTP 500 → error + Retry; Retry recovers to "Showing 1–20 of 423".
+- Selecting a customer sends exactly one `add-job.php` request.
+- Fail-first: forced 500 keeps the picker open with rows re-enabled; a fresh
+  selection succeeds and navigates to the new job.
+- Close/reopen during creation: exactly one request even with a close attempt
+  while in flight.
+- Standalone `/store/admin/customers` URL is untouched.
+
+### Engineering checks
+
+- `npm run build` passes (only pre-existing budget warnings + the pre-existing
+  "2 rules skipped" selector warning).
+- `tsc --noEmit` shows only the known baseline `AppComponent.title` spec error.
+- `php -l` clean on changed PHP files.
+- `git diff --check` clean.
+- No customer payloads or credentials entered logs/artifacts; all disposable
+  test data was removed.
