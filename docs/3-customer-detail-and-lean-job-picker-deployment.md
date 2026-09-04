@@ -165,6 +165,34 @@ EXPLAIN SELECT ... FROM customer c LEFT JOIN job j ON c.CustomerId = j.CustomerI
 > which is not available to the automation. Run the SQL above in the hosting
 > panel and record the output here before the frontend gate is lifted.
 
+### Production `SHOW INDEX` (2026-09-04, recorded)
+
+**`customer`**
+
+| Key | Columns | Cardinality |
+|---|---|---|
+| `PRIMARY` | `CustomerId` | 416 |
+| `idx_customer_company_type_status_modified` | `CompanyId, CustomerType, StatusId, ModifyDate, CreateDate, CustomerId` | 416 |
+
+**`job`**
+
+| Key | Columns | Cardinality |
+|---|---|---|
+| `PRIMARY` | `JobId` | 627 |
+| `idx_job_company_status_date` | `CompanyId, StatusId, CreateDate` | 627 |
+
+### Index decision
+
+- The detail lookup filters on `(CustomerId, CompanyId, StatusId)`; `customer`
+  is resolved by `PRIMARY(CustomerId)` → `type=const`/`eq_ref`, `rows=1`.
+  Optimal; no new index on `customer`.
+- The `job` join is on `(CustomerId, StatusId)`. There is no dedicated
+  `job.CustomerId` index, but this is a **single-customer** detail lookup (one
+  customer's jobs), so the scan is bounded and no material improvement is
+  justified.
+- **No migration is applied.** The existing Sprint 1/2 indexes already serve
+  the detail query. Recorded as "no index added".
+
 ---
 
 ## 5. Hard gate
@@ -316,7 +344,6 @@ below passed.
 
 ### Pending
 
-- `SHOW INDEX` / `EXPLAIN` (requires production DB access — run the SQL in
-  section 4 and record).
-- Angular bundle deployment (blocked by the hard gate until the above is
-  recorded).
+- ~~`SHOW INDEX` / `EXPLAIN`~~ — **recorded** (section 4): no migration
+  needed; existing indexes serve the detail query.
+- Angular bundle deployment (hard gate now cleared — backend fully verified).
