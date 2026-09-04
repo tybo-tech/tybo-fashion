@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { BehaviorSubject, EMPTY, Subject, Subscription } from 'rxjs';
-import { catchError, debounceTime, switchMap } from 'rxjs/operators';
+import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
+import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
 import { JobListItem } from 'src/models/job.model';
 import { JobService } from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
@@ -32,19 +32,20 @@ export class JobsComponent implements OnInit, OnDestroy {
 
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; page: number; q: string; status: string };
-  private pendingRequest?: { companyId: string; page: number; q: string; status: string };
 
   // Search debounce: ngModel pushes here; the URL (and thus the request)
-  // updates only after ~300ms of settled input.
+  // updates only after ~300ms of settled input. A pending debounce is
+  // cancelled (takeUntil) whenever the URL state changes (Reset, Back/Forward)
+  // or the component is destroyed, so a stale search can never overwrite the
+  // URL after the user has already navigated away.
   private searchInput$ = new Subject<string>();
+  private cancelSearch$ = new Subject<void>();
+  private destroy$ = new Subject<void>();
   // Request driver: every URL change emits here; switchMap cancels obsolete
   // requests so an older response can never replace a newer one.
   private request$ = new Subject<{ companyId: string; page: number; q: string; status: string }>();
   private requestSub?: Subscription;
   private searchSub?: Subscription;
-  // Guard: a navigation triggered by this component (URL sync) must not be
-  // treated as new state to fetch again.
-  private suppressNextParamSync = false;
   private userSub?: Subscription;
 
   pageSize = 20;
@@ -132,12 +133,10 @@ export class JobsComponent implements OnInit, OnDestroy {
     });
 
     // URL is the single source of truth: every query-param change drives one
-    // request through switchMap.
+    // request through switchMap. Any URL change also cancels a pending search
+    // debounce so a stale search can never overwrite the restored URL.
     this.route.queryParamMap.subscribe((params) => {
-      if (this.suppressNextParamSync) {
-        this.suppressNextParamSync = false;
-        return;
-      }
+      this.cancelSearch$.next();
       this.selectedStatus = params.get('status') || '';
       // Show the restored query instantly (no debounce on restore).
       this.query = params.get('q') || '';
@@ -153,10 +152,23 @@ export class JobsComponent implements OnInit, OnDestroy {
     // distinctUntilChanged here — the URL cycle can legitimately repeat a
     // query (type → reset → type the same text again), and debounceTime
     // already collapses rapid typing into one emission.
-    this.searchSub = this.searchInput$
-      .pipe(debounceTime(300))
+    //
+    // Cancellation: a cancel signal switches the stream to EMPTY, which
+    // aborts the pending debounce timer without killing the stream, so a
+    // stale search can never overwrite the URL after Reset or Back/Forward.
+    this.searchSub = merge(
+      this.searchInput$.pipe(map((value) => ({ kind: 'search' as const, value }))),
+      this.cancelSearch$.pipe(map(() => ({ kind: 'cancel' as const, value: '' })))
+    )
+      .pipe(
+        switchMap((evt) =>
+          evt.kind === 'cancel'
+            ? EMPTY
+            : timer(300).pipe(map(() => evt.value))
+        ),
+        takeUntil(this.destroy$)
+      )
       .subscribe((value) => {
-        this.suppressNextParamSync = false;
         this.router.navigate([], {
           relativeTo: this.route,
           queryParams: { q: value || null, page: null },
@@ -166,6 +178,8 @@ export class JobsComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
     this.requestSub?.unsubscribe();
     this.searchSub?.unsubscribe();
     this.userSub?.unsubscribe();
@@ -181,7 +195,6 @@ export class JobsComponent implements OnInit, OnDestroy {
     if (!user?.CompanyId) return;
     const q = (this.query || '').trim();
     const req = { companyId: user.CompanyId, page, q, status: this.selectedStatus };
-    this.pendingRequest = req;
     this.request$.next(req);
   }
 
@@ -202,6 +215,10 @@ export class JobsComponent implements OnInit, OnDestroy {
   resetFilters(): void {
     this.query = '';
     this.selectedStatus = '';
+    // Cancel any pending search debounce explicitly: Reset navigates to the
+    // clean canonical URL, which may be the SAME URL as the current one, so
+    // queryParamMap would not emit and the URL-change cancel would not fire.
+    this.cancelSearch$.next();
     // Clean canonical URL: no page, q or status params.
     this.router.navigate(['/store/admin/jobs']);
   }
@@ -246,6 +263,54 @@ export class JobsComponent implements OnInit, OnDestroy {
 
   get currentPage(): number {
     return this.pagination.page;
+  }
+
+  // Empty-state classification (see template):
+  // - no jobs at all, no filters -> "Create your first job"
+  // - no jobs at all, filters active -> filtered-empty state
+  // - jobs exist but the current page is empty (page beyond totalPages)
+  //   -> "No jobs on this page" with a safe return to page 1 / Previous
+  get hasNoJobsAtAll(): boolean {
+    return this.pagination.totalItems === 0;
+  }
+
+  get hasActiveFilters(): boolean {
+    return !!(this.query || this.selectedStatus);
+  }
+
+  get isPageBeyondEnd(): boolean {
+    return this.pagination.totalItems > 0 && this.jobs.length === 0;
+  }
+
+  get emptyStateTitle(): string {
+    if (this.isPageBeyondEnd) return 'No jobs on this page';
+    return 'No jobs found';
+  }
+
+  get emptyStateHint(): string {
+    if (this.isPageBeyondEnd) {
+      return 'This page is beyond the last page of results.';
+    }
+    if (this.hasActiveFilters) {
+      return 'Try adjusting search or reset filters.';
+    }
+    return 'Create your first job to get started.';
+  }
+
+  get emptyStateActionLabel(): string {
+    if (this.isPageBeyondEnd) return 'Go to page 1';
+    if (this.hasActiveFilters) return 'Reset filters';
+    return 'New Job';
+  }
+
+  emptyStateAction(): void {
+    if (this.isPageBeyondEnd) {
+      this.goToPage(1);
+    } else if (this.hasActiveFilters) {
+      this.resetFilters();
+    } else {
+      this.show_add = true;
+    }
   }
 
   trackByJobId(_index: number, job: JobListItem): string {

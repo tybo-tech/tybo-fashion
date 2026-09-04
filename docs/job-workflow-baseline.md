@@ -10,18 +10,24 @@ returns 500 for unknown IDs).
 > consumes `get-jobs.php`; it paginates/searches/filters server-side through
 > `get-admin-jobs.php` (lean `{items, pagination}` contract; canonical status
 > set `Not started`, `In Progress`, `Completed`, `Stuck`, `Terminated`,
-> `Paused` with legacy `Complete` aliased server-side; URL-driven
-> `?page=&q=&status=`; ~300 ms debounced, `switchMap`-canceled search;
-> loading/empty/error/Retry states; Retry re-issues identical parameters).
-> Everything below about job detail, job-item add/edit and `get-jobs.php`
-> remains byte-identical to the original baseline.
+> `Paused`; URL-driven `?page=&q=&status=`; ~300 ms debounced,
+> `switchMap`-canceled search; loading/empty/error/Retry states; Retry
+> re-issues identical parameters). Everything below about job detail,
+> job-item add/edit and `get-jobs.php` remains byte-identical to the original
+> baseline.
+>
+> **Adopted status aliases (server-side normalization):** `Working on it` →
+> `In Progress`; `Done` and `Complete` → `Completed`. The frontend dropdown
+> exposes only the canonical set (one `Completed` option, plus `Paused`); the
+> server still accepts `complete` as a compatibility alias.
 >
 > **Outstanding Phase 2 operational task:** production `SHOW INDEX` and
 > `EXPLAIN` analysis for the new endpoint's query shapes could not be
-> performed (no production DB access from this environment). The committed
-> migration artifact
-> `api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`
-> must only be executed after that evidence is recorded on production.
+> performed (no production DB access from this environment). No index
+> migration has been committed or executed; the migration artifact
+> (`api.tybo.fashion.main/database/migrations/20260904_admin_jobs_query_indexes.sql`)
+> must be created and committed only after that evidence is recorded on
+> production.
 
 ## Service methods (src/services/job.service.ts)
 

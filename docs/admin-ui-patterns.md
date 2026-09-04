@@ -112,22 +112,31 @@ downloads or scans the full collection:
   `Completed` option only — the server aliases legacy `Complete` into
   `Completed` (never a separate dropdown entry). Unknown slugs → HTTP 400
   rendered as an error, never as "No jobs found".
+- **Status aliases (server-side normalization)** — `Working on it` →
+  `In Progress`; `Done` and `Complete` → `Completed`. The dropdown exposes
+  only the canonical set; the server still accepts `complete` as a
+  compatibility alias.
 - **Debounced, cancelable search** — text input debounces ~300 ms before
   touching the URL; every request flows through one `switchMap` so a newer
   request cancels the older one and stale responses can never replace
-  current state. Errors are caught inside the `switchMap` (an inner
-  `catchError`) so a failed request cannot terminate the pipeline — Retry
-  must keep working after a failure.
+  current state. A pending debounce is cancelled on Reset and on any URL
+  change (Back/Forward) so a stale search can never overwrite the restored
+  URL. Errors are caught inside the `switchMap` (an inner `catchError`) so a
+  failed request cannot terminate the pipeline — Retry must keep working
+  after a failure.
 - **Pagination from metadata only** — "Showing X–Y of Z" is computed from
   the current page, page size, returned item count and API `totalItems`;
   Previous/Next disable from `hasPrevious`/`hasNext`; totals are never
   inferred from the rendered array length. A page beyond `totalPages`
-  renders the filtered empty state while keeping accurate metadata.
+  renders the "No jobs on this page" empty state with a safe return to
+  page 1 / Previous, while keeping accurate metadata.
 - **States** — initial loading spinner; loading on every page/filter/search
-  change; distinct unfiltered vs filtered/search empty states; HTTP failure
-  state with a Retry control that re-issues the identical request (same URL
-  parameters) even though the URL has not changed. A 400/500 is never
-  misrepresented as "No jobs found".
+  change; three distinct empty states (no jobs at all → "Create your first
+  job"; filtered/search empty → "Try adjusting search or reset filters";
+  page beyond the last → "No jobs on this page"); HTTP failure state with a
+  Retry control that re-issues the identical request (same URL parameters)
+  even though the URL has not changed. A 400/500 is never misrepresented as
+  "No jobs found".
 - **Status badges** — rendered from the API's normalized `Status` with the
   case-insensitive class map covering the canonical set (`Not started`,
   `In Progress`, `Completed`, `Stuck`, `Terminated`, `Paused`); status text

@@ -223,57 +223,57 @@ Build `get-admin-jobs.php` plus the model query it needs, without touching
 
 #### Tasks
 
-- [ ] **1.1** Add a lean jobs-list query to the Job model: `CompanyId`-bound,
+- [x] **1.1** Add a lean jobs-list query to the Job model: `CompanyId`-bound,
       `StatusId = 1`, `LEFT JOIN customer ON customer.CustomerId =
       job.CustomerId AND customer.CompanyId = job.CompanyId`, deterministic
       `ORDER BY CreateDate DESC, JobId DESC`, `LIMIT`/`OFFSET` bound with
       `PDO::PARAM_INT`, and a matching `COUNT(*)` query with identical WHERE
       conditions.
-- [ ] **1.2** Implement search in the WHERE clause as parameterized
+- [x] **1.2** Implement search in the WHERE clause as parameterized
       case-insensitive `LIKE '%q%'` matches against: `job.JobNo`,
       `customer.Name`, `customer.Surname`, the combined full name
       (`CONCAT_WS(' ', customer.Name, customer.Surname)`), `customer.PhoneNumber`,
       and legacy `job.CustomerName`. No string interpolation into SQL.
-- [ ] **1.3** Implement status filtering against `job.Status`
+- [x] **1.3** Implement status filtering against `job.Status`
       case-insensitively over the canonical set (`Not started`, `In Progress`,
       `Completed`, `Stuck`, `Terminated`, `Paused`) with legacy `Complete`
       aliased to `Completed` (a `completed` filter matches both). Reject
       `StatusId`-based status values. Map `status` slugs (`not-started`,
       `in-progress`, …) to stored values inside the endpoint.
-- [ ] **1.4** Implement the error contract and parameter validation: missing
+- [x] **1.4** Implement the error contract and parameter validation: missing
       `CompanyId` → 400; unknown status slug → 400
       `{"error":"Unsupported job status."}`; trim `q` and cap it at 100
       characters; cast `page`/`pageSize` to integers and clamp
       (`page < 1 → 1`, `pageSize < 1 → 20`, `pageSize > 100 → 100`); empty
       `q`/`status` treated as absent. Failures return HTTP `500` with a
       generic message; SQL/exception details never reach the client.
-- [ ] **1.5** Return the lean contract:
+- [x] **1.5** Return the lean contract:
       `{"items":[{"JobId","JobNo","CustomerName","Status"}],"pagination":{"page","pageSize","totalItems","totalPages","hasPrevious","hasNext"}}`
       with the customer-name SQL fallback (em-dash when no name resolves) and
       `Status` normalized for display (`Complete` → `Completed`).
-- [ ] **1.6** Confirm the endpoint never loads customers into PHP arrays and
+- [x] **1.6** Confirm the endpoint never loads customers into PHP arrays and
       never fetches order/payment data for the list.
-- [ ] **1.7** Verify `get-jobs.php` is byte-identical to its current state
+- [x] **1.7** Verify `get-jobs.php` is byte-identical to its current state
       (`git diff` on the backend repo must show no changes to it).
-- [ ] **1.8** Run `php -l` on every changed PHP file (endpoint + model) and
+- [x] **1.8** Run `php -l` on every changed PHP file (endpoint + model) and
       record the output; syntax must be clean without running the backend
       locally.
 
 #### Exit Criteria
 
-- [ ] `get-admin-jobs.php` returns the lean JSON object for page 1 with
+- [x] `get-admin-jobs.php` returns the lean JSON object for page 1 with
       defaults when called with only `CompanyId`.
-- [ ] `q=sibahle` returns only matching jobs (name, surname, full name, phone,
+- [x] `q=sibahle` returns only matching jobs (name, surname, full name, phone,
       job number all verified); `status=not-started` matches DB rows stored as
       `Not started`; `status=completed` matches both `Completed` and legacy
       `Complete` rows; `status=paused` matches `Paused`.
-- [ ] `page=2` returns a different, non-overlapping set; `totalItems` matches
+- [x] `page=2` returns a different, non-overlapping set; `totalItems` matches
       a manual `COUNT(*)` on the same filters; a `page` beyond `totalPages`
       returns empty `items` with accurate metadata.
-- [ ] Missing `CompanyId` and unknown `status` each return HTTP 400 with the
+- [x] Missing `CompanyId` and unknown `status` each return HTTP 400 with the
       specified error body; invalid `page`/`pageSize` are clamped, not fatal.
-- [ ] `php -l` clean on all changed PHP files.
-- [ ] `get-jobs.php` unchanged in version control.
+- [x] `php -l` clean on all changed PHP files.
+- [x] `get-jobs.php` unchanged in version control.
 
 ---
 
@@ -304,31 +304,31 @@ proven by `EXPLAIN` are added.
 - [ ] **2.4** Execute only the proven migration on production (phpMyAdmin or
       equivalent), then re-run `SHOW INDEX` and the four `EXPLAIN` queries to
       record the improvement.
-- [ ] **2.5** Upload via FileZilla: the new endpoint file and required model
+- [x] **2.5** Upload via FileZilla: the new endpoint file and required model
       changes only. The upload manifest is recorded in the phase notes and
       must never contain `Database.php`, credentials, or any secrets. Commit
       output and diffs must equally contain no credentials.
-- [ ] **2.6** Test the live endpoint directly (browser/HTTP client): unfiltered
+- [x] **2.6** Test the live endpoint directly (browser/HTTP client): unfiltered
       pagination, customer search (name, surname, full name, phone),
       job-number search, every status slug including `paused` and the
       `completed`/`Complete` alias, invalid parameters, empty results,
       first/last page boundaries, missing `CompanyId`, and unknown status
       (must return the 400 error body).
-- [ ] **2.7** Confirm the storefront profile-orders flow still works
+- [x] **2.7** Confirm the storefront profile-orders flow still works
       (regression proof that `get-jobs.php` is untouched).
 
 #### Exit Criteria
 
-- [ ] Live `get-admin-jobs.php` passes every Phase 1 verification against
+- [x] Live `get-admin-jobs.php` passes every Phase 1 verification against
       production data, with totals quoted as **the verified production total**
       (no assumed job counts).
 - [ ] `SHOW INDEX` baseline + four `EXPLAIN` outputs recorded before and after
       index changes; every index addition traces to an `EXPLAIN` result.
 - [ ] Migration SQL committed with named indexes and rollback statements;
       `phpMyAdmin` execution is not the only record of the schema change.
-- [ ] Upload manifest recorded; `Database.php` and credentials absent from it,
+- [x] Upload manifest recorded; `Database.php` and credentials absent from it,
       from commit output, and from any logs.
-- [ ] Storefront profile-orders regression passes.
+- [x] Storefront profile-orders regression passes.
 
 ---
 
