@@ -86,7 +86,7 @@ export class CustomerComponent implements OnDestroy {
     if (!user?.CompanyId) {
       // No session/company: never spin forever. Route through the sign-in flow.
       this.loading = false;
-      this.router.navigate(['/sign-in']);
+      this.router.navigate(['/home/sign-in']);
       return;
     }
     this.request$.next({ companyId: user.CompanyId, customerId: this.id });

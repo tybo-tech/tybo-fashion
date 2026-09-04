@@ -510,6 +510,13 @@ class Customer
         // must not overwrite them with empty values. Existing callers that
         // send a password/token still work unchanged.
         $existing = $this->loadExistingAuthFields($model->CustomerId);
+        if ($existing === null) {
+            // Fail closed: if we cannot read the current protected fields, we
+            // must not proceed — an update could erase the password, token or
+            // audit identifiers. "Could not preserve protected fields" means
+            // no update occurred.
+            return array("error" => true, "message" => "Could not preserve protected fields.");
+        }
         $password = !empty($model->Password)
             ? password_hash($model->Password, PASSWORD_BCRYPT)
             : $existing['Password'];
@@ -575,8 +582,8 @@ class Customer
     /**
      * Loads the current Password, UserToken, CreateUserId and ModifyUserId for
      * a customer so update() can preserve them when the incoming model omits
-     * them. Returns empty strings when the row is missing so update() still
-     * behaves predictably.
+     * them. Returns null when the row is missing or the query fails, so
+     * update() can abort rather than risk erasing protected fields.
      */
     private function loadExistingAuthFields($customerId)
     {
@@ -587,7 +594,7 @@ class Customer
             $stmt->execute([$customerId]);
             $row = $stmt->fetch(PDO::FETCH_ASSOC);
             if (!$row) {
-                return array('Password' => '', 'UserToken' => '', 'CreateUserId' => '', 'ModifyUserId' => '');
+                return null;
             }
             return array(
                 'Password' => $row['Password'] ?? '',
@@ -596,7 +603,7 @@ class Customer
                 'ModifyUserId' => $row['ModifyUserId'] ?? '',
             );
         } catch (Exception $e) {
-            return array('Password' => '', 'UserToken' => '', 'CreateUserId' => '', 'ModifyUserId' => '');
+            return null;
         }
     }
 

@@ -45,6 +45,8 @@ Customer Picker**. No write-contract changes and no speculative UI.
 - Lookup scoped by both `CompanyId` and `CustomerId`.
 - Returns the editable customer fields the existing form needs (full row +
   decoded `Measurements`/`Metadata` + `FullName`).
+- **Password and `UserToken` are never returned by the focused endpoint** —
+  they are stripped from the response before it reaches the browser.
 - Returns only analytics the new detail page renders.
 - Does not return unused job/payment history arrays.
 - Does not generate unused contact/address/activity/service-preference analysis.
@@ -53,6 +55,16 @@ Customer Picker**. No write-contract changes and no speculative UI.
 - Generic 400, 404, 500 responses; guarded DB connection; parameterized queries.
 - `SHOW INDEX` + `EXPLAIN`; no index without production evidence.
 - `php -l` on changed PHP files.
+
+**Edit/save preservation (write contract unchanged):**
+
+- Missing password/token/audit fields are preserved server-side. `update()`
+  reads the current `Password`, `UserToken`, `CreateUserId` and `ModifyUserId`
+  and reuses them when the incoming model omits them, so an edit/save from the
+  detail flow never erases them.
+- **Preservation failure aborts the update.** If the current protected fields
+  cannot be read, `update()` returns an error and no SQL runs — "Could not
+  preserve protected fields" means no update occurred.
 
 Response groups:
 
