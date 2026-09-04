@@ -1,6 +1,7 @@
 import { Component, HostListener } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { IComment } from 'src/models/comment.model';
+import { CustomerListItem } from 'src/models/Customer';
 import { Job } from 'src/models/job.model';
 import { JobService } from 'src/services/job.service';
 import { UxService } from 'src/services/ux.service';
@@ -10,8 +11,15 @@ import { UxService } from 'src/services/ux.service';
  *
  * Owns exactly three things: customer, due date and special instructions.
  * Status is NOT editable here — it stays the overview quick action.
- * Save/cancel with an unsaved-change guard, loading/error+Retry states and
- * duplicate-submit protection. The overview page itself is read-first.
+ *
+ * Customer is a controlled draft: the picker only updates the job's
+ * CustomerId/CustomerName locally; the association is persisted through
+ * this editor's single Save. The customer entity itself is edited on the
+ * customer detail page (linked), not here.
+ *
+ * Save/cancel with an unsaved-change guard, inline error + Retry on save,
+ * loading/error+Retry states and duplicate-submit protection. The overview
+ * page itself is read-first.
  */
 @Component({
   selector: 'app-job-editor',
@@ -23,9 +31,11 @@ export class JobEditorComponent {
   job?: Job;
   loading = true;
   loadError: string | null = null;
+  saveError: string | null = null;
 
   dueDate = '';
   instructions: IComment[] = [];
+  customerPickerOpen = false;
 
   saving = false;
   private dirty = false;
@@ -81,6 +91,28 @@ export class JobEditorComponent {
     this.dirty = true;
   }
 
+  openCustomerPicker(): void {
+    this.customerPickerOpen = true;
+  }
+
+  closeCustomerPicker(): void {
+    this.customerPickerOpen = false;
+  }
+
+  /** Controlled draft: persist only through Save (Sprint 5 §3). */
+  onCustomerPicked(customer: CustomerListItem): void {
+    if (!this.job || !customer?.CustomerId) return;
+    this.job.CustomerId = customer.CustomerId;
+    this.job.CustomerName = customer.CustomerName;
+    this.customerPickerOpen = false;
+    this.dirty = true;
+  }
+
+  get customerDetailLink(): string | null {
+    const id = this.job?.CustomerId;
+    return id ? `/store/admin/customer/${id}` : null;
+  }
+
   get overviewLink(): string {
     return `/store/admin/jobs/${this.jobId}`;
   }
@@ -92,6 +124,7 @@ export class JobEditorComponent {
   save(): void {
     if (this.saving || !this.job) return;
     this.saving = true;
+    this.saveError = null;
     this.job.DueDate = this.dueDate;
     this.job.Metadata.Special_instructions = this.instructions;
     this.jobService.update(this.job).subscribe({
@@ -105,11 +138,8 @@ export class JobEditorComponent {
       },
       error: () => {
         this.saving = false;
-        this.uxService.show_toast(
-          'Failed to save the job. Please try again.',
-          'Error',
-          ['bg-danger']
-        );
+        this.saveError =
+          'Failed to save the job. Nothing was changed — please try again.';
       },
     });
   }
@@ -135,6 +165,8 @@ export class JobEditorComponent {
     return JSON.stringify({
       dueDate: this.dueDate,
       instructions: this.instructions,
+      CustomerId: this.job?.CustomerId,
+      CustomerName: this.job?.CustomerName,
     });
   }
 

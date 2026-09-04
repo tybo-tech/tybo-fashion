@@ -67,12 +67,11 @@
     </div>
   </div>
 
-  <!-- Items -->
-  <div class="card border shadow-sm mb-3">
-    <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-bag-check text-primary"></i> Garments</h2>
-      <app-job-items [job]="job" [user]="user"></app-job-items>
-    </div>
+  <!-- Garments — unboxed plain section (Sprint 5 §4): no card, no
+       shadow. The list itself carries the separators. -->
+  <div class="mb-3">
+    <h2 class="h6 mb-2 d-flex align-items-center gap-2"><i class="bi bi-bag-check text-primary"></i> Garments</h2>
+    <app-job-items [job]="job" [user]="user"></app-job-items>
   </div>
 
   <!-- Totals -->

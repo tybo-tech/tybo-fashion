@@ -179,6 +179,27 @@ class JobItem
         }
         return null;
     }
+
+    /**
+     * Sprint 5 — minimal parent context for the garment details page
+     * breadcrumb (the raw JobId UUID must never be shown as the job
+     * label). Returns { JobId, JobNo } only — never the full job.
+     */
+    public function getScopedParentContext($JobId, $CompanyId)
+    {
+        $query = "
+            SELECT JobId, JobNo FROM job
+            WHERE JobId = ? AND CompanyId = ?
+        ";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(array($JobId, $CompanyId));
+
+        if ($stmt->rowCount()) {
+            return $stmt->fetch(PDO::FETCH_ASSOC);
+        }
+        return null;
+    }
     public function getByJobId($JobId)
     {
         $query = "SELECT * FROM jobitem WHERE JobId =?";

@@ -92,13 +92,27 @@ export class JobComponent {
   updateJob() {
     // Explicit save — used by the status quick action and the
     // shipping/payments modals only. Nothing auto-saves on this page.
+    // On failure the loading state is released and the select reverts to
+    // the last confirmed status (tempStatus).
     this.uxService.load(true);
     this.job &&
-      this.jobService.update(this.job).subscribe((data) => {
-        this.uxService.load(false);
-        this.uxService.show_toast('Job updated successfully', 'Success', [
-          'bg-success',
-        ]);
+      this.jobService.update(this.job).subscribe({
+        next: () => {
+          this.tempStatus = this.job!.Status;
+          this.uxService.load(false);
+          this.uxService.show_toast('Job updated successfully', 'Success', [
+            'bg-success',
+          ]);
+        },
+        error: () => {
+          this.job!.Status = this.tempStatus;
+          this.uxService.load(false);
+          this.uxService.show_toast(
+            'Failed to update the job. Please try again.',
+            'Error',
+            ['bg-danger']
+          );
+        },
       });
   }
 

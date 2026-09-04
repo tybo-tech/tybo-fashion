@@ -9,10 +9,10 @@
     </button>
   </div>
 
-  <!-- Sprint 5 §4 — plain list, no section box, no row cards. Separators
-       only: each row carries a bottom border (serving as the between-row
-       and bottom separator). -->
-  <div *ngIf="hasItems" class="d-flex flex-column">
+  <!-- Sprint 5 §4 — plain list, no section box, no row cards. The list
+       carries an explicit top separator; each row a bottom border
+       (between-row and bottom separators). -->
+  <div *ngIf="hasItems" class="d-flex flex-column garment-list">
     <app-job-item *ngFor="let item of jobItems" [jobItem]="item" [user]="user" [job]="job"></app-job-item>
   </div>
 

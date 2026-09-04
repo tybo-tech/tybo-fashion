@@ -168,6 +168,13 @@ try {
     $scoped = $jobItemModel->getScopedById($addedJobItemId, $JobId, $CompanyId);
     check('scoped read: garment returned', 'Mini skirt', $scoped['ItemName'] ?? null);
     check('scoped read: does not embed the parent job', false, array_key_exists('Job', $scoped ?? array()));
+    $parent = $jobItemModel->getScopedParentContext($JobId, $CompanyId);
+    check('parent context: JobNo returned', 'JOB-TEST', $parent['JobNo'] ?? null);
+    check(
+        'parent context: minimal keys only',
+        array('JobId', 'JobNo'),
+        array_keys($parent ?? array())
+    );
     check(
         'scoped read: cross-company rejected',
         null,
@@ -183,6 +190,20 @@ try {
         null,
         $jobItemModel->getScopedById('no-such-item', $JobId, $CompanyId)
     );
+
+    // ── 2c. Field validation (quantity ≥ 1 whole number; price ≥ 0) ──────
+    $model->Quantity = 0;
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('quantity 0 rejected: 400', 400, $status);
+    $model->Quantity = 1.5;
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('fractional quantity rejected: 400', 400, $status);
+    $model->Quantity = 1;
+    $model->UnitPrice = -1;
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('negative unit price rejected: 400', 400, $status);
+    $model->UnitPrice = 200.0;
+    check_num('rejected updates left totals intact', 250.0, (float) readJob($db, $JobId)['TotalCost']);
 
     // ── 3. Cross-job / cross-company rejection ───────────────────────────
     list($status, $body) = $transaction->update($otherCompanyId, $otherJobId, $addedJobItemId, $model);

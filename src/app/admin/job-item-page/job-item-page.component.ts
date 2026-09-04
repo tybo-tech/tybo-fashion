@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Job } from 'src/models/job.model';
 import { JobItem } from 'src/models/job-item.model';
@@ -15,11 +15,14 @@ import { UxService } from 'src/services/ux.service';
  *
  * - Edit mode reads the garment through the scoped item endpoint
  *   (CompanyId + JobId + JobItemId) — no full-job load with client-side
- *   lookup. New mode still needs the job record for context only.
+ *   lookup. The response carries minimal parent context (JobId + JobNo)
+ *   for the breadcrumb. New mode still needs the job record for context.
  * - Save/remove use the transactional endpoints (Sprint 5 §6): the server
  *   persists the item mutation and job totals in one transaction and
- *   returns both, so the client never chains a parent-totals update and
- *   never reports false success.
+ *   returns both. Success requires a valid garment (matching ID on edit)
+ *   AND complete totals — never a partial response.
+ * - Unsaved-change protection: snapshot/dirty tracking, a route
+ *   canDeactivate guard and a beforeunload handler (Sprint 5 §5).
  * - Remove from job is a quiet danger action at the bottom, with a
  *   confirmation naming the garment; duplicate submissions are blocked.
  */
@@ -39,6 +42,9 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   saving = false;
   removing = false;
   error: string | null = null;
+  parentJobNo = '';
+
+  private savedSnapshot = '';
 
   private userSub?: { unsubscribe(): void };
 
@@ -82,11 +88,13 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
             return;
           }
           this.job = job;
+          this.parentJobNo = job.JobNo || '';
           this.jobItem = this.jobService.initJobItem(
             job.JobId,
             job.CompanyId,
             job.CreateUserId || this.user?.UserId || ''
           );
+          this.savedSnapshot = this.snapshot();
           this.loading = false;
         },
         error: () => {
@@ -112,6 +120,8 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
           return;
         }
         this.jobItem = garment;
+        this.parentJobNo = res.job?.JobNo || '';
+        this.savedSnapshot = this.snapshot();
         this.loading = false;
       },
       error: (err) => {
@@ -133,8 +143,32 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     this.loading = false;
   }
 
+  // ── Unsaved-change protection (Sprint 5 §5) ───────────────────────────
+
+  private snapshot(): string {
+    return JSON.stringify(this.jobItem || null);
+  }
+
+  get isDirty(): boolean {
+    return !!this.jobItem && this.snapshot() !== this.savedSnapshot;
+  }
+
+  canDeactivate(): boolean {
+    return !this.isDirty || confirm('Discard unsaved changes?');
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  unloadWarning($event: BeforeUnloadEvent): void {
+    if (this.isDirty) {
+      $event.preventDefault();
+      $event.returnValue = true;
+    }
+  }
+
+  // ── Presentation ──────────────────────────────────────────────────────
+
   get jobNo(): string {
-    return this.job?.JobNo || this.jobItem?.JobId || '';
+    return this.parentJobNo || this.job?.JobNo || '';
   }
 
   get jobDetailsLink(): string {
@@ -159,8 +193,11 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   cancel(): void {
+    if (this.isDirty && !confirm('Discard unsaved changes?')) return;
     this.router.navigate([this.jobDetailsLink]);
   }
+
+  // ── Mutations ─────────────────────────────────────────────────────────
 
   save(item: JobItem): void {
     if (!item || this.saving || this.removing) return; // duplicate-submission guard
@@ -173,14 +210,29 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     this.saving = true;
     this.error = null;
 
-    const handle = (res: { garment: JobItem | null; totals?: unknown }) => {
-      // The server returns the saved garment plus recalculated totals only
-      // when the whole transaction committed (Sprint 5 §6).
-      if (!res || (!res.garment && !('totals' in res))) {
+    // Success requires the complete contract: non-null garment with the
+    // right ID (on edit) AND the totals object. A partial response is a
+    // failure (Sprint 5 §6).
+    const handle = (res: {
+      garment: JobItem | null;
+      totals?: Record<string, unknown>;
+    }) => {
+      const totalsComplete =
+        !!res?.totals && typeof res.totals === 'object' && 'totalCost' in res.totals;
+      const garmentValid =
+        !!res?.garment &&
+        !!res.garment.JobItemId &&
+        (this.mode === 'new' || res.garment.JobItemId === this.jobItemId);
+
+      if (!garmentValid || !totalsComplete) {
         this.saving = false;
         this.fail('The change was not saved as expected. Please try again.');
         return;
       }
+
+      // Saved: align the snapshot so the route guard lets us leave.
+      this.jobItem = res.garment || undefined;
+      this.savedSnapshot = this.snapshot();
       this.saving = false;
       this.uxService.show_toast(
         this.mode === 'new' ? 'Garment added successfully' : 'Garment saved successfully',
@@ -225,12 +277,14 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           // Success only when the transaction (removal + totals) committed.
-          if (!res || !res.removedJobItemId) {
+          if (!res || !res.removedJobItemId || !res.totals) {
             this.removing = false;
             this.fail('The garment was not removed as expected. Please try again.');
             return;
           }
           this.removing = false;
+          // Removed: align the snapshot so the route guard lets us leave.
+          this.savedSnapshot = this.snapshot();
           this.uxService.show_toast('Garment removed from job', 'success');
           this.router.navigate([this.jobDetailsLink]);
         },

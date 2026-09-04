@@ -1,1 +1,7 @@
 :host { display: block; }
+
+/* Sprint 5 §4 — explicit top separator for the plain garment list;
+   each row supplies its own bottom border. */
+.garment-list {
+  border-top: 1px solid var(--bs-border-color, #dee2e6);
+}

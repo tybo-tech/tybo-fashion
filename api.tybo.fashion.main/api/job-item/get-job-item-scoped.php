@@ -63,4 +63,9 @@ if ($garment === null) {
     respond(array('error' => 'Garment not found in this job.'), 404);
 }
 
-respond(array('garment' => $garment));
+// Minimal parent context (JobId + JobNo) for the page breadcrumb — the
+// full job payload is intentionally NOT returned. The garment is already
+// proven to belong to this job, so this cannot fail meaningfully.
+$parentJob = $jobItem->getScopedParentContext($JobId, $CompanyId);
+
+respond(array('garment' => $garment, 'job' => $parentJob));

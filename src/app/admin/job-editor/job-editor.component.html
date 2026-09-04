@@ -26,11 +26,29 @@
     </div>
   </div>
 
-  <!-- Customer -->
-  <div class="card border shadow-sm mb-3" *ngIf="job.Customer">
+  <!-- Customer — controlled draft (Sprint 5 §3). The picker updates the
+       job's association only; the entity is edited on the customer detail
+       page. Persisted through this editor's single Save. -->
+  <div class="card border shadow-sm mb-3" *ngIf="job">
     <div class="card-body p-3">
       <h2 class="h6 mb-3"><i class="bi bi-person text-primary me-2"></i>Customer</h2>
-      <app-customer-form [customer]="job.Customer"></app-customer-form>
+      <div class="d-flex align-items-center justify-content-between gap-2 flex-wrap">
+        <div class="min-w-0">
+          <span class="fw-medium small d-block text-truncate">{{ job.CustomerName || job.Customer?.Name || 'No Customer' }}</span>
+          <a *ngIf="customerDetailLink" class="small" [routerLink]="customerDetailLink">View customer details <i class="bi bi-box-arrow-up-right ms-1 small"></i></a>
+        </div>
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="openCustomerPicker()">
+          <i class="bi bi-arrow-repeat me-1"></i> Change customer
+        </button>
+      </div>
+
+      <div *ngIf="customerPickerOpen" class="border rounded-2 mt-3 p-2 bg-light">
+        <div class="d-flex align-items-center justify-content-between mb-2">
+          <span class="small fw-semibold">Choose a customer</span>
+          <button type="button" class="btn btn-sm btn-light border" (click)="closeCustomerPicker()" aria-label="Close customer picker"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <app-customer-list-view (onSelect)="onCustomerPicked($event)"></app-customer-list-view>
+      </div>
     </div>
   </div>
 
@@ -46,7 +64,11 @@
     </div>
   </div>
 
-  <!-- Actions -->
+  <!-- Actions — inline save error with Retry (Sprint 5 acceptance) -->
+  <div *ngIf="saveError" class="alert alert-danger">
+    <div class="fw-semibold small mb-1">{{ saveError }}</div>
+    <button type="button" class="btn btn-sm btn-outline-danger" [disabled]="saving" (click)="save()"><i class="bi bi-arrow-clockwise me-1"></i> Retry</button>
+  </div>
   <div class="d-flex gap-2 pb-4">
     <button type="button" class="btn btn-primary" [disabled]="saving" (click)="save()">
       <span *ngIf="saving" class="spinner-border spinner-border-sm me-1" aria-hidden="true"></span>

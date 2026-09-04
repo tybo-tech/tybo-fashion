@@ -28,6 +28,7 @@ import { JobItemPageComponent } from './job-item-page/job-item-page.component';
 import { JobsStatusRedirectComponent } from './jobs/jobs-status-redirect.component';
 import { JobEditorComponent } from './job-editor/job-editor.component';
 import { unsavedChangesGuard } from './job-editor/unsaved-changes.guard';
+import { garmentUnsavedChangesGuard } from './job-item-page/garment-unsaved-changes.guard';
 import {
   jobIdRouteMatcher,
   jobStatusSlugMatcher,
@@ -69,10 +70,12 @@ const routes: Routes = [
       {
         path: 'jobs/:jobId/garments/new',
         component: JobItemPageComponent,
+        canDeactivate: [garmentUnsavedChangesGuard],
       },
       {
         path: 'jobs/:jobId/garments/:garmentId',
         component: JobItemPageComponent,
+        canDeactivate: [garmentUnsavedChangesGuard],
       },
       {
         // Known status slugs only — everything else falls to jobs/**.

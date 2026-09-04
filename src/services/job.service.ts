@@ -210,7 +210,7 @@ export class JobService {
       .set('CompanyId', companyId)
       .set('JobId', jobId)
       .set('JobItemId', jobItemId);
-    return this.http.get<{ garment: JobItem }>(
+    return this.http.get<{ garment: JobItem; job: { JobId: string; JobNo: string } | null }>(
       `${this.url}/job-item/get-job-item-scoped.php`,
       { params }
     );
