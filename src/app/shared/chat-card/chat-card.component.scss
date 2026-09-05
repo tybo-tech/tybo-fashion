@@ -1,0 +1,63 @@
+:host {
+  display: block;
+}
+
+.chat-card {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #f2f2f2;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: #fafafa;
+  }
+}
+
+.avatar-wrap {
+  flex: 0 0 auto;
+}
+
+.avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  object-fit: cover;
+  filter: grayscale(100%);
+}
+
+.presence-dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #2dd4bf;
+  border: 2px solid #fff;
+}
+
+.chat-meta {
+  min-width: 0;
+}
+
+.chat-name {
+  font-size: 0.925rem;
+  font-weight: 600;
+  color: #16191d;
+  line-height: 1.35;
+}
+
+.chat-preview {
+  font-size: 0.8rem;
+  color: #9aa0a6;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-time {
+  flex: 0 0 auto;
+  font-size: 0.725rem;
+  color: #b6bcc2;
+}

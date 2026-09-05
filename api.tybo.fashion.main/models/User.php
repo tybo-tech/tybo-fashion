@@ -341,8 +341,8 @@ class User
             if (!empty($result['CompanyId'])) {
                 $result['Company'] = $company->GetById($result['CompanyId']);
             }
-            $result["Measurements"] = json_decode($result["Measurements"]);
-            $result["Metadata"] = json_decode($result["Metadata"]);
+            $result["Measurements"] = json_decode($result["Measurements"] ?? '');
+            $result["Metadata"] = json_decode($result["Metadata"] ?? '');
             $result["Favorites"] = $this->my_favs($result);
 
             return $result;
@@ -352,7 +352,7 @@ class User
     }
     function my_favs($user)
     {
-        $favorites = $user["Metadata"]->Favorites;
+        $favorites = $user["Metadata"]->Favorites ?? [];
         if (!empty($favorites)) {
             // $product = new ProductQuery($this->conn);
             // return $product->getProductsByIds($favorites);

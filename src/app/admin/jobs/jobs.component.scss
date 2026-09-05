@@ -58,6 +58,13 @@
   font-size: .82rem;
 }
 
+.job-dates {
+  display: flex;
+  gap: .75rem;
+  color: var(--admin-muted);
+  font-size: .78rem;
+}
+
 .job-row-side {
   display: flex;
   align-items: center;

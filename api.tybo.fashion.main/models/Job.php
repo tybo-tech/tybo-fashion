@@ -511,6 +511,8 @@ class Job
         $query = "SELECT
             job.JobId,
             job.JobNo,
+            job.StartDate,
+            job.DueDate,
             COALESCE(
                 NULLIF(TRIM(CONCAT_WS(' ', customer.Name, customer.Surname)), ''),
                 NULLIF(job.CustomerName, ''),

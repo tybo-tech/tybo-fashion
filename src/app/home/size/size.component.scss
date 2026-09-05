@@ -19,17 +19,14 @@
       border-color: #1d2124;
     }
   }
+  // Selected/unselected distinction: dark border + text on white.
+  // (Restores the border/text formerly supplied by the deleted global
+  // _boot.scss .btn-outline rule; must stay before .btn-dark so the
+  // selected state wins on equal !important.)
   .btn-outline {
     background-color: #ffffff !important;
-  }
-  .btn-dark {
-    background-color: #343a40 !important;
-    border-color: #343a40 !important;
-    color: #fff !important;
-    &:hover {
-      background-color: #23272b;
-      border-color: #1d2124;
-    }
+    border-color: var(--black) !important;
+    color: var(--black) !important;
   }
 
   .size-overlay {

@@ -86,6 +86,8 @@ export interface JobListItem {
   JobNo: string;
   CustomerName: string;
   Status: string;
+  StartDate?: any;
+  DueDate?: any;
 }
 
 export interface JobsPagination {

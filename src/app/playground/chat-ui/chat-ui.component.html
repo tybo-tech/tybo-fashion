@@ -1,0 +1,69 @@
+<div class="chat-stage d-flex align-items-center justify-content-center">
+  <div class="phone-shell">
+    <div class="phone-screen d-flex flex-column">
+
+      <!-- Top bar -->
+      <div class="top-bar d-flex align-items-center justify-content-between">
+        <button type="button" class="icon-btn" aria-label="Search">
+          <i class="bi bi-search"></i>
+        </button>
+        <button type="button" class="icon-btn has-dot" aria-label="Notifications">
+          <i class="bi bi-chat"></i>
+        </button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="tab-switch mx-auto d-flex">
+        <button
+          type="button"
+          class="tab-pill flex-fill"
+          [class.is-active]="activeTab === 'chats'"
+          (click)="setTab('chats')"
+        >
+          Chats
+        </button>
+        <button
+          type="button"
+          class="tab-pill flex-fill"
+          [class.is-active]="activeTab === 'friends'"
+          (click)="setTab('friends')"
+        >
+          Friends
+        </button>
+      </div>
+
+      <!-- Chat list -->
+      <ul class="chat-list list-unstyled flex-grow-1">
+        <li *ngFor="let chat of chats">
+          <app-chat-card
+            [avatar]="chat.avatar"
+            [name]="chat.name"
+            [message]="chat.message"
+            [time]="chat.time"
+            [online]="chat.online"
+          ></app-chat-card>
+        </li>
+      </ul>
+
+      <!-- Bottom nav -->
+      <nav class="bottom-nav d-flex align-items-center justify-content-between">
+        <button type="button" class="icon-btn" [class.is-active]="activeNav === 'discover'" (click)="setNav('discover')" aria-label="Discover">
+          <i class="bi bi-lightbulb"></i>
+        </button>
+        <button type="button" class="icon-btn" [class.is-active]="activeNav === 'location'" (click)="setNav('location')" aria-label="Nearby">
+          <i class="bi bi-geo-alt"></i>
+        </button>
+        <button type="button" class="icon-btn" [class.is-active]="activeNav === 'add'" (click)="setNav('add')" aria-label="New">
+          <i class="bi bi-plus-circle"></i>
+        </button>
+        <button type="button" class="nav-fab d-flex align-items-center justify-content-center" [class.is-active]="activeNav === 'chats'" (click)="setNav('chats')" aria-label="Chats">
+          <i class="bi bi-chat-dots"></i>
+        </button>
+        <button type="button" class="icon-btn" [class.is-active]="activeNav === 'apps'" (click)="setNav('apps')" aria-label="Apps">
+          <i class="bi bi-grid-3x3-gap-fill"></i>
+        </button>
+      </nav>
+
+    </div>
+  </div>
+</div>

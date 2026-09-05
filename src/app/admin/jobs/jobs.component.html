@@ -48,6 +48,10 @@
           <span class="job-row-main min-w-0">
             <span class="job-no text-truncate">{{ job.JobNo }}</span>
             <span class="job-customer text-truncate">{{ job.CustomerName }}</span>
+            <span class="job-dates text-truncate">
+              <span *ngIf="job.StartDate">Start: {{ job.StartDate | date: 'dd MMM yyyy' }}</span>
+              <span *ngIf="job.DueDate">Due: {{ job.DueDate | date: 'dd MMM yyyy' }}</span>
+            </span>
           </span>
           <span class="job-row-side flex-shrink-0">
             <span class="badge border fw-semibold" [ngClass]="statusBadgeClass(job.Status)">{{ job.Status }}</span>

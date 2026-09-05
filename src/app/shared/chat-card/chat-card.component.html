@@ -1,0 +1,11 @@
+<div class="chat-card d-flex align-items-center">
+  <div class="avatar-wrap position-relative">
+    <img class="avatar" [src]="avatar" [alt]="name" />
+    <span *ngIf="online" class="presence-dot"></span>
+  </div>
+  <div class="chat-meta flex-grow-1 ms-3">
+    <p class="chat-name mb-0">{{ name }}</p>
+    <p class="chat-preview mb-0">{{ message }}</p>
+  </div>
+  <span class="chat-time">{{ time }}</span>
+</div>
