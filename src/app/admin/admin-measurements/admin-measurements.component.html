@@ -1,69 +1,78 @@
-<table class="table mb-5" *ngIf="measurements.length">
-  <tbody>
-    <tr>
-      <td colspan="2" class="td">
+<div class="measurements-editor">
+  <div *ngIf="measurements.length" class="card border bg-white">
+    <div class="card-body p-3">
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
+        <label class="form-label small text-muted mb-0">Units</label>
         <select
           [(ngModel)]="units"
-          name=""
-          id=""
-          class="form-select"
+          name="measurement-units"
+          id="measurement-units"
+          class="form-select form-select-sm w-auto"
           (change)="onUnits(); onDone()"
         >
           <option [value]="u" *ngFor="let u of systemUnits">
-            {{ u || "Select Units" }}
+            {{ u || 'Select Units' }}
           </option>
         </select>
-        <small class="text-danger w-100 text-left" *ngIf="unit_error">
-          {{ unit_error }}
-        </small>
-      </td>
-    </tr>
-    <tr *ngFor="let item of measurements; let i = index">
-      <td style="width: 70%">
-        <input
-          [ngModelOptions]="{ standalone: true }"
-          type="text"
-          class="form-control"
-          id="email"
-          [(ngModel)]="item.Name"
-          [readOnly]="!can_edit"
-          required
-          (change)="onDone()"
-        />
-      </td>
-      <td>
-        <div class="d-flex gap-1 align-items-center">
+      </div>
+      <small class="text-danger d-block mb-2" *ngIf="unit_error">
+        {{ unit_error }}
+      </small>
+
+      <div class="measurement-rows">
+        <div class="measurement-row" *ngFor="let item of measurements; let i = index">
           <input
             [ngModelOptions]="{ standalone: true }"
-            type="number"
-            class="form-control"
-            [id]="'value' + i"
-            [(ngModel)]="item.Value"
+            type="text"
+            class="form-control form-control-sm"
+            [id]="'measurement-name-' + i"
+            [(ngModel)]="item.Name"
+            [readOnly]="!can_edit"
+            placeholder="Measurement name"
             required
             (change)="onDone()"
           />
-
-          <i *ngIf="can_delete" class="bi bi-trash" (click)="delete(i)"></i>
-        </div>
-      </td>
-    </tr>
-    <tr *ngIf="can_add">
-      <td colspan="2" align="right" class="td">
-        <div class="d-flex gap-2">
-          <button class="btn border btn-light" (click)="add_measurement()">
-            Add Line
+          <input
+            [ngModelOptions]="{ standalone: true }"
+            type="number"
+            class="form-control form-control-sm"
+            [id]="'measurement-value-' + i"
+            [(ngModel)]="item.Value"
+            placeholder="Value"
+            required
+            (change)="onDone()"
+          />
+          <button
+            *ngIf="can_delete"
+            type="button"
+            class="btn btn-sm btn-outline-danger measurement-delete"
+            (click)="delete(i)"
+            [attr.aria-label]="'Remove ' + (item.Name || 'measurement')"
+          >
+            <i class="bi bi-trash"></i>
           </button>
         </div>
-      </td>
-    </tr>
-  </tbody>
-</table>
+      </div>
+      <small class="text-danger d-block mt-2" *ngIf="values_error">
+        {{ values_error }}
+      </small>
 
-<div class="" *ngIf="!measurements.length">
-  <div class="alert alert-info">
-    No measurements found
-    <!-- Add New Measurement -->
-    <button class="btn btn-light border mt-2 mb-2 d-block" (click)="add_measurement()">Add new</button>
+      <div class="d-flex justify-content-end mt-3" *ngIf="can_add">
+        <button type="button" class="btn btn-sm btn-outline-primary" (click)="add_measurement()">
+          <i class="bi bi-plus-lg me-1"></i> Add Line
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!measurements.length" class="text-center py-4">
+    <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-2 icon-40">
+      <i class="bi bi-rulers text-muted"></i>
+    </div>
+    <p class="small text-muted mb-3">No measurements added yet.</p>
+    <button type="button" class="btn btn-sm btn-outline-primary" (click)="add_measurement()">
+      <i class="bi bi-plus-lg me-1"></i> Add Measurement
+    </button>
   </div>
 </div>
 

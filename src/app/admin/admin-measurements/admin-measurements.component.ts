@@ -1,6 +1,5 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { Constants } from 'src/constants/Constants';
-import { Product } from 'src/models/Product';
 import { IMeasurement } from 'src/models/measurement.model';
 
 @Component({
@@ -10,7 +9,6 @@ import { IMeasurement } from 'src/models/measurement.model';
 })
 export class AdminMeasurementsComponent {
   @Input() measurements: IMeasurement[] = [];
-  @Input() systemMeasurements: string[] = [];
   @Input() can_add = true;
   @Input() can_delete = true;
   @Input() can_edit = true;
@@ -29,6 +27,7 @@ export class AdminMeasurementsComponent {
   }
   delete(index: number) {
     this.measurements.splice(index, 1);
+    this.onCaptured.emit(this.measurements);
   }
   add_measurement() {
     if (!this.measurements) this.measurements = [];
@@ -47,7 +46,7 @@ export class AdminMeasurementsComponent {
       return;
     }
 
-    if(this.units && this.measurements.length){
+    if (this.units && this.measurements.length) {
       this.measurements.map((m) => {
         m.Units = this.units;
       });
@@ -55,8 +54,7 @@ export class AdminMeasurementsComponent {
 
     this.measurements.forEach((m) => {
       if (!m.Value) {
-        this.values_error = 'Please all enter values';
-        return;
+        this.values_error = 'Please enter all values';
       }
     });
     if (this.unit_error || this.values_error) {
@@ -73,11 +71,12 @@ export class AdminMeasurementsComponent {
         const i: IMeasurement = {
           Image: '',
           Name: s,
-          Units: '',
+          Units: this.units,
           Value: '',
         };
         this.measurements.push(i);
       }
     });
+    this.onCaptured.emit(this.measurements);
   }
 }

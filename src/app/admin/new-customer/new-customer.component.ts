@@ -3,7 +3,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
 import { Customer, CustomerListItem, initCustomer, sanitizePhoneNumber } from 'src/models/Customer';
-import { initMeasurements } from 'src/models/measurement.model';
 import { loading, stop_loading } from 'src/models/ux.model';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
@@ -144,10 +143,6 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     );
   }
 
-  get hasMeasurementInput(): boolean {
-    return !!(this.customer.Measurements || []).some((m) => m.Name && m.Name.trim());
-  }
-
   goBack(): void {
     if (this.stepIndex <= 0) {
       this.leave();
@@ -242,14 +237,6 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
       return;
     }
     this.router.navigate(['/store/admin/customer', saved.CustomerId]);
-  }
-
-  add_measurement() {
-    this.customer.Measurements?.push({ ...initMeasurements('') });
-  }
-
-  delete_measurement(index: number) {
-    this.customer.Measurements?.splice(index, 1);
   }
 
   // ── Draft persistence (localStorage) ───────────────────────────────────

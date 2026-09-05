@@ -157,63 +157,12 @@
     <div class="form-section">
       <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
         <span class="optional-badge">Optional</span>
-        <button type="button" class="btn btn-outline-primary btn-sm" (click)="add_measurement()">
-          <i class="bi bi-plus"></i> Add Measurement
-        </button>
       </div>
 
-      <div class="measurements-container" *ngIf="customer.Measurements && customer.Measurements.length > 0">
-        <div class="measurements-grid">
-          <div class="measurement-item" *ngFor="let item of customer.Measurements; let i = index">
-            <div class="measurement-inputs">
-              <div class="measurement-name">
-                <label class="form-label">Measurement Name</label>
-                <input
-                  [ngModelOptions]="{ standalone: true }"
-                  type="text"
-                  class="form-control"
-                  placeholder="e.g., Waist, Chest, Hip"
-                  [(ngModel)]="item.Name"
-                  required
-                />
-              </div>
-              <div class="measurement-value">
-                <label class="form-label">Value</label>
-                <div class="value-input-group">
-                  <input
-                    [ngModelOptions]="{ standalone: true }"
-                    type="number"
-                    class="form-control"
-                    placeholder="0"
-                    [(ngModel)]="item.Value"
-                    min="0"
-                    step="0.1"
-                  />
-                  <select [(ngModel)]="item.Units" class="form-select units-select">
-                    <option value="">Units</option>
-                    <option value="CM">CM</option>
-                    <option value="INC">IN</option>
-                  </select>
-                  <button type="button" class="btn btn-outline-danger btn-sm delete-btn" (click)="delete_measurement(i)">
-                    <i class="bi bi-trash"></i>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="measurements-empty" *ngIf="!customer.Measurements || customer.Measurements.length === 0">
-        <div class="empty-state">
-          <i class="bi bi-rulers"></i>
-          <h6>No measurements added yet</h6>
-          <p>Add customer measurements for better fitting — or skip and add them later.</p>
-          <button type="button" class="btn btn-primary" (click)="add_measurement()">
-            <i class="bi bi-plus-circle"></i> Add First Measurement
-          </button>
-        </div>
-      </div>
+      <app-admin-measurements
+        [measurements]="customer.Measurements || []"
+        (onCaptured)="customer.Measurements = $event"
+      ></app-admin-measurements>
     </div>
   </section>
 

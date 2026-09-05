@@ -1,7 +1,31 @@
-.table{
-    .form-control,.form-select{
-        font-size: .8rem !important;
-        padding: 4px 8px !important;
-        text-transform: capitalize !important;
+.measurements-editor {
+  .measurement-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .measurement-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 0.5rem;
+    align-items: center;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr 1fr;
+      .measurement-delete {
+        grid-column: 1 / -1;
+        justify-self: end;
+      }
     }
+  }
+
+  .measurement-delete {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
 }

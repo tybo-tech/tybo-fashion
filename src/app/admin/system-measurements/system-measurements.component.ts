@@ -1,6 +1,7 @@
 import {
   Component,
   EventEmitter,
+  Input,
   OnInit,
   Output,
   Pipe,
@@ -20,6 +21,10 @@ import { UxService } from 'src/services/ux.service';
   styleUrls: ['./system-measurements.component.scss'],
 })
 export class SystemMeasurementsComponent implements OnInit {
+  // 'view' = picker mode: clicking a measurement emits doneSelecting and
+  // closes. Any other value (default) = full management mode: edit/delete/
+  // add against the company's shared measurement template.
+  @Input() mode: 'view' | 'manage' = 'manage';
   @Output() closed = new EventEmitter<any>();
   @Output() doneSelecting = new EventEmitter<string[]>();
   oldValue = '';
@@ -159,6 +164,12 @@ export class SystemMeasurementsComponent implements OnInit {
     this.form.items[0].value = value.Name;
     this.form.title = 'Edit Measurement';
     this.oldValue = value.Name;
+  }
+
+  // Picker mode: emit the selected measurement name and close.
+  select(name: string) {
+    this.doneSelecting.emit([name]);
+    this.closed.emit();
   }
   afterEdit(form: IForm) {
     if (this.index > -1 && this.measurement) {
