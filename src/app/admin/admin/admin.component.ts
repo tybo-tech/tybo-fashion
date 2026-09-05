@@ -27,6 +27,21 @@ export class AdminComponent implements OnInit, OnDestroy {
       ],
     },
     {
+      name: 'Manage',
+      items: [
+        {
+          name: 'Customers',
+          icon: 'bi bi-people',
+          url: '/store/admin/customers',
+        },
+        {
+          name: 'Jobs',
+          icon: 'bi bi-briefcase',
+          url: '/store/admin/jobs',
+        },
+      ],
+    },
+    {
       name: 'Products',
       items: [
         {
@@ -56,11 +71,6 @@ export class AdminComponent implements OnInit, OnDestroy {
       name: 'Orders',
       items: [
         {
-          name: 'Jobs',
-          icon: 'bi bi-briefcase',
-          url: '/store/admin/jobs',
-        },
-        {
           name: 'Discounts',
           icon: 'bi bi-percent',
           url: '/store/admin/discounts',
@@ -79,12 +89,6 @@ export class AdminComponent implements OnInit, OnDestroy {
           name: 'Users',
           icon: 'bi bi-person',
           url: '/store/admin/users',
-        },
-
-        {
-          name: 'Customers',
-          icon: 'bi bi-people',
-          url: '/store/admin/customers',
         },
       ],
     },

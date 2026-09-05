@@ -23,7 +23,7 @@ export class DashboardComponent {
     // Add Job lives on the Jobs page (customer-picked modal flow).
     { label: 'Add Job', route: '/store/admin/jobs' },
     { label: 'Add Product', route: '/store/admin/product/add' },
-    { label: 'Add Customer', route: '/store/admin/customer/add' },
+    { label: 'Add Customer', route: '/store/admin/customers/new' },
   ];
 
   user?: User;
@@ -41,6 +41,18 @@ export class DashboardComponent {
         // Fix: render cards even when CustomerCount is 0; check counts exists
         if (this.counts) {
           this.cards = [
+            {
+              title: 'Customers',
+              count: this.counts.CustomerCount ?? 0,
+              link: '/store/admin/customers',
+              classes: ['bg-white'],
+            },
+            {
+              title: 'Jobs',
+              count: this.counts.JobCount ?? 0,
+              link: '/store/admin/jobs',
+              classes: ['bg-white'],
+            },
             {
               title: 'Products',
               count: this.counts.ProductCount ?? 0,
@@ -60,21 +72,9 @@ export class DashboardComponent {
               classes: ['bg-white'],
             },
             {
-              title: 'Customers',
-              count: this.counts.CustomerCount ?? 0,
-              link: '/store/admin/customers',
-              classes: ['bg-white'],
-            },
-            {
               title: 'Users',
               count: this.counts.UserCount ?? 0,
               link: '/store/admin/users',
-              classes: ['bg-white'],
-            },
-            {
-              title: 'Jobs',
-              count: this.counts.JobCount ?? 0,
-              link: '/store/admin/jobs',
               classes: ['bg-white'],
             },
             {
