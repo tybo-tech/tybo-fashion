@@ -1,0 +1,12 @@
+<div class="input-group input-group-sm search-input">
+  <span class="input-group-text"><i class="bi bi-search"></i></span>
+  <input
+    type="text"
+    class="form-control"
+    [placeholder]="placeholder"
+    [(ngModel)]="text"
+    (input)="onInput()"
+    [disabled]="disabled"
+    [attr.aria-label]="placeholder"
+  />
+</div>

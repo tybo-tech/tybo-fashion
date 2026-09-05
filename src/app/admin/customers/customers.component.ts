@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
-import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY, Subject, Subscription } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { CustomerListItem } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
@@ -30,19 +30,14 @@ export class CustomersComponent implements OnInit, OnDestroy {
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; page: number; q: string };
 
-  // Search debounce: ngModel pushes here; the URL (and thus the request)
-  // updates only after ~300ms of settled input. A pending debounce is
-  // cancelled (takeUntil) whenever the URL state changes (Reset, Back/Forward)
-  // or the component is destroyed, so a stale search can never overwrite the
-  // URL after the user has already navigated away.
-  private searchInput$ = new Subject<string>();
-  private cancelSearch$ = new Subject<void>();
-  private destroy$ = new Subject<void>();
-  // Request driver: every URL change emits here; switchMap cancels obsolete
-  // requests so an older response can never replace a newer one.
+  // Search debounce lives inside <app-search-input>. An external `value`
+  // change (URL restore, Reset) cancels its pending timer, so a stale
+  // search can never overwrite the URL after the user has moved on.
+  //
+  // Request driver: every URL change emits here; switchMap cancels
+  // obsolete requests so an older response can never replace a newer one.
   private request$ = new Subject<{ companyId: string; page: number; q: string }>();
   private requestSub?: Subscription;
-  private searchSub?: Subscription;
   private userSub?: Subscription;
 
   pageSize = 20;
@@ -111,10 +106,10 @@ export class CustomersComponent implements OnInit, OnDestroy {
       });
 
     // URL is the single source of truth: every query-param change drives one
-    // request through switchMap. Any URL change also cancels a pending search
+    // request through switchMap. Restored values flow into <app-search-input>
+    // via `query`, whose external-change handling cancels any pending
     // debounce so a stale search can never overwrite the restored URL.
     this.route.queryParamMap.subscribe((params) => {
-      this.cancelSearch$.next();
       // Show the restored query instantly (no debounce on restore).
       this.query = params.get('q') || '';
 
@@ -124,41 +119,10 @@ export class CustomersComponent implements OnInit, OnDestroy {
       // to page 1 by removing `page`.
       this.requestNext(Math.max(1, parseInt(params.get('page') || '1', 10) || 1));
     });
-
-    // Debounced search: URL updates only after the input settles. No
-    // distinctUntilChanged here — the URL cycle can legitimately repeat a
-    // query (type → reset → type the same text again), and debounceTime
-    // already collapses rapid typing into one emission.
-    //
-    // Cancellation: a cancel signal switches the stream to EMPTY, which
-    // aborts the pending debounce timer without killing the stream, so a
-    // stale search can never overwrite the URL after Reset or Back/Forward.
-    this.searchSub = merge(
-      this.searchInput$.pipe(map((value) => ({ kind: 'search' as const, value }))),
-      this.cancelSearch$.pipe(map(() => ({ kind: 'cancel' as const, value: '' })))
-    )
-      .pipe(
-        switchMap((evt) =>
-          evt.kind === 'cancel'
-            ? EMPTY
-            : timer(300).pipe(map(() => evt.value))
-        ),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((value) => {
-        this.router.navigate([], {
-          relativeTo: this.route,
-          queryParams: { q: value || null, page: null },
-          queryParamsHandling: 'merge',
-        });
-      });
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.requestSub?.unsubscribe();
-    this.searchSub?.unsubscribe();
     this.userSub?.unsubscribe();
   }
 
@@ -171,17 +135,20 @@ export class CustomersComponent implements OnInit, OnDestroy {
     this.request$.next(req);
   }
 
-  onSearchInput() {
-    this.searchInput$.next(this.query);
+  // Debounced by <app-search-input>; the URL (and thus the request)
+  // updates only after the input settles.
+  onSearch(value: string): void {
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams: { q: value || null, page: null },
+      queryParamsHandling: 'merge',
+    });
   }
 
   resetFilters(): void {
     this.query = '';
-    // Cancel any pending search debounce explicitly: Reset navigates to the
-    // clean canonical URL, which may be the SAME URL as the current one, so
-    // queryParamMap would not emit and the URL-change cancel would not fire.
-    this.cancelSearch$.next();
-    // Clean canonical URL: no page or q params.
+    // The shared search cancels its pending debounce when `value` changes
+    // externally. Clean canonical URL: no page or q params.
     this.router.navigate(['/store/admin/customers']);
   }
 

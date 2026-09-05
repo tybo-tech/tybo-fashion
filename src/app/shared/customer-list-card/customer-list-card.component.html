@@ -1,0 +1,18 @@
+<div class="row-avatar">
+  <span class="avatar-icon d-flex align-items-center justify-content-center">
+    <i class="bi bi-person"></i>
+  </span>
+</div>
+<div class="row-main min-w-0">
+  <span class="row-title text-truncate">{{ name }}</span>
+  <span class="row-sub text-truncate">{{ hasPhone ? phone : 'No phone number' }}</span>
+  <span class="row-meta">
+    <span *ngIf="hasEmail" class="email-chip">
+      <i class="bi bi-envelope"></i>{{ email }}
+    </span>
+    <span *ngIf="!hasEmail" class="no-contact">No email address</span>
+  </span>
+</div>
+<div class="row-side">
+  <i class="bi bi-chevron-right text-muted small chevron"></i>
+</div>

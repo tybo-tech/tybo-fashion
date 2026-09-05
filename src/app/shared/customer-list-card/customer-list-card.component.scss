@@ -1,0 +1,82 @@
+@use '../list-row' as lr;
+
+:host {
+  @include lr.lr-host;
+  @include lr.lr-row($pad-x: 0.75rem, $pad-y: 0.5rem, $min-h: 56px);
+}
+
+// ---- Identity zone: circular person avatar ------------------------------
+.row-avatar {
+  flex: 0 0 auto;
+}
+
+.avatar-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #f4f4f5;
+  color: #5f6672;
+  font-size: 1.1rem;
+}
+
+// ---- Main zone: name / phone / email chip -------------------------------
+.row-main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.row-title {
+  @include lr.lr-title(1rem);
+}
+
+.row-sub {
+  @include lr.lr-subtitle(0.85rem);
+}
+
+.row-meta {
+  display: flex;
+  gap: 0.375rem;
+  margin-top: 0.25rem;
+  min-width: 0;
+}
+
+.email-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 0.72rem;
+  font-weight: 500;
+  line-height: 1.2;
+  white-space: nowrap;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  i {
+    font-size: 0.78rem;
+    flex-shrink: 0;
+  }
+}
+
+.no-contact {
+  font-size: 0.72rem;
+  color: #b6bcc2;
+}
+
+// ---- Trailing zone: chevron ---------------------------------------------
+.row-side {
+  @include lr.lr-side;
+}
+
+@media (max-width: 575.98px) {
+  .chevron {
+    display: none;
+  }
+}

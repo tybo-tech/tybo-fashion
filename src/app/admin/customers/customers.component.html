@@ -1,22 +1,24 @@
-<div class="container-fluid p-0">
-  <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
-    <h1 class="h5 mb-0">Customers</h1>
-    <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()">
-      <i class="bi bi-plus-lg"></i> New Customer
-    </button>
-  </div>
-
-  <!-- Search -->
-  <div class="row g-2 align-items-center mb-2">
-    <div class="col">
-      <div class="input-group input-group-sm">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers">
-      </div>
+<div class="customers-screen">
+  <!-- Sticky toolbar: title + actions + search. Pins under the admin
+       topbar; the list scrolls beneath it. -->
+  <div class="customers-toolbar">
+    <div class="d-flex align-items-center justify-content-between gap-2 px-3 px-md-0 pt-3 pt-md-0 pb-2">
+      <h1 class="h5 mb-0">Customers</h1>
+      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()">
+        <i class="bi bi-plus-lg"></i> New Customer
+      </button>
     </div>
-    <div class="col-auto" *ngIf="query">
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetFilters()">Reset</button>
+
+    <!-- Search -->
+    <div class="d-flex align-items-center gap-2 px-3 px-md-0 pb-2">
+      <app-search-input
+        class="flex-fill"
+        [value]="query"
+        (valueChange)="query = $event"
+        (search)="onSearch($event)"
+        placeholder="Search name, phone or email…"
+      ></app-search-input>
+      <button class="btn btn-outline-secondary btn-sm flex-shrink-0" type="button" *ngIf="query" (click)="resetFilters()">Reset</button>
     </div>
   </div>
 
@@ -24,33 +26,26 @@
     <div class="spinner-border spinner-border-sm"></div>
     <div class="small text-muted mt-2">Loading customers…</div>
   </div>
-  <div *ngIf="error && !loading" class="alert alert-danger py-2 small" role="alert">
+  <div *ngIf="error && !loading" class="alert alert-danger py-2 small mx-3 mx-md-0" role="alert">
     <div>{{ error }}</div>
     <button class="btn btn-outline-secondary btn-sm mt-2" type="button" (click)="retry()">Retry</button>
   </div>
 
-  <!-- Customers list: unboxed on mobile, same structure on desktop -->
+  <!-- Customers list: full-bleed, shared card per row -->
   <div *ngIf="!loading && !error && customers.length > 0">
     <ul class="list-group list-group-flush customers-list">
       <li *ngFor="let customer of customers; trackBy: trackByCustomerId" class="list-group-item customers-list-item">
-        <a class="customer-row-link" [routerLink]="['/store/admin/customer', customer.CustomerId]" [attr.aria-label]="'Open customer ' + customer.CustomerName">
-          <span class="customer-row-main min-w-0">
-            <span class="customer-name text-truncate">{{ customer.CustomerName }}</span>
-            <span class="customer-contact text-truncate">
-              <span *ngIf="customer.PhoneNumber !== '—'">{{ customer.PhoneNumber }}</span>
-              <span *ngIf="customer.PhoneNumber !== '—' && customer.Email !== '—'" class="contact-sep">·</span>
-              <span *ngIf="customer.Email !== '—'">{{ customer.Email }}</span>
-            </span>
-          </span>
-          <span class="customer-row-side flex-shrink-0">
-            <i class="bi bi-chevron-right text-muted small d-none d-sm-inline"></i>
-          </span>
-        </a>
+        <app-customer-list-card
+          [name]="customer.CustomerName"
+          [phone]="customer.PhoneNumber"
+          [email]="customer.Email"
+          [link]="'/store/admin/customer/' + customer.CustomerId"
+        ></app-customer-list-card>
       </li>
     </ul>
 
     <!-- Pagination: driven by API metadata -->
-    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-3 px-md-0">
       <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
       <nav class="d-flex align-items-center gap-1" aria-label="Customers pagination">
         <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>
@@ -61,7 +56,7 @@
   </div>
 
   <!-- Empty state: distinguish no-customers-at-all, filtered-empty, and page-beyond-end -->
-  <div *ngIf="!loading && !error && customers.length === 0" class="text-center py-5">
+  <div *ngIf="!loading && !error && customers.length === 0" class="text-center py-5 px-3">
     <div class="mx-auto d-inline-flex align-items-center justify-content-center rounded-circle bg-light border mb-3 icon-48"><i class="bi bi-people"></i></div>
     <h6 class="mb-1">{{ emptyStateTitle }}</h6>
     <p class="small text-muted mb-3">{{ emptyStateHint }}</p>

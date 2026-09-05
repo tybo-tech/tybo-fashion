@@ -60,3 +60,13 @@
   gap: 0.5rem;
   flex-shrink: 0;
 }
+
+// Sticky list toolbar (title/actions + filters). Pins flush under the admin
+// topbar (56px); the list scrolls beneath the soft bottom shadow.
+@mixin lr-toolbar($top: 56px, $z: 1010) {
+  position: sticky;
+  top: $top;
+  z-index: $z;
+  background: var(--admin-surface);
+  box-shadow: 0 10px 14px -14px rgba(15, 23, 42, 0.35);
+}

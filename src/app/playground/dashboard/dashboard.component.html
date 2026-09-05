@@ -32,5 +32,29 @@
         link="/playground"
       ></app-job-list-card>
     </div>
+
+    <p class="dash-label mt-4">Customer card — no inputs passed</p>
+    <div class="dash-box">
+      <app-customer-list-card></app-customer-list-card>
+    </div>
+
+    <p class="dash-label mt-4">Customer card — with inputs</p>
+    <div class="dash-box">
+      <app-customer-list-card
+        name="Rickie Baroch"
+        phone="+27 82 555 0142"
+        email="rickie@example.com"
+        link="/playground"
+      ></app-customer-list-card>
+      <app-customer-list-card
+        name="Santiago Valentin"
+        phone="—"
+        email="—"
+        link="/playground"
+      ></app-customer-list-card>
+    </div>
+
+    <p class="dash-label mt-4">Shared search input</p>
+    <app-search-input placeholder="Search name, phone or email…"></app-search-input>
   </div>
 </div>

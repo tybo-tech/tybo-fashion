@@ -1,28 +1,34 @@
 <div class="jobs-screen">
-  <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between gap-2 mb-2 px-3 px-md-0">
-    <h1 class="h5 mb-0">Jobs</h1>
-    <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openAddJob()">
-      <i class="bi bi-plus-lg"></i> New Job
-    </button>
-  </div>
-
-  <!-- Search & filter -->
-  <div class="d-flex align-items-center gap-2 mb-2 px-3 px-md-0">
-    <div class="input-group input-group-sm flex-fill">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="form-control" placeholder="Search job number or customer…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search jobs">
+  <!-- Sticky toolbar: title + actions + filters. Pins under the admin
+       topbar; the list scrolls beneath it. -->
+  <div class="jobs-toolbar">
+    <div class="d-flex align-items-center justify-content-between gap-2 px-3 px-md-0 pt-3 pt-md-0 pb-2">
+      <h1 class="h5 mb-0">Jobs</h1>
+      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openAddJob()">
+        <i class="bi bi-plus-lg"></i> New Job
+      </button>
     </div>
-    <select class="form-select form-select-sm w-auto flex-shrink-0" [(ngModel)]="selectedStatus" (change)="onStatusChange()" aria-label="Filter by status">
-      <option value="">All statuses</option>
-      <option value="not-started">Not started</option>
-      <option value="in-progress">In Progress</option>
-      <option value="completed">Completed</option>
-      <option value="stuck">Stuck</option>
-      <option value="terminated">Terminated</option>
-      <option value="paused">Paused</option>
-    </select>
-    <button class="btn btn-outline-secondary btn-sm flex-shrink-0" type="button" *ngIf="query || selectedStatus" (click)="resetFilters()">Reset</button>
+
+    <!-- Search & filter -->
+    <div class="d-flex align-items-center gap-2 px-3 px-md-0 pb-2">
+      <app-search-input
+        class="flex-fill"
+        [value]="query"
+        (valueChange)="query = $event"
+        (search)="onSearch($event)"
+        placeholder="Search job number or customer…"
+      ></app-search-input>
+      <select class="form-select form-select-sm w-auto flex-shrink-0" [(ngModel)]="selectedStatus" (change)="onStatusChange()" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option value="not-started">Not started</option>
+        <option value="in-progress">In Progress</option>
+        <option value="completed">Completed</option>
+        <option value="stuck">Stuck</option>
+        <option value="terminated">Terminated</option>
+        <option value="paused">Paused</option>
+      </select>
+      <button class="btn btn-outline-secondary btn-sm flex-shrink-0" type="button" *ngIf="query || selectedStatus" (click)="resetFilters()">Reset</button>
+    </div>
   </div>
 
   <div *ngIf="loading" class="text-center py-5">

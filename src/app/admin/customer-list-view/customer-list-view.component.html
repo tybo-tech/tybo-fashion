@@ -1,21 +1,19 @@
 <!-- Lean, paginated customer picker (Sprint 3) -->
 <div class="picker-container">
   <!-- Search + persistent New Customer action -->
-  <div class="row g-2 align-items-center mb-2">
-    <div class="col">
-      <div class="input-group input-group-sm">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" placeholder="Search name, phone or email…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search customers" [disabled]="busy">
-      </div>
-    </div>
-    <div class="col-auto" *ngIf="allowAdd">
-      <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openNewCustomer()" [disabled]="busy">
-        <i class="bi bi-plus-lg"></i> New Customer
-      </button>
-    </div>
-    <div class="col-auto" *ngIf="query">
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetSearch()" [disabled]="busy">Reset</button>
-    </div>
+  <div class="d-flex align-items-center gap-2 mb-2">
+    <app-search-input
+      class="flex-fill"
+      [value]="query"
+      (valueChange)="query = $event"
+      (search)="onSearch($event)"
+      placeholder="Search name, phone or email…"
+      [disabled]="busy"
+    ></app-search-input>
+    <button class="btn btn-primary btn-sm flex-shrink-0" type="button" *ngIf="allowAdd" (click)="openNewCustomer()" [disabled]="busy">
+      <i class="bi bi-plus-lg"></i> New Customer
+    </button>
+    <button class="btn btn-outline-secondary btn-sm flex-shrink-0" type="button" *ngIf="query" (click)="resetSearch()" [disabled]="busy">Reset</button>
   </div>
 
   <div *ngIf="loading" class="text-center py-4">

@@ -97,6 +97,8 @@ import { AdminToastComponent } from './layout/admin-toast/admin-toast.component'
 import { AdminConfirmModalComponent } from './layout/admin-confirm-modal/admin-confirm-modal.component';
 import { ChatCardComponent } from '../shared/chat-card/chat-card.component';
 import { JobListCardComponent } from '../shared/job-list-card/job-list-card.component';
+import { CustomerListCardComponent } from '../shared/customer-list-card/customer-list-card.component';
+import { SearchInputComponent } from '../shared/search-input/search-input.component';
 
 @NgModule({
   declarations: [
@@ -201,6 +203,8 @@ import { JobListCardComponent } from '../shared/job-list-card/job-list-card.comp
     HeroHeaderComponent,
     ChatCardComponent,
     JobListCardComponent,
+    CustomerListCardComponent,
+    SearchInputComponent,
   ],
   providers: [
     NgxImageCompressService, // Add the service to providers

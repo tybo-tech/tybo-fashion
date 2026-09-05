@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnDestroy, Output } from '@angular/core';
 import { Router } from '@angular/router';
-import { EMPTY, Subject, Subscription, merge, timer } from 'rxjs';
-import { catchError, map, switchMap, takeUntil } from 'rxjs/operators';
+import { EMPTY, Subject, Subscription } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { CustomerListItem } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
@@ -39,17 +39,13 @@ export class CustomerListViewComponent implements OnDestroy {
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; page: number; q: string };
 
-  // Search debounce: ngModel pushes here; the request updates only after
-  // ~300ms of settled input. A pending debounce is cancelled whenever the
-  // picker resets or is destroyed.
-  private searchInput$ = new Subject<string>();
-  private cancelSearch$ = new Subject<void>();
-  private destroy$ = new Subject<void>();
+  // Search debounce lives inside <app-search-input>; an external `value`
+  // change (Reset) cancels its pending timer.
+  //
   // Request driver: every page/search change emits here; switchMap cancels
   // obsolete requests so an older response can never replace a newer one.
   private request$ = new Subject<{ companyId: string; page: number; q: string }>();
   private requestSub?: Subscription;
-  private searchSub?: Subscription;
 
   pageSize = 20;
 
@@ -89,32 +85,11 @@ export class CustomerListViewComponent implements OnDestroy {
         },
       });
 
-    // Debounced search: request updates only after the input settles.
-    this.searchSub = merge(
-      this.searchInput$.pipe(map((value) => ({ kind: 'search' as const, value }))),
-      this.cancelSearch$.pipe(map(() => ({ kind: 'cancel' as const, value: '' })))
-    )
-      .pipe(
-        switchMap((evt) =>
-          evt.kind === 'cancel'
-            ? EMPTY
-            : timer(300).pipe(map(() => evt.value))
-        ),
-        takeUntil(this.destroy$)
-      )
-      .subscribe((value) => {
-        this.query = value;
-        this.requestNext(1);
-      });
-
     this.load_customers();
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
     this.requestSub?.unsubscribe();
-    this.searchSub?.unsubscribe();
   }
 
   // Sprint 4: the inline add-customer modal is replaced by the URL-driven
@@ -143,13 +118,14 @@ export class CustomerListViewComponent implements OnDestroy {
     this.request$.next(req);
   }
 
-  onSearchInput() {
-    this.searchInput$.next(this.query);
+  // Debounced by <app-search-input>.
+  onSearch(value: string): void {
+    this.query = value;
+    this.requestNext(1);
   }
 
   resetSearch() {
     this.query = '';
-    this.cancelSearch$.next();
     this.requestNext(1);
   }
 

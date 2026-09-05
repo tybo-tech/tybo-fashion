@@ -1,3 +1,5 @@
+@use '../../shared/list-row' as lr;
+
 :host { display: block; }
 
 // The page owns its spacing: header/filters carry px-3 on mobile (px-md-0
@@ -5,6 +7,11 @@
 // full-bleed; the shared job card provides the row's internal padding.
 .jobs-screen {
   width: 100%;
+}
+
+// Sticky toolbar: shared with the customers screen via the list-row base.
+.jobs-toolbar {
+  @include lr.lr-toolbar;
 }
 
 // Unboxed list: flush rows with quiet separators, provided per-row by the
