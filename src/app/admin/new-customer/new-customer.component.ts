@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostListener, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, Subscription } from 'rxjs';
 import { finalize, takeUntil } from 'rxjs/operators';
@@ -18,6 +18,11 @@ import { UploadService } from 'src/services/upload.service';
 type WizardStep = 'basic' | 'address' | 'measurements';
 
 const STEP_ORDER: WizardStep[] = ['basic', 'address', 'measurements'];
+
+// Local-storage key for the in-progress New Customer draft. Persisted across
+// step navigations and page refreshes so the user can freely refresh on any
+// step without losing what they filled in. Cleared on successful save.
+const DRAFT_KEY = 'tybo_new_customer_draft';
 
 /**
  * Multi-step New Customer flow (Sprint 4). Replaces the add-customer modal:
@@ -68,7 +73,7 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     private route: ActivatedRoute
   ) {
     const user = this.userService.getUser;
-    this.customer = initCustomer(user?.CompanyId || '');
+    this.customer = this.loadDraft() || initCustomer(user?.CompanyId || '');
     if (!user) {
       this.router.navigate(['/home/sign-in']);
     }
@@ -110,6 +115,12 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
     this.destroy$.next();
     this.destroy$.complete();
     this.paramSub?.unsubscribe();
+  }
+
+  // Persist the current step's input on refresh/close so nothing is lost.
+  @HostListener('window:beforeunload')
+  onBeforeUnload(): void {
+    this.saveDraft();
   }
 
   get stepIndex(): number {
@@ -171,6 +182,9 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
   }
 
   private goToStep(step: WizardStep): void {
+    // Persist the draft before navigating so a refresh on the next step
+    // restores everything filled in so far.
+    this.saveDraft();
     // Preserve query params across steps so ?return=picker survives Next,
     // Back and Skip — and a refresh on a later step still returns to the
     // Add Job flow after saving.
@@ -201,6 +215,7 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (data) => {
           if (data && data.CustomerId) {
+            this.clearDraft();
             this.ux.show_toast('Customer created successfully', 'Success');
             this.navigateAfterSave(data);
           } else {
@@ -235,6 +250,41 @@ export class NewCustomerComponent implements OnInit, OnDestroy {
 
   delete_measurement(index: number) {
     this.customer.Measurements?.splice(index, 1);
+  }
+
+  // ── Draft persistence (localStorage) ───────────────────────────────────
+  // The draft survives step navigations and page refreshes so the user can
+  // freely refresh on any step. Cleared on successful save.
+
+  private saveDraft(): void {
+    try {
+      localStorage.setItem(DRAFT_KEY, JSON.stringify(this.customer));
+    } catch {
+      // Storage unavailable (private mode / quota) — non-blocking.
+    }
+  }
+
+  private loadDraft(): Customer | null {
+    try {
+      const raw = localStorage.getItem(DRAFT_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed !== 'object') return null;
+      // Merge over a fresh init so any missing fields get sane defaults.
+      const user = this.userService.getUser;
+      const base = initCustomer(user?.CompanyId || '');
+      return { ...base, ...parsed };
+    } catch {
+      return null;
+    }
+  }
+
+  private clearDraft(): void {
+    try {
+      localStorage.removeItem(DRAFT_KEY);
+    } catch {
+      // Non-blocking.
+    }
   }
 
   /** User-gesture entry point — opens OS contact picker and patches the form */

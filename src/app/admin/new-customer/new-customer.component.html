@@ -1,10 +1,7 @@
 <div class="new-customer-wizard" *ngIf="customer">
-  <!-- Header: back + title + stepper -->
+  <!-- Header: title + stepper -->
   <div class="wizard-header">
     <div class="d-flex align-items-center gap-2 mb-3">
-      <button class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" (click)="leave()" aria-label="Cancel and go back">
-        <i class="bi bi-arrow-left"></i> Cancel
-      </button>
       <h1 class="h5 mb-0">New Customer</h1>
     </div>
 
@@ -19,19 +16,16 @@
           <i *ngIf="i < stepIndex" class="bi bi-check"></i>
           <span *ngIf="i >= stepIndex">{{ i + 1 }}</span>
         </span>
-        <span class="step-label">{{ s === 'basic' ? 'Basic details' : s === 'address' ? 'Address' : 'Measurements' }}</span>
+        <span class="step-label">{{ s === 'basic' ? 'Contacts' : s === 'address' ? 'Address' : 'Measurements' }}</span>
       </li>
     </ol>
   </div>
 
-  <!-- Step 1: Basic details -->
+  <!-- Step 1: Contacts -->
   <section *ngIf="step === 'basic'" class="wizard-body">
     <div class="form-section">
-      <div class="section-header">
-        <div class="section-icon"><i class="bi bi-person-circle"></i></div>
-        <h5 class="section-title">Contact Details</h5>
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-3" *ngIf="isContactPickerSupported">
         <button
-          *ngIf="isContactPickerSupported"
           type="button"
           class="btn btn-outline-primary btn-sm contact-import-btn"
           (click)="importFromContacts()"
@@ -106,12 +100,6 @@
   <!-- Step 2: Address (optional) -->
   <section *ngIf="step === 'address'" class="wizard-body">
     <div class="form-section">
-      <div class="section-header">
-        <div class="section-icon"><i class="bi bi-geo-alt"></i></div>
-        <h5 class="section-title">Address Information</h5>
-        <span class="optional-badge">Optional</span>
-      </div>
-
       <div class="form-grid">
         <div class="form-group full-width">
           <label for="addressLine1" class="form-label">Address Line 1</label>
@@ -167,11 +155,9 @@
   <!-- Step 3: Measurements (optional) -->
   <section *ngIf="step === 'measurements'" class="wizard-body">
     <div class="form-section">
-      <div class="section-header">
-        <div class="section-icon"><i class="bi bi-rulers"></i></div>
-        <h5 class="section-title">Customer Measurements</h5>
+      <div class="d-flex align-items-center justify-content-between gap-2 mb-3">
         <span class="optional-badge">Optional</span>
-        <button type="button" class="btn btn-outline-primary btn-sm ms-auto" (click)="add_measurement()">
+        <button type="button" class="btn btn-outline-primary btn-sm" (click)="add_measurement()">
           <i class="bi bi-plus"></i> Add Measurement
         </button>
       </div>
@@ -231,52 +217,31 @@
     </div>
   </section>
 
-  <!-- Sticky action bar: Next/Skip always visible without scrolling -->
+  <!-- Action bar: normal flow below the form -->
   <div class="wizard-footer">
     <div class="wizard-footer-inner">
-      <button
-        type="button"
-        class="btn btn-outline-secondary"
-        (click)="goBack()"
-        [disabled]="saving"
-      >
-        <i class="bi bi-arrow-left me-1"></i>{{ stepIndex === 0 ? 'Cancel' : 'Back' }}
-      </button>
-
-      <div class="d-flex align-items-center gap-2">
-        <!-- Skip: offered only on the optional steps -->
+      <div class="d-flex align-items-center gap-2 ms-auto">
         <button
-          *ngIf="step === 'address' || (step === 'measurements' && !hasMeasurementInput)"
           type="button"
-          class="btn btn-link text-decoration-none"
-          (click)="skip()"
+          class="btn btn-outline-secondary"
+          (click)="goBack()"
           [disabled]="saving"
         >
-          {{ step === 'address' ? 'Skip for now' : 'Skip & create' }}
+          {{ stepIndex === 0 ? 'Cancel' : 'Back' }}
         </button>
 
         <button
-          *ngIf="step === 'address'"
+          *ngIf="step === 'basic' || step === 'address'"
           type="button"
           class="btn btn-primary d-inline-flex align-items-center gap-1"
           (click)="next()"
-          [disabled]="saving"
+          [disabled]="(step === 'basic' && !canLeaveBasic) || saving"
         >
           Next<i class="bi bi-arrow-right"></i>
         </button>
 
         <button
-          *ngIf="step === 'basic'"
-          type="button"
-          class="btn btn-primary d-inline-flex align-items-center gap-1"
-          (click)="next()"
-          [disabled]="!canLeaveBasic || saving"
-        >
-          Next<i class="bi bi-arrow-right"></i>
-        </button>
-
-        <button
-          *ngIf="step === 'measurements' && hasMeasurementInput"
+          *ngIf="step === 'measurements'"
           type="button"
           class="btn btn-primary d-inline-flex align-items-center gap-1"
           (click)="save()"
