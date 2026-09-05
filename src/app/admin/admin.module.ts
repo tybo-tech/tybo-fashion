@@ -88,6 +88,13 @@ import { ChipPickerComponent } from './chip-picker/chip-picker.component';
 import { CheckboxComponent } from './checkbox/checkbox.component';
 import { CategoryFormComponent } from './shared/category-form/category-form.component';
 import { JobEditorComponent } from './job-editor/job-editor.component';
+import { AdminTopbarComponent } from './layout/admin-topbar/admin-topbar.component';
+import { AdminNavListComponent } from './layout/admin-nav-list/admin-nav-list.component';
+import { AdminSidebarComponent } from './layout/admin-sidebar/admin-sidebar.component';
+import { AdminOffcanvasNavComponent } from './layout/admin-offcanvas-nav/admin-offcanvas-nav.component';
+import { AdminBottomNavComponent } from './layout/admin-bottom-nav/admin-bottom-nav.component';
+import { AdminToastComponent } from './layout/admin-toast/admin-toast.component';
+import { AdminConfirmModalComponent } from './layout/admin-confirm-modal/admin-confirm-modal.component';
 
 @NgModule({
   declarations: [
@@ -173,6 +180,13 @@ import { JobEditorComponent } from './job-editor/job-editor.component';
     ChipPickerComponent,
     CheckboxComponent,
     CategoryFormComponent,
+    AdminTopbarComponent,
+    AdminNavListComponent,
+    AdminSidebarComponent,
+    AdminOffcanvasNavComponent,
+    AdminBottomNavComponent,
+    AdminToastComponent,
+    AdminConfirmModalComponent,
   ],
   imports: [
     CommonModule,

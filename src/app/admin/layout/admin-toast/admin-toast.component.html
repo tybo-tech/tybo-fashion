@@ -1,0 +1,9 @@
+<div class="position-fixed top-0 end-0 p-3 toast-admin" *ngIf="ux && ux.Toast && ux.Toast.Message">
+  <div class="toast show bg-white border shadow-sm" role="alert" [ngClass]="ux.Toast.Classes">
+    <div class="toast-header">
+      <strong class="me-auto">{{ ux.Toast.Title }}</strong>
+      <button type="button" class="btn-close" (click)="clearToast()" aria-label="Close"></button>
+    </div>
+    <div class="toast-body small">{{ ux.Toast.Message }}</div>
+  </div>
+</div>

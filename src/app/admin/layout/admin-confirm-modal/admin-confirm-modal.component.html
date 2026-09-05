@@ -1,0 +1,17 @@
+<div *ngIf="ux && ux.Confirm && ux.Confirm.Show" class="modal d-block modal-backdrop-admin" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h6 class="modal-title">{{ (ux && ux.Confirm && ux.Confirm.Title) || "Please confirm" }}</h6>
+        <button type="button" class="btn-close" (click)="uxService.onConfirm(false)" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-0 small text-muted">{{ (ux && ux.Confirm && ux.Confirm.Message) || defaultConfirm }}</p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary btn-sm" (click)="uxService.onConfirm(false)">Cancel</button>
+        <button class="btn btn-primary btn-sm" (click)="uxService.onConfirm(true)">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>

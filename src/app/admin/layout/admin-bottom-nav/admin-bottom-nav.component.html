@@ -1,0 +1,16 @@
+<nav class="admin-bottom-nav d-lg-none" aria-label="Primary">
+  <div class="d-grid grid-4">
+    <button type="button" class="nav-item-btn" [class.active]="isBottomActive('home')" (click)="goBottom('home')">
+      <span class="active-pill"><i class="bi bi-house"></i><span>Home</span></span>
+    </button>
+    <button type="button" class="nav-item-btn" [class.active]="isBottomActive('jobs')" (click)="goBottom('jobs')">
+      <span class="active-pill"><i class="bi bi-briefcase"></i><span>Jobs</span></span>
+    </button>
+    <button type="button" class="nav-item-btn" [class.active]="isBottomActive('customers')" (click)="goBottom('customers')">
+      <span class="active-pill"><i class="bi bi-people"></i><span>Customers</span></span>
+    </button>
+    <button type="button" class="nav-item-btn" data-bs-toggle="offcanvas" data-bs-target="#adminOffcanvas" aria-controls="adminOffcanvas">
+      <span class="active-pill"><i class="bi bi-list"></i><span>More</span></span>
+    </button>
+  </div>
+</nav>

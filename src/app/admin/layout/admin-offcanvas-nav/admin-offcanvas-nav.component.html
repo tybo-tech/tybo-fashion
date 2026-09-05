@@ -1,0 +1,14 @@
+<div class="offcanvas-header border-bottom">
+  <h6 id="adminOffcanvasLabel" class="mb-0 d-flex align-items-center gap-2">
+    <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white icon-28 bg-admin-primary"><i class="bi bi-shop"></i></span>
+    {{ company?.Name }}
+  </h6>
+  <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+</div>
+<div class="offcanvas-body p-3">
+  <app-admin-nav-list [menu]="menu" [currentUrl]="currentUrl"></app-admin-nav-list>
+  <a class="btn btn-sm btn-outline-secondary w-100 mb-2 d-flex align-items-center justify-content-center gap-1" [href]="storeUrl">
+    <i class="bi bi-shop"></i> View Store
+  </a>
+  <button class="btn btn-sm btn-outline-danger w-100" (click)="logout.emit()">Logout</button>
+</div>
