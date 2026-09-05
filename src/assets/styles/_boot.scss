@@ -1,26 +1,29 @@
+// Storefront layer — pre-bootstrap-era design quirks the storefront depends
+// on. Anything theme-able (radii, colors, control sizing) now lives in
+// _bootstrap-theme.scss as Bootstrap $variables; only storefront-specific
+// behaviour remains here. !important is kept only where a rule must beat a
+// Bootstrap state/utility class (noted inline) or preserve legacy rendering.
 .btn {
-  border-radius: 8px !important;
-  padding: 8px 16px !important;
+  // Hover morph flourish + fluid mobile buttons — storefront behaviour.
+  // (Admin workspace disables the morph locally in _admin-theme.scss.)
   transition: all 0.3s !important;
   width: fit-content;
-  font-weight: 500;
   &:hover {
-    border-radius: 0 0 18px 0 !important;
+    border-radius: 0 0 18px 0;
   }
   @media only screen and (max-width: 600px) {
     width: 100%;
   }
 }
-.btn-primary {
-  background-color: var(--accent) !important;
-  border-color: var(--accent) !important;
-  color: var(--black) !important;
-}
+
+// NOTE: var(--clou) is undefined (typo'd legacy) → background resolves to
+// transparent; kept because it is the rendered behaviour templates expect.
 .btn-secondary {
   background-color: var(--clou) !important;
   border-color: var(--accent) !important;
   color: black !important;
 }
+
 .btn-light {
   box-shadow: 0 0 15px rgba(181, 181, 181, 0.25) !important;
   background: #ffffff !important;
@@ -28,12 +31,8 @@
   color: #4b4a4a !important;
 }
 
-.btn-outline {
-  background-color: transparent !important;
-  border-color: var(--black) !important;
-  color: var(--black) !important;
-}
-
+// Storefront toast (add-to-cart etc.) — always visible, fixed top-right.
+// display !important must beat Bootstrap's .toast:not(.show) { display: none }.
 .toast {
   display: block !important;
   position: fixed;
@@ -45,43 +44,17 @@
     width: 80%;
   }
 }
-.form-floating,
-.form-control,
-.list-group-item,
-.list-group {
-  border-radius: 8px !important;
-}
-.form-floating,
-.form-control {
-  // background after autofill
-  // background: #fff !important;
-}
+
 .form-check-input {
   border: 2px solid rgb(163, 163, 163);
 }
 
-.form-check-input:checked {
-  background-color: orange;
-  border-color: orange;
-}
+// !important required: Bootstrap's .link-* utilities ship their own
+// !important color declarations.
 .link-info {
   color: rgb(34, 124, 184) !important;
 }
-.max-600 {
-  max-width: 600px !important;
-}
-.w-80 {
-  width: 80% !important;
-}
-.w-70 {
-  width: 70% !important;
-}
-.w-200px {
-  width: 200px !important;
-}
-.round-0 {
-  border-radius: 0 !important;
-}
+
 .shadow {
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px !important;
 }
@@ -91,22 +64,6 @@
   font-size: 0.75rem !important;
   border: 1px solid #ced4da !important;
   font-weight: 600 !important;
-}
-
-.text-small {
-  font-size: 0.85rem !important;
-}
-.pointer {
-  cursor: pointer !important;
-}
-.text-primary {
-  color: var(--accent) !important;
-}
-.pc-only {
-  display: none;
-  @media only screen and (min-width: 600px) {
-    display: block;
-  }
 }
 
 .nav-section {
@@ -121,15 +78,7 @@
     z-index: 5;
   }
 }
+
 .form-signin {
   padding: 20px;
-}
-
-.w-fit {
-  width: fit-content !important;
-}
-
-.btn-sm{
-  padding: 4px 8px !important;
-  font-size: 0.75rem !important;
 }

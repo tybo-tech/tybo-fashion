@@ -91,33 +91,21 @@
   // behaviour untouched. They are a temporary boundary until the legacy
   // overrides are removed or scoped themselves.
 
+  // ── Local admin button identity ──────────────────────────────────────────
+  // The source theme (_bootstrap-theme.scss) now carries $primary (yellow)
+  // so .btn-primary/.text-primary/checked controls need no re-assertion.
+  // These rules only neutralise the storefront quirk layer (_boot.scss) and
+  // express the admin shape. No !important: .admin-workspace specificity
+  // beats both the source theme and the quirk layer.
   .btn {
-    border-radius: var(--admin-radius) !important;
-    &:hover { border-radius: var(--admin-radius) !important; } // disable asymmetric hover radius
+    border-radius: var(--admin-radius);
+    &:hover { border-radius: var(--admin-radius); } // disable storefront hover morph
   }
-  // Primary action = yellow with near-black text (accent used sparingly)
-  .btn-primary {
-    --bs-btn-bg: var(--admin-accent);
-    --bs-btn-border-color: var(--admin-accent);
-    --bs-btn-color: var(--admin-accent-ink);
-    --bs-btn-hover-bg: var(--admin-accent-hover);
-    --bs-btn-hover-border-color: var(--admin-accent-hover);
-    --bs-btn-hover-color: var(--admin-accent-ink);
-    --bs-btn-active-bg: var(--admin-accent-hover);
-    --bs-btn-active-border-color: var(--admin-accent-hover);
-    --bs-btn-active-color: var(--admin-accent-ink);
-    --bs-btn-disabled-bg: var(--admin-accent);
-    --bs-btn-disabled-border-color: var(--admin-accent);
-    --bs-btn-disabled-color: var(--admin-accent-ink);
-    --bs-btn-focus-shadow-rgb: var(--admin-accent-rgb);
-    background-color: var(--bs-btn-bg) !important;
-    border-color: var(--bs-btn-border-color) !important;
-    color: var(--bs-btn-color) !important;
-    &:hover, &:focus, &:active {
-      background-color: var(--admin-accent-hover) !important;
-      border-color: var(--admin-accent-hover) !important;
-      color: var(--admin-accent-ink) !important;
-    }
+  .btn-light {
+    box-shadow: none !important; // must match _boot.scss's own !important
+    background-color: #fff !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-text) !important;
   }
   .btn-outline-primary {
     --bs-btn-color: var(--admin-ink);
@@ -128,23 +116,12 @@
     --bs-btn-active-bg: var(--admin-accent);
     --bs-btn-active-color: var(--admin-accent-ink);
   }
-  .btn-light {
-    box-shadow: none !important;
-    background-color: #fff !important;
-    border-color: var(--admin-border) !important;
-    color: var(--admin-text) !important;
-  }
-  .text-primary { color: var(--admin-accent) !important; }
-  .form-check-input:checked {
-    background-color: var(--admin-accent) !important;
-    border-color: var(--admin-accent) !important;
-  }
   @media only screen and (max-width: 600px) {
     // Legacy _boot.scss forces every .btn to width:100% on small screens.
     // Keep explicit Bootstrap .w-100 buttons full width and legacy .w-fit
     // buttons at fit-content; restore auto width for everything else inside
     // the admin workspace.
-    .btn:not(.w-100):not(.w-fit) { width: auto !important; }
+    .btn:not(.w-100):not(.w-fit) { width: auto; }
   }
 
   // Links inside the workspace follow the neutral ink, accent on hover
@@ -218,6 +195,7 @@
   .icon-36 { width: 36px; height: 36px; }
   .icon-40 { width: 40px; height: 40px; }
   .icon-48 { width: 48px; height: 48px; }
+  .icon-56 { width: 56px; height: 56px; } // avatar images
   .icon-30 { width: 30px; height: 30px; }
 
   // Job-item thumbnail

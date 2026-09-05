@@ -1,0 +1,28 @@
+// Bootstrap compiled from SCSS source, themed at the source ($variables)
+// instead of fought with global !important overrides.
+//
+// Palette decisions (verified against the pre-refactor rendering):
+// - $primary is the project yellow accent (#e6b505): .btn-primary,
+//   .text-primary, checked form controls, progress bars and active states
+//   all derive from it. Storefront .btn-primary/.text-primary were already
+//   yellow via the legacy _boot.scss !important overrides; this moves that
+//   intent into the source.
+// - Links intentionally keep the Bootstrap default blue: yellow links on
+//   white fail contrast in the storefront. The admin workspace overrides
+//   link colors locally in _admin-theme.scss.
+$primary: #e6b505;
+$link-color: #0d6efd;
+
+// Shape + control sizing that _boot.scss used to force with !important.
+// Deliberately NOT set: $border-radius / $body-bg — cards, modals and the
+// storefront body keep their Bootstrap defaults (white bg, 6px radii).
+$btn-border-radius: 8px;
+$btn-padding-y: 0.5rem; // was 8px via _boot.scss
+$btn-padding-x: 1rem;   // was 16px via _boot.scss
+$btn-font-weight: 500;
+$btn-font-size-sm: 0.75rem; // was forced via _boot.scss .btn-sm
+$input-border-radius: 8px;
+$list-group-border-radius: 8px;
+$breadcrumb-divider: quote("›");
+
+@import "bootstrap/scss/bootstrap";
