@@ -1,1 +1,7 @@
 :host { display: block; }
+
+// The shell owns NO spacing (no Bootstrap container, no gutters).
+// Pages and components control their own padding.
+.admin-shell {
+  width: 100%;
+}

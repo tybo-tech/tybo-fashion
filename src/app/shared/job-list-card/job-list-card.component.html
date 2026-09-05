@@ -1,0 +1,22 @@
+<div class="row-avatar position-relative">
+  <span class="avatar-icon d-flex align-items-center justify-content-center">
+    <i class="bi bi-briefcase"></i>
+  </span>
+  <span *ngIf="dotClass" class="presence-dot" [ngClass]="dotClass"></span>
+</div>
+<div class="row-main min-w-0">
+  <span class="row-title text-truncate">{{ jobNo }}</span>
+  <span class="row-sub text-truncate">{{ customerName }}</span>
+  <span *ngIf="startDate || dueDate" class="row-meta">
+    <span *ngIf="startDate" class="date-chip">
+      <i class="bi bi-calendar-event"></i>{{ startDate | date: 'dd MMM yyyy' }}
+    </span>
+    <span *ngIf="dueDate" class="date-chip date-chip--due">
+      <i class="bi bi-calendar-check"></i>{{ dueDate | date: 'dd MMM yyyy' }}
+    </span>
+  </span>
+</div>
+<div class="row-side">
+  <span class="badge border fw-semibold" [ngClass]="badgeClass">{{ status }}</span>
+  <i class="bi bi-chevron-right text-muted small chevron"></i>
+</div>

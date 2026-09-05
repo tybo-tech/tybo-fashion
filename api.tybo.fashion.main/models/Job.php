@@ -506,7 +506,7 @@ class Job
      * remains the active-record condition only.
      * $statusValues must already be normalized LOWERCASE stored values.
      */
-    public function GetAdminJobsPage($CompanyId, $statusValues, $search, $limit, $offset)
+    public function GetAdminJobsPage($CompanyId, $statusValues, $search, $limit, $offset, $sort = 'date')
     {
         $query = "SELECT
             job.JobId,
@@ -561,8 +561,16 @@ class Job
             $params[':search'] = '%' . $search . '%';
         }
 
-        $query .= " ORDER BY job.CreateDate DESC, job.JobId DESC
+        if ($sort === 'jobno') {
+            // Numeric-aware: JobNo is 'JOB' + sequential int, so compare the
+            // suffix as unsigned int (lexicographic would rank JOB999 above
+            // JOB1000). Recency breaks ties for legacy/garbage suffixes.
+            $query .= " ORDER BY CAST(SUBSTRING(job.JobNo, 4) AS UNSIGNED) DESC, job.CreateDate DESC, job.JobId DESC
         LIMIT :limit OFFSET :offset";
+        } else {
+            $query .= " ORDER BY job.CreateDate DESC, job.JobId DESC
+        LIMIT :limit OFFSET :offset";
+        }
 
         try {
             $stmt = $this->conn->prepare($query);

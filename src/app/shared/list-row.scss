@@ -1,0 +1,62 @@
+// Shared anatomy for "list row card" UI (chat card, job card, future customer
+// card). Applied per-component via @use — Angular scopes styles to :host, so
+// the base travels with the component instead of living in a feature SCSS.
+
+@mixin lr-host($display: block) {
+  display: $display;
+}
+
+// Full-width row: identity zone left, trailing zone right.
+@mixin lr-row($pad-x: 0, $pad-y: 0.85rem, $min-h: 0, $gap: 0.75rem) {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: $gap;
+  padding: $pad-y $pad-x;
+  @if $min-h > 0 {
+    min-height: $min-h;
+  }
+  border-bottom: 1px solid #f2f2f2;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background: #fafafa;
+  }
+
+  &:focus-visible {
+    outline: 2px solid #16191d;
+    outline-offset: -2px;
+    border-radius: 4px;
+  }
+}
+
+@mixin lr-title($size: 0.95rem) {
+  font-weight: 600;
+  color: #16191d;
+  font-size: $size;
+  line-height: 1.35;
+}
+
+@mixin lr-subtitle($size: 0.82rem) {
+  color: #9aa0a6;
+  font-size: $size;
+  line-height: 1.35;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin lr-meta($size: 0.78rem) {
+  display: flex;
+  gap: 0.75rem;
+  color: #9aa0a6;
+  font-size: $size;
+}
+
+@mixin lr-side {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}

@@ -63,6 +63,16 @@ if ($rawStatus !== '' && !array_key_exists($rawStatus, $statusSlugToValues)) {
 }
 $statusValues = $rawStatus !== '' ? $statusSlugToValues[$rawStatus] : array();
 
+// ── Sort: whitelist; unknown values fall back to the default ─────────────
+// 'jobno' orders numerically by the number suffix of JobNo ('JOB' + int) so
+// JOB1000 sorts after JOB999 (a raw string sort would not). Default remains
+// recency (CreateDate DESC) for callers that don't send sort.
+$sort = 'date';
+$rawSort = isset($_GET['sort']) ? trim($_GET['sort']) : '';
+if ($rawSort === 'jobno') {
+  $sort = 'jobno';
+}
+
 // ── Connection guard: Database::connect() may echo a driver error and
 // return null. Never surface it; validate the handle; fail generically. ───
 $database = new Database();
@@ -84,7 +94,7 @@ if (!($db instanceof PDO)) {
 $job = new Job($db);
 $result = null;
 try {
-  $result = $job->GetAdminJobsPage($CompanyId, $statusValues, $q, $pageSize, ($page - 1) * $pageSize);
+  $result = $job->GetAdminJobsPage($CompanyId, $statusValues, $q, $pageSize, ($page - 1) * $pageSize, $sort);
 } catch (Throwable $queryError) {
   error_log('get-admin-jobs: query failed.');
   get_admin_jobs_respond(array('error' => 'Unable to load jobs.'), 500);

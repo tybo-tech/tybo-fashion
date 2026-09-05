@@ -208,7 +208,8 @@ export class JobService {
     page = 1,
     pageSize = 20,
     q = '',
-    status = ''
+    status = '',
+    sort = ''
   ): Observable<JobsPageResponse> {
     let params = new HttpParams()
       .set('CompanyId', companyId)
@@ -216,6 +217,7 @@ export class JobService {
       .set('pageSize', String(pageSize));
     if (q && q.trim()) params = params.set('q', q.trim());
     if (status) params = params.set('status', status);
+    if (sort) params = params.set('sort', sort);
     return this.http.get<JobsPageResponse>(
       `${this.url}/job/get-admin-jobs.php`,
       { params }

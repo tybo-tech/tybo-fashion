@@ -1,6 +1,6 @@
-<div class="container-fluid p-0">
+<div class="jobs-screen">
   <!-- Header -->
-  <div class="d-flex align-items-center justify-content-between gap-2 mb-2">
+  <div class="d-flex align-items-center justify-content-between gap-2 mb-2 px-3 px-md-0">
     <h1 class="h5 mb-0">Jobs</h1>
     <button class="btn btn-primary btn-sm d-inline-flex align-items-center gap-1" (click)="openAddJob()">
       <i class="bi bi-plus-lg"></i> New Job
@@ -8,27 +8,21 @@
   </div>
 
   <!-- Search & filter -->
-  <div class="row g-2 align-items-center mb-2">
-    <div class="col">
-      <div class="input-group input-group-sm">
-        <span class="input-group-text"><i class="bi bi-search"></i></span>
-        <input type="text" class="form-control" placeholder="Search job number or customer…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search jobs">
-      </div>
+  <div class="d-flex align-items-center gap-2 mb-2 px-3 px-md-0">
+    <div class="input-group input-group-sm flex-fill">
+      <span class="input-group-text"><i class="bi bi-search"></i></span>
+      <input type="text" class="form-control" placeholder="Search job number or customer…" [(ngModel)]="query" (input)="onSearchInput()" aria-label="Search jobs">
     </div>
-    <div class="col-auto">
-      <select class="form-select form-select-sm" [(ngModel)]="selectedStatus" (change)="onStatusChange()" aria-label="Filter by status">
-        <option value="">All statuses</option>
-        <option value="not-started">Not started</option>
-        <option value="in-progress">In Progress</option>
-        <option value="completed">Completed</option>
-        <option value="stuck">Stuck</option>
-        <option value="terminated">Terminated</option>
-        <option value="paused">Paused</option>
-      </select>
-    </div>
-    <div class="col-auto" *ngIf="query || selectedStatus">
-      <button class="btn btn-outline-secondary btn-sm" type="button" (click)="resetFilters()">Reset</button>
-    </div>
+    <select class="form-select form-select-sm w-auto flex-shrink-0" [(ngModel)]="selectedStatus" (change)="onStatusChange()" aria-label="Filter by status">
+      <option value="">All statuses</option>
+      <option value="not-started">Not started</option>
+      <option value="in-progress">In Progress</option>
+      <option value="completed">Completed</option>
+      <option value="stuck">Stuck</option>
+      <option value="terminated">Terminated</option>
+      <option value="paused">Paused</option>
+    </select>
+    <button class="btn btn-outline-secondary btn-sm flex-shrink-0" type="button" *ngIf="query || selectedStatus" (click)="resetFilters()">Reset</button>
   </div>
 
   <div *ngIf="loading" class="text-center py-5">
@@ -44,25 +38,19 @@
   <div *ngIf="!loading && !error && jobs.length > 0">
     <ul class="list-group list-group-flush jobs-list">
       <li *ngFor="let job of jobs; trackBy: trackByJobId" class="list-group-item jobs-list-item">
-        <a class="job-row-link" [routerLink]="['/store/admin/job', job.JobId, 'jobs']" [attr.aria-label]="'Open job ' + job.JobNo">
-          <span class="job-row-main min-w-0">
-            <span class="job-no text-truncate">{{ job.JobNo }}</span>
-            <span class="job-customer text-truncate">{{ job.CustomerName }}</span>
-            <span class="job-dates text-truncate">
-              <span *ngIf="job.StartDate">Start: {{ job.StartDate | date: 'dd MMM yyyy' }}</span>
-              <span *ngIf="job.DueDate">Due: {{ job.DueDate | date: 'dd MMM yyyy' }}</span>
-            </span>
-          </span>
-          <span class="job-row-side flex-shrink-0">
-            <span class="badge border fw-semibold" [ngClass]="statusBadgeClass(job.Status)">{{ job.Status }}</span>
-            <i class="bi bi-chevron-right text-muted small d-none d-sm-inline"></i>
-          </span>
-        </a>
+        <app-job-list-card
+          [jobNo]="job.JobNo"
+          [customerName]="job.CustomerName"
+          [status]="job.Status"
+          [startDate]="job.StartDate"
+          [dueDate]="job.DueDate"
+          [link]="'/store/admin/job/' + job.JobId + '/jobs'"
+        ></app-job-list-card>
       </li>
     </ul>
 
     <!-- Pagination: driven by API metadata -->
-    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-1">
+    <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2 mt-2 px-3 px-md-0">
       <span class="small text-muted">Showing {{ pageStart }}–{{ pageEnd }} of {{ pagination.totalItems }}</span>
       <nav class="d-flex align-items-center gap-1" aria-label="Jobs pagination">
         <button class="btn btn-sm btn-outline-secondary" (click)="prevPage()" [disabled]="!pagination.hasPrevious" aria-label="Previous page"><i class="bi bi-chevron-left"></i></button>

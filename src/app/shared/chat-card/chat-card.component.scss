@@ -1,16 +1,10 @@
+@use '../list-row' as lr;
+
 :host {
-  display: block;
-}
-
-.chat-card {
-  padding: 0.85rem 0;
-  border-bottom: 1px solid #f2f2f2;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background: #fafafa;
-  }
+  @include lr.lr-host;
+  // No host gap: the meta zone carries its own left margin (ms-3) and grows,
+  // matching the original chat-row spacing exactly.
+  @include lr.lr-row($pad-x: 0, $pad-y: 0.85rem, $gap: 0);
 }
 
 .avatar-wrap {
@@ -41,19 +35,11 @@
 }
 
 .chat-name {
-  font-size: 0.925rem;
-  font-weight: 600;
-  color: #16191d;
-  line-height: 1.35;
+  @include lr.lr-title(0.925rem);
 }
 
 .chat-preview {
-  font-size: 0.8rem;
-  color: #9aa0a6;
-  line-height: 1.35;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  @include lr.lr-subtitle(0.8rem);
 }
 
 .chat-time {
@@ -61,3 +47,4 @@
   font-size: 0.725rem;
   color: #b6bcc2;
 }
+ 

@@ -1,7 +1,7 @@
 <div *ngIf="user && user.Company" class="admin-workspace">
   <app-admin-topbar [company]="user.Company" (logout)="logout()"></app-admin-topbar>
 
-  <div class="container-fluid">
+  <div class="admin-shell">
     <div class="row g-0">
       <!-- Sidebar desktop -->
       <app-admin-sidebar

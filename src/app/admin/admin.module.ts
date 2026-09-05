@@ -95,6 +95,8 @@ import { AdminOffcanvasNavComponent } from './layout/admin-offcanvas-nav/admin-o
 import { AdminBottomNavComponent } from './layout/admin-bottom-nav/admin-bottom-nav.component';
 import { AdminToastComponent } from './layout/admin-toast/admin-toast.component';
 import { AdminConfirmModalComponent } from './layout/admin-confirm-modal/admin-confirm-modal.component';
+import { ChatCardComponent } from '../shared/chat-card/chat-card.component';
+import { JobListCardComponent } from '../shared/job-list-card/job-list-card.component';
 
 @NgModule({
   declarations: [
@@ -197,6 +199,8 @@ import { AdminConfirmModalComponent } from './layout/admin-confirm-modal/admin-c
     CategorySectionComponent,
     ProductCardComponent,
     HeroHeaderComponent,
+    ChatCardComponent,
+    JobListCardComponent,
   ],
   providers: [
     NgxImageCompressService, // Add the service to providers

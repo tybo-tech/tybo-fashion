@@ -1,10 +1,17 @@
 :host { display: block; }
 
-// Unboxed list: flush rows with quiet horizontal separators. No outer card,
-// no per-row rounding, no side borders on mobile.
+// The page owns its spacing: header/filters carry px-3 on mobile (px-md-0
+// hands desktop spacing to the shell's admin-content). The list itself is
+// full-bleed; the shared job card provides the row's internal padding.
+.jobs-screen {
+  width: 100%;
+}
+
+// Unboxed list: flush rows with quiet separators, provided per-row by the
+// shared <app-job-card>. The container only caps the group with a top rule;
+// the final bottom rule comes from the last card.
 .jobs-list {
   border-top: 1px solid var(--admin-border);
-  border-bottom: 1px solid var(--admin-border);
   background: transparent;
 }
 
@@ -16,57 +23,4 @@
   border-radius: 0 !important;
   padding: 0;
   background: var(--admin-surface);
-
-  + .jobs-list-item {
-    border-top: 1px solid var(--admin-border);
-  }
-}
-
-.job-row-link {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: .75rem;
-  min-height: 56px; // ≥44px touch target
-  padding: .5rem .25rem .5rem .75rem;
-  color: var(--admin-text);
-  text-decoration: none;
-
-  &:hover { background: #fafafa; }
-  &:focus-visible {
-    outline: 2px solid var(--admin-accent);
-    outline-offset: -2px;
-    border-radius: 4px;
-  }
-}
-
-.job-row-main {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-}
-
-.job-no {
-  font-weight: 600;
-  color: var(--admin-ink);
-  font-size: .95rem;
-}
-
-.job-customer {
-  color: var(--admin-muted);
-  font-size: .82rem;
-}
-
-.job-dates {
-  display: flex;
-  gap: .75rem;
-  color: var(--admin-muted);
-  font-size: .78rem;
-}
-
-.job-row-side {
-  display: flex;
-  align-items: center;
-  gap: .5rem;
 }

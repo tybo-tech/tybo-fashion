@@ -7,5 +7,30 @@
     <div class="dash-box">
       <app-chat-card></app-chat-card>
     </div>
+
+    <p class="dash-label mt-4">Job card — no inputs passed</p>
+    <div class="dash-box">
+      <app-job-list-card></app-job-list-card>
+    </div>
+
+    <p class="dash-label mt-4">Job card — with inputs</p>
+    <div class="dash-box">
+      <app-job-list-card
+        jobNo="JOB1042"
+        customerName="Rickie Baroch"
+        status="In Progress"
+        startDate="2026-08-28"
+        dueDate="2026-09-12"
+        link="/playground"
+      ></app-job-list-card>
+      <app-job-list-card
+        jobNo="JOB1041"
+        customerName="Santiago Valentin"
+        status="Completed"
+        startDate="2026-08-20"
+        dueDate="2026-09-02"
+        link="/playground"
+      ></app-job-list-card>
+    </div>
   </div>
 </div>

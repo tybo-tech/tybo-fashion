@@ -35,7 +35,10 @@ export class JobsComponent implements OnInit, OnDestroy {
   };
 
   // Last request parameters — Retry re-issues exactly these
-  private lastRequest?: { companyId: string; page: number; q: string; status: string };
+  private lastRequest?: { companyId: string; page: number; q: string; status: string; sort: string };
+
+  // The Jobs screen orders by job number (numeric-aware, server side).
+  private readonly jobSort = 'jobno';
 
   // Search debounce: ngModel pushes here; the URL (and thus the request)
   // updates only after ~300ms of settled input. A pending debounce is
@@ -47,7 +50,7 @@ export class JobsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   // Request driver: every URL change emits here; switchMap cancels obsolete
   // requests so an older response can never replace a newer one.
-  private request$ = new Subject<{ companyId: string; page: number; q: string; status: string }>();
+  private request$ = new Subject<{ companyId: string; page: number; q: string; status: string; sort: string }>();
   private requestSub?: Subscription;
   private searchSub?: Subscription;
   private userSub?: Subscription;
@@ -114,7 +117,8 @@ export class JobsComponent implements OnInit, OnDestroy {
               req.page,
               this.pageSize,
               req.q,
-              req.status
+              req.status,
+              req.sort
             )
             .pipe(
               catchError((err) => {
@@ -204,7 +208,7 @@ export class JobsComponent implements OnInit, OnDestroy {
     const user = this.userService.getUser;
     if (!user?.CompanyId) return;
     const q = (this.query || '').trim();
-    const req = { companyId: user.CompanyId, page, q, status: this.selectedStatus };
+    const req = { companyId: user.CompanyId, page, q, status: this.selectedStatus, sort: this.jobSort };
     this.request$.next(req);
   }
 
@@ -339,19 +343,5 @@ export class JobsComponent implements OnInit, OnDestroy {
 
   trackByJobId(_index: number, job: JobListItem): string {
     return job.JobId;
-  }
-
-  statusBadgeClass(status: string): string {
-    // Case-insensitive over the canonical set returned by the API.
-    const map: Record<string, string> = {
-      'not started': 'bg-light text-dark',
-      'in progress': 'bg-dark-subtle text-dark',
-      'completed': 'bg-success-subtle text-success',
-      'complete': 'bg-success-subtle text-success',
-      'terminated': 'bg-danger-subtle text-danger',
-      'stuck': 'bg-warning-subtle text-dark',
-      'paused': 'bg-secondary-subtle text-dark',
-    };
-    return map[(status || '').toLowerCase()] || 'bg-light text-dark';
   }
 }
