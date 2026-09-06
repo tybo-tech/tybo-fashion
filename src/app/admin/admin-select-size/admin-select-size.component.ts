@@ -23,6 +23,7 @@ export class AdminSelectSizeComponent implements OnInit {
   systemMeasurements: string[] = [];
   show_new_size = false;
   name: string = '';
+  updating = false;
   sizes?: OtherInfo<string[]>;
   constructor(private otherInfoService: OtherInfoService<string[]>, private uxService: UxService) {}
   ngOnInit(): void {
@@ -90,21 +91,53 @@ export class AdminSelectSizeComponent implements OnInit {
   }
 
   addSize() {
-    if (
-      this.sizes &&
-      this.name &&
-      Array.isArray(this.sizes.ItemValue)
-    ) {
-      this.sizes.ItemValue.push(this.name);
-      this.update('Size Added', 'Size Added', ['bg-success', 'text-white']);
+    const label = this.name.trim();
+    if (!this.sizes || !label || !Array.isArray(this.sizes.ItemValue)) {
+      return;
+    }
+    // Audit fix §7.12: no duplicate-size guard existed — the same label
+    // could be pushed repeatedly into the shared library.
+    const exists = this.sizes.ItemValue.some(
+      (existing) => existing.toLowerCase() === label.toLowerCase()
+    );
+    if (exists) {
+      this.uxService.show_toast(
+        `"${label}" is already in the size list`,
+        'Duplicate size',
+        ['bg-warning', 'text-dark']
+      );
       this.name = '';
       this.show_new_size = false;
+      return;
     }
+    this.updating = true;
+    // Audit fix §7.11: single shared add-size path (OtherInfoService).
+    // Audit fix §7.10: the new size is applied to the garment immediately —
+    // the user no longer has to find and click the new button afterwards.
+    this.otherInfoService.addNewSize(this.user.CompanyId, label).subscribe(
+      (saved) => {
+        this.updating = false;
+        if (saved && Array.isArray(saved.ItemValue)) {
+          this.sizes = saved;
+          this.selectSize.emit(label);
+        } else {
+          this.uxService.show_toast(
+            'Could not add the size. Please try again.',
+            'Error',
+            ['bg-danger', 'text-white']
+          );
+        }
+        this.name = '';
+        this.show_new_size = false;
+      }
+    );
   }
 
   update(message: string = '', title = '', classess: string[] = []) {
-    if (this.sizes) {
+    if (this.sizes && !this.updating) {
+      this.updating = true;
       this.otherInfoService.save(this.sizes).subscribe((data) => {
+        this.updating = false;
         if (data && data.Id) {
           this.sizes = data;
           if (message) {

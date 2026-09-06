@@ -128,11 +128,22 @@ function cleanup($db, $CompanyId, $JobId, $otherJobId)
 {
     $db->prepare("DELETE FROM jobitem WHERE CompanyId = ?")->execute(array($CompanyId));
     $db->prepare("DELETE FROM job WHERE JobId IN (?, ?)")->execute(array($JobId, $otherJobId));
+    $db->prepare("DELETE FROM other_info WHERE ParentId = ? AND ItemType = 'SystemSizes'")->execute(array($CompanyId));
+}
+
+function seedSizeLibrary($db, $CompanyId, array $sizes)
+{
+    $db->prepare(
+        "INSERT INTO other_info (Name, ItemType, ImageUrl, ParentId, Notes,
+            ItemValue, Status, Decription, Rules, ItemCode)
+         VALUES ('', 'SystemSizes', '', ?, '', ?, '', '', '', '')"
+    )->execute(array($CompanyId, json_encode($sizes)));
 }
 
 try {
     seedJob($db, $JobId, $CompanyId, $metadata, 50.00);
     seedJob($db, $otherJobId, $otherCompanyId, $metadata, 10.00);
+    seedSizeLibrary($db, $CompanyId, array('S', 'M', 'XXL'));
     $transaction = new JobItemTransaction($db);
 
     // ── 1. Add: one transaction recalculates totals ──────────────────────
@@ -204,6 +215,51 @@ try {
     check('negative unit price rejected: 400', 400, $status);
     $model->UnitPrice = 200.0;
     check_num('rejected updates left totals intact', 250.0, (float) readJob($db, $JobId)['TotalCost']);
+
+    // ── 2d. Size validation against the company size library (audit §7.2) ─
+    // The transactional constructor validates by default.
+    $model->Size = 'M';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('size in library: 200', 200, $status);
+    check('size in library: canonical label persisted', 'M', $body['garment']['Size'] ?? null);
+
+    $model->Size = '  xxl ';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('size case/whitespace-insensitive match: 200', 200, $status);
+    check('size canonical spelling persisted', 'XXL', $body['garment']['Size'] ?? null);
+
+    $model->Size = 'NoSuchSize';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('size not in library: 400', 400, $status);
+    check_num('rejected size left totals intact', 250.0, (float) readJob($db, $JobId)['TotalCost']);
+
+    $model->Size = 'Measurements ';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('sentinel Measurements canonicalised: 200', 200, $status);
+    check('sentinel Measurements persisted canonical', 'Measurements', $body['garment']['Size'] ?? null);
+
+    $model->Size = 'Use Measurements';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('legacy sentinel Use Measurements canonicalised: 200', 200, $status);
+    check('legacy sentinel persisted canonical', 'Measurements', $body['garment']['Size'] ?? null);
+
+    $model->Size = 'later';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('sentinel Later canonicalised: 200', 200, $status);
+    check('sentinel Later persisted canonical', 'Later', $body['garment']['Size'] ?? null);
+
+    $model->Size = '';
+    list($status, $body) = $transaction->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('empty size allowed: 200', 200, $status);
+    check('empty size persisted null', null, $body['garment']['Size'] ?? null);
+    $model->Size = 'M';
+
+    // Legacy delegate mode (validateSize = false): unknown labels pass.
+    $legacy = new JobItemTransaction($db, false);
+    $model->Size = 'Storefront Variation 42';
+    list($status, $body) = $legacy->update($CompanyId, $JobId, $addedJobItemId, $model);
+    check('legacy delegate accepts unknown size: 200', 200, $status);
+    $model->Size = 'M';
 
     // ── 3. Cross-job / cross-company rejection ───────────────────────────
     list($status, $body) = $transaction->update($otherCompanyId, $otherJobId, $addedJobItemId, $model);

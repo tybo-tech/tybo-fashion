@@ -3,6 +3,7 @@ require_once 'JobItem.php';
 require_once 'Customer.php';
 require_once 'Orders.php';
 require_once 'Company.php';
+require_once __DIR__ . '/../common/Cast.php';
 class Job
 {
     private $conn;
@@ -33,6 +34,7 @@ class Job
             TotalDays,
             Shipping,
             ShippingPrice,
+            StartDate,
             Status,
             Class,
             CreateUserId,
@@ -41,7 +43,7 @@ class Job
             Metadata,
             DueDate
         )
-        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)
         ";
         try {
             //code...
@@ -57,17 +59,20 @@ class Job
                         $model->Tittle,
                         $model->JobType,
                         $model->Description,
-                        $model->TotalCost,
-                        $model->TotalDays,
+                        Cast::money($model->TotalCost ?? null),
+                        Cast::days($model->TotalDays ?? null),
                         $model->Shipping,
-                        $model->ShippingPrice,
+                        Cast::money($model->ShippingPrice ?? null),
+                        // Audit fix §7.5: StartDate was only written by
+                        // Update(); a new job now carries its start date too.
+                        Cast::dateTime($model->StartDate ?? null),
                         $model->Status,
                         $model->Class,
                         $model->CreateUserId,
                         $model->ModifyUserId,
                         $model->StatusId,
                         json_encode($model->Metadata),
-                        $model->DueDate ?? ''
+                        Cast::dateTime($model->DueDate ?? null)
                     )
                 )
             ) {
@@ -167,12 +172,12 @@ class Job
                         $model->Tittle,
                         $model->JobType,
                         $model->Description,
-                        $model->TotalCost,
-                        $model->TotalDays,
+                        Cast::money($model->TotalCost ?? null),
+                        Cast::days($model->TotalDays ?? null),
                         $model->Shipping,
-                        $model->ShippingPrice,
-                        $model->StartDate,
-                        $model->DueDate,
+                        Cast::money($model->ShippingPrice ?? null),
+                        Cast::dateTime($model->StartDate ?? null),
+                        Cast::dateTime($model->DueDate ?? null),
                         $model->Status,
                         $model->Class,
                         $model->CreateUserId,
@@ -311,7 +316,7 @@ class Job
                     // Calculate derived fields for admin UI
                     $item['IsOverdue'] = $this->isJobOverdue($item['DueDate']);
                     $item['DaysRemaining'] = $this->calculateDaysRemaining($item['DueDate']);
-                    $item['FormattedCost'] = number_format($item['TotalCost'], 2);
+                    $item['FormattedCost'] = number_format(Cast::moneyFloat($item['TotalCost']), 2);
                     $item['StatusDisplay'] = $this->getStatusDisplay($item['Status'], $item['StatusId']);
 
                     // Add progress information

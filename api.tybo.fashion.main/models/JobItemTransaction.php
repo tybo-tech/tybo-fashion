@@ -38,9 +38,21 @@ class JobItemTransaction
 
   private $conn;
 
-  public function __construct($db)
+  /**
+   * Audit fix §7.2 — when true, Size is validated against the company's
+   * size library before it is written. The dedicated transactional
+   * endpoints (the admin garment editor surface) validate; the legacy
+   * delegates do not, because other clients (e.g. the storefront, whose
+   * sizes come from product variations rather than the size library) may
+   * legitimately write sizes outside the library.
+   * @var bool
+   */
+  private $validateSize;
+
+  public function __construct($db, $validateSize = true)
   {
     $this->conn = $db;
+    $this->validateSize = $validateSize;
   }
 
   /**
@@ -59,6 +71,7 @@ class JobItemTransaction
             function ($job) use ($model, $CompanyId, $JobId) {
                 $this->assertUnitPrice($model->UnitPrice ?? null);
                 $this->assertQuantity($model->Quantity ?? null);
+                $size = $this->resolveValidatedSize($CompanyId, $model, $this->validateSize);
 
         $JobItemId = getUuid($this->conn);
         $subTotal = round(
@@ -80,7 +93,7 @@ class JobItemTransaction
           $model->FeaturedImageUrl ?? null,
           json_encode($model->Measurements ?? null),
           json_encode($model->Metadata ?? null),
-          $model->Size ?? null,
+          $size,
           $model->Colour ?? null,
           $model->ItemName ?? null,
           $model->ItemType ?? null,
@@ -110,9 +123,10 @@ class JobItemTransaction
       $JobId,
       $JobItemId,
       true,
-            function ($job) use ($JobItemId, $model) {
+            function ($job) use ($JobItemId, $model, $CompanyId) {
                 $this->assertUnitPrice($model->UnitPrice ?? null);
                 $this->assertQuantity($model->Quantity ?? null);
+                $size = $this->resolveValidatedSize($CompanyId, $model, $this->validateSize);
 
         $subTotal = round(
           ((float) $model->UnitPrice) * ((float) $model->Quantity),
@@ -130,7 +144,7 @@ class JobItemTransaction
           $model->FeaturedImageUrl ?? null,
           json_encode($model->Measurements ?? null),
           json_encode($model->Metadata ?? null),
-          $model->Size ?? null,
+          $size,
           $model->Colour ?? null,
           $model->ItemName ?? null,
           $model->ItemType ?? null,
@@ -328,5 +342,88 @@ class JobItemTransaction
         ) {
             throw new JobItemTransactionException('Quantity must be a whole number of at least 1.', 400);
         }
+    }
+
+    /**
+     * Audit fix §7.2 — validate Size against the company's size library
+     * (other_info rows with ItemType 'SystemSizes', ParentId = CompanyId)
+     * before it can be written to jobitem.Size. jobitem.Size is free text
+     * with no referential integrity, so this is the only guard against
+     * writing a size the company never defined.
+     *
+     * Rules:
+     *  - empty/missing Size is allowed (no size chosen yet);
+     *  - the sentinels 'Measurements' and 'Later' (any casing, plus the
+     *    legacy variants 'Measurements ' / 'Use Measurements') pass and are
+     *    canonicalised, so editing legacy rows self-heals them;
+     *  - any other label must exist in the library (case-insensitive; the
+     *    canonical stored spelling is persisted);
+     *  - when the company has NO size library at all, the label is accepted
+     *    (nothing to validate against — the size page creates the library
+     *    on first use, so this only guards brand-new companies).
+     *
+     * Runs inside the transaction, before the item mutation.
+     *
+     * @param string $CompanyId
+     * @param object $model
+     * @param bool $enabled When false the size is canonicalised (sentinels
+     *                      normalised, whitespace trimmed) but never
+     *                      rejected — used by the legacy delegates.
+     */
+    private function resolveValidatedSize($CompanyId, $model, $enabled = true)
+    {
+        $raw = isset($model->Size) && is_string($model->Size) ? trim($model->Size) : '';
+        if ($raw === '') {
+            return null;
+        }
+
+        $lower = strtolower($raw);
+        if ($lower === 'later') {
+            return 'Later';
+        }
+        if (strpos($lower, 'measurements') !== false) {
+            return 'Measurements';
+        }
+
+        if (!$enabled) {
+            return $raw;
+        }
+
+        $library = $this->companySizeLibrary($CompanyId);
+        if ($library === null) {
+            return $raw;
+        }
+        foreach ($library as $label) {
+            if (strcasecmp(trim((string) $label), $raw) === 0) {
+                return trim((string) $label);
+            }
+        }
+        throw new JobItemTransactionException(
+            'Size "' . $raw . '" is not in this company\'s size list. Add it to the size library first, or choose Measurements.',
+            400
+        );
+    }
+
+    /**
+     * All size labels defined for the company, or null when the company has
+     * no SystemSizes row at all. Multiple rows are unioned defensively.
+     */
+    private function companySizeLibrary($CompanyId)
+    {
+        $stmt = $this->conn->prepare(
+            "SELECT ItemValue FROM other_info
+             WHERE ParentId = ? AND ItemType = 'SystemSizes'"
+        );
+        $stmt->execute(array(trim($CompanyId)));
+
+        $labels = null;
+        foreach ($stmt->fetchAll(PDO::FETCH_ASSOC) as $row) {
+            $values = json_decode((string) $row['ItemValue'], true);
+            if (is_array($values)) {
+                $labels = $labels === null ? array() : $labels;
+                $labels = array_merge($labels, $values);
+            }
+        }
+        return $labels;
     }
 }

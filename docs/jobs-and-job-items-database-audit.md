@@ -318,3 +318,99 @@ apply it, the user must click the new size button, which emits
   deprecate the legacy ones.
 - Add duplicate-size detection and a merge-safe update for the size library.
 - Fix `getTopSellingByCompanyId()` or remove it.
+
+---
+
+## 8. Remediation implemented (2026-09-06)
+
+All of the recommended next steps above have been implemented and verified
+against the live Podman stack (PHP tests + HTTP smoke tests + `ng build`).
+
+### Data model / casting (§7.1)
+- New `common/Cast.php` — `money()`, `moneyFloat()`, `quantity()`, `days()`,
+  `dateTime()` centralise all varchar money/quantity/date casting. Pure and
+  DB-free, covered by `tests/CastTest.php` (29 checks).
+- `Job::Create()` / `Job::Update()` cast `TotalCost`, `TotalDays`,
+  `ShippingPrice`, `StartDate`, `DueDate` through the helpers.
+  `DueDate: ''` (which MySQL stored as NULL anyway) is now a proper null.
+- `JobItem::Create()` / `JobItem::Update()` cast `UnitPrice`, `Quantity`,
+  `SubTotal`; `Update()` no longer crashes on garbage prices (it used
+  `number_format((float) $model->UnitPrice)` unguarded).
+- `Job::GetJobsByCompanyId()` `FormattedCost` no longer warns on garbage.
+- The columns themselves remain varchar (schema migration is a separate
+  effort); all access now funnels through one set of rules.
+
+### Job::Create() StartDate gap (§7.5)
+- `Create()` now writes `StartDate` (column added to the INSERT).
+
+### Size validation (§7.2)
+- `JobItemTransaction` gains a `$validateSize` constructor flag (default
+  **on**). When enabled, add/update validate `Size` against the company's
+  `other_info` `SystemSizes` library **inside the transaction, before the
+  mutation**:
+  - empty size → stored as NULL;
+  - sentinels canonicalised: `Later`, `Measurements` (also accepts the
+    legacy variants `Measurements ` / `Use Measurements`);
+  - library labels match case-insensitively and the canonical spelling is
+    persisted;
+  - unknown labels → HTTP 400 "not in this company's size list";
+  - a company with **no** size library row accepts any label (the size page
+    creates the library on first use).
+- The legacy delegates construct with `$validateSize = false`: the
+  storefront writes sizes from **product variations**, not the size library
+  (`size.component.ts`), so they are canonicalised but never rejected.
+
+### Transactional-only write path (§7.6)
+- `add-job-item.php`, `update-job-item.php`, `delete-job-item.php` and
+  `add-job-item-range.php` are now thin delegates of `JobItemTransaction`.
+  Legacy URL/body/response contracts are preserved (the echoed item /
+  `{deleted, removedJobItemId, totals}` for the GET delete), but every write
+  now recalculates and persists job totals atomically.
+- `add-job-item-range.php` was dead-on-arrival (looped an undefined
+  `$jobItems` — `$data->jobItems` was read instead); it now accepts
+  `{CompanyId, JobId, JobItems:[…]}`, runs each insert through the
+  transaction and returns `{added, failed:[{index, error}]}`.
+- The admin job-card component (`job-card.component.ts`) now saves through
+  `updateJobItemTransactional` + `isValidGarmentMutationResponse` instead of
+  the totals-blind legacy update; a `saving` guard disables double submits.
+- Legacy write endpoints should be treated as compatibility shims only; new
+  code must use the `-transactional` endpoints.
+
+### Size library integrity (§7.9, §7.11, §7.12)
+- `Other_info::Add()/Update()` normalise `SystemSizes` rows server-side:
+  labels trimmed, empty labels dropped, duplicates removed
+  case-insensitively (first occurrence wins). Object-payload `ItemType`s are
+  untouched.
+- `OtherInfoService.addNewSize()` is now the single shared add-size path:
+  it returns the saved library row (or `null` when the label already
+  exists — client-side dedup too).
+- The size picker (`admin-select-size`) uses `addNewSize()` instead of its
+  private inline copy, shows a "Duplicate size" toast instead of silently
+  double-storing, and **auto-assigns the new size to the garment** after the
+  library save succeeds (§7.10: no more create-then-hunt-for-the-button).
+  A `saving`/`updating` guard blocks double submits.
+- `string-option-picker` adapts to the new return contract (duplicate toast,
+  optimistic selection).
+
+### Other backend fixes (§7.7, §7.8)
+- `JobItem::getByCompanyId()` now decodes `Measurements`/`Metadata` like
+  every other reader.
+- `JobItem::getTopSellingByCompanyId()` (referenced non-existent
+  `ProductId`/`ProductName` columns) is removed; the endpoint that exposed
+  it never existed and no caller existed.
+
+### Measurements error messaging (§7.13)
+- Not changed: the global `values_error` on `admin-measurements` remains;
+  per-row error highlighting was deferred.
+
+### Verification
+- `php tests/CastTest.php` — 29 checks, 0 failures.
+- `php tests/JobTotalsTest.php` — 38 checks, 0 failures.
+- `php tests/JobTransactionIntegrationTest.php` (live MySQL) — 55 checks,
+  0 failures, including the new size-validation suite (library match,
+  case-insensitive canonicalisation, unknown-size 400, sentinel
+  canonicalisation, empty size, legacy-delegate acceptance).
+- HTTP smoke tests against the running containers: legacy add/update/delete
+  recalculate job totals (250 → 350 → 50-shipping); transactional add
+  rejects unknown size (400) and canonicalises `xxl` → `XXL`.
+- `npm run build` — clean (pre-existing SCSS/bundle budget warnings only).

@@ -106,19 +106,41 @@ export class OtherInfoService<T> {
     });
   }
 
-  addNewSize(companyId: string, name: string) {
-    this.sizes(companyId).subscribe((data) => {
-      if (data && data.length) {
-        const item = data[0];
-        if (Array.isArray(item.ItemValue)) {
-          item.ItemValue.push(name);
-          this.save(item).subscribe((data) => {
-            if (data && data.Id) {
-              this.sizes(companyId);
-            }
+  /**
+   * Append a size label to the company's size library (server dedupes and
+   * trims). Returns the saved library row so callers can react to the
+   * actual persisted value, or null when the label already exists.
+   * Audit fix §7.11: the size picker previously had its own inline copy of
+   * this logic — all add-size paths now share this single implementation.
+   */
+  addNewSize(
+    companyId: string,
+    name: string
+  ): Observable<OtherInfo<string[]> | null> {
+    return new Observable<OtherInfo<string[]> | null>((observer) => {
+      this.sizes(companyId).subscribe((data) => {
+        if (data && data.length && Array.isArray(data[0].ItemValue)) {
+          const item = data[0] as OtherInfo<string[]>;
+          const label = name.trim();
+          const values = item.ItemValue as string[];
+          const exists = values.some(
+            (existing) => existing.toLowerCase() === label.toLowerCase()
+          );
+          if (!label || exists) {
+            observer.next(null);
+            observer.complete();
+            return;
+          }
+          values.push(label);
+          this.save(item as unknown as OtherInfo<T>).subscribe((saved) => {
+            observer.next(saved && saved.Id ? (saved as OtherInfo<string[]>) : null);
+            observer.complete();
           });
+        } else {
+          observer.next(null);
+          observer.complete();
         }
-      }
+      });
     });
   }
   addNewMeasurement(companyId: string, name: string) {

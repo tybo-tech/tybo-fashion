@@ -44,8 +44,10 @@
           <div class="actions">
               <!-- Input -->
                <input type="text" placeholder="e.g. XXL" [(ngModel)]="name" class="form-control mb-3 p-2">
-               <button class="btn btn-primary w-100" (click)="addSize()">Save</button>
-    
+               <button class="btn btn-primary w-100" (click)="addSize()" [disabled]="updating">
+                 {{ updating ? 'Saving...' : 'Save' }}
+               </button>
+
           </div>
         </div>
       </div>

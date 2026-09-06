@@ -31,7 +31,7 @@ class Other_info
                 $model->ImageUrl,
                 $model->ParentId,
                 $model->Notes,
-                json_encode($model->ItemValue),
+                json_encode($this->normalizeItemValue($model)),
                 $model->Status,
                 $model->Decription,
                 $model->Rules,
@@ -67,7 +67,7 @@ class Other_info
                 $model->ImageUrl,
                 $model->ParentId,
                 $model->Notes,
-                json_encode($model->ItemValue),
+                json_encode($this->normalizeItemValue($model)),
                 $model->Status,
                 $model->Decription,
                 $model->Rules,
@@ -133,6 +133,42 @@ class Other_info
             return $items;
         }
         return [];
+    }
+
+    /**
+     * Audit fix §7.12 — the size library (ItemType 'SystemSizes') is a
+     * single shared string array, so writes are normalised server-side:
+     * labels are trimmed and duplicates are removed case-insensitively
+     * (first occurrence wins). Other ItemTypes store object payloads and
+     * are passed through untouched.
+     */
+    private function normalizeItemValue($model)
+    {
+        $value = $model->ItemValue ?? null;
+        $itemType = isset($model->ItemType) ? (string) $model->ItemType : '';
+        if ($itemType !== 'SystemSizes' || !is_array($value)) {
+            return $value;
+        }
+
+        $seen = array();
+        $normalised = array();
+        foreach ($value as $label) {
+            if (!is_string($label)) {
+                $normalised[] = $label;
+                continue;
+            }
+            $trimmed = trim($label);
+            if ($trimmed === '') {
+                continue;
+            }
+            $key = strtolower($trimmed);
+            if (isset($seen[$key])) {
+                continue;
+            }
+            $seen[$key] = true;
+            $normalised[] = $trimmed;
+        }
+        return $normalised;
     }
 
 }

@@ -39,12 +39,21 @@ export class JobItemFormComponent implements OnInit, OnDestroy {
     )?.Name;
   }
   sizeChanged(event: string) {
-    if (event === 'Measurements' && this.jobItem) {
-      this.jobItem.Metadata.Measurements = [
-        initMeasurements('Waist', '', ''),
-        initMeasurements('Hips', '', ''),
-        initMeasurements('Chest', '', ''),
-      ];
+    // 'Measurements' seeds 3 common defaults so a garment can be measured
+    // immediately; 'Later' opens the same editor empty. Never overwrite
+    // measurements the user has already captured, and seed units so the
+    // units select isn't stuck on "Select Units".
+    if ((event === 'Measurements' || event === 'Later') && this.jobItem) {
+      if (!this.jobItem.Metadata.Measurements) {
+        this.jobItem.Metadata.Measurements =
+          event === 'Measurements'
+            ? [
+                initMeasurements('Waist', '', '', 'Cm'),
+                initMeasurements('Hips', '', '', 'Cm'),
+                initMeasurements('Chest', '', '', 'Cm'),
+              ]
+            : [];
+      }
     }
   }
   get isMeasurements() {

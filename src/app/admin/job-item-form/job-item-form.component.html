@@ -19,10 +19,10 @@
             <input type="text" id="item-color" [(ngModel)]="jobItem.Colour" class="form-control" placeholder="Colour">
           </div>
         </div>
-        <div *ngIf="isMeasurements && jobItem.Metadata && jobItem.Metadata.Measurements" class="card border bg-light mb-3">
+        <div *ngIf="isMeasurements && jobItem.Metadata" class="card border bg-light mb-3">
           <div class="card-body p-3">
             <div class="small fw-semibold mb-2"><i class="bi bi-rulers me-1"></i> Measurements</div>
-            <app-admin-measurements [measurements]="jobItem.Metadata.Measurements" (onCaptured)="jobItem.Metadata.Measurements = $event"></app-admin-measurements>
+            <app-admin-measurements [measurements]="jobItem.Metadata.Measurements || []" (onCaptured)="jobItem.Metadata.Measurements = $event"></app-admin-measurements>
           </div>
         </div>
         <div class="row g-2 mb-3">

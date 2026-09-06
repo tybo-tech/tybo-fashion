@@ -3,7 +3,10 @@ import { Constants } from 'src/constants/Constants';
 import { JobCard, JobItem } from 'src/models/job-item.model';
 import { initMeasurements } from 'src/models/measurement.model';
 import { User } from 'src/models/user.model';
-import { JobService } from 'src/services/job.service';
+import {
+  JobService,
+  isValidGarmentMutationResponse,
+} from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
@@ -19,6 +22,7 @@ export class JobCardComponent implements OnInit {
   @Output() onClose = new EventEmitter<any>();
   user?: User;
   users: User[] = [];
+  saving = false;
 
   constructor(
     private jobService: JobService,
@@ -57,12 +61,47 @@ export class JobCardComponent implements OnInit {
     }
   }
   updateJobItem(){
-    this.jobItem && this.jobService.updateJobItem(this.jobItem).subscribe((data) => {
-      if (data && data.JobItemId) {
-        this.jobItem = data;
-        this.uxService.show_toast('Item updated', 'success');
-      }
-    });
+    // Audit fix §7.6: the legacy updateJobItem() did not recalculate job
+    // totals. The card now saves through the transactional endpoint — the
+    // item and the parent job totals persist in one server transaction.
+    if (!this.jobItem || !this.user?.CompanyId || this.saving) return;
+    this.saving = true;
+    this.jobService
+      .updateJobItemTransactional(
+        this.user.CompanyId,
+        this.jobItem.JobId,
+        this.jobItem.JobItemId,
+        this.jobItem
+      )
+      .subscribe({
+        next: (res) => {
+          this.saving = false;
+          if (
+            !isValidGarmentMutationResponse(
+              res,
+              'edit',
+              this.jobItem?.JobItemId
+            )
+          ) {
+            this.uxService.show_toast(
+              'The change was not saved as expected. Please try again.',
+              'Error'
+            );
+            return;
+          }
+          if (res.garment) {
+            this.jobItem = res.garment;
+          }
+          this.uxService.show_toast('Item updated', 'success');
+        },
+        error: () => {
+          this.saving = false;
+          this.uxService.show_toast(
+            'Failed to save the item. Please try again.',
+            'Error'
+          );
+        },
+      });
   }
   get jobCardPrint() {
     return Constants.PrintJobCard + this.jobItem?.JobItemId;

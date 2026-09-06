@@ -47,9 +47,28 @@ export class StringOptionPickerComponent implements OnInit {
     this.show_modal = true;
     if (this.newSetting) {
       switch (this.key) {
-        case 'sizes':
-          this.otherInfoService.addNewSize(this.companyId, this.newSetting);
+        case 'sizes': {
+          // addNewSize now returns the saved library (or null when the
+          // label already exists) — optimistically select the new value
+          // either way, since it is available in the library.
+          const label = this.newSetting;
+          this.otherInfoService.addNewSize(this.companyId, label).subscribe(
+            (saved) => {
+              if (saved === null) {
+                this.uxService.show_toast(
+                  `"${label}" is already in the size list`,
+                  'Duplicate size',
+                  ['bg-warning', 'text-dark']
+                );
+              }
+              this.settings.push({
+                name: label,
+                selected: true,
+              });
+            }
+          );
           break;
+        }
         case 'categories':
           this.otherInfoService.addNewCategory(this.companyId, this.newSetting);
           break;
@@ -67,13 +86,15 @@ export class StringOptionPickerComponent implements OnInit {
           );
           break;
       }
-      this.uxService.show_toast('New setting added successfully', 'Success', [
-        'bg-success',
-      ]);
-      this.settings.push({
-        name: this.newSetting,
-        selected: true,
-      });
+      if (this.key !== 'sizes') {
+        this.uxService.show_toast('New setting added successfully', 'Success', [
+          'bg-success',
+        ]);
+        this.settings.push({
+          name: this.newSetting,
+          selected: true,
+        });
+      }
     } else {
       this.uxService.show_toast(
         'Operation cancelled, due to empty value',

@@ -1,5 +1,6 @@
 <?php
 require_once 'Job.php';
+require_once __DIR__ . '/../common/Cast.php';
 
 
 class JobItem
@@ -56,9 +57,9 @@ class JobItem
                         $model->Colour,
                         $model->ItemName,
                         $model->ItemType,
-                        $model->UnitPrice,
-                        $model->Quantity,
-                        $model->SubTotal,
+                        Cast::money($model->UnitPrice ?? null),
+                        Cast::quantity($model->Quantity ?? null),
+                        Cast::money($model->SubTotal ?? null),
                         $model->CreateUserId,
                         $model->ModifyUserId,
                         $model->StatusId
@@ -77,7 +78,7 @@ class JobItem
 
     public function Update($model)
     {
-        $unitPrice = number_format((float) $model->UnitPrice, 2, '.', '');
+        $unitPrice = Cast::money($model->UnitPrice ?? null);
         $query = "UPDATE
         jobitem
          SET
@@ -116,8 +117,8 @@ class JobItem
                         $model->ItemName,
                         $model->ItemType,
                         $unitPrice,
-                        $model->Quantity,
-                        $model->SubTotal,
+                        Cast::quantity($model->Quantity ?? null),
+                        Cast::money($model->SubTotal ?? null),
                         $model->CreateUserId,
                         $model->ModifyUserId,
                         $model->StatusId,
@@ -298,7 +299,7 @@ ORDER BY
     public function getByCompanyId($CompanyId)
     {
         $query = "
-        SELECT * 
+        SELECT *
         FROM
             jobitem
         WHERE
@@ -308,36 +309,16 @@ ORDER BY
         $stmt = $this->conn->prepare($query);
         $stmt->execute(array($CompanyId));
 
+        // Audit fix §7.7: decode the JSON columns like every other reader.
+        $results = array();
         if ($stmt->rowCount()) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            foreach ($items as $item) {
+                $item["Measurements"] = json_decode($item["Measurements"]);
+                $item["Metadata"] = json_decode($item["Metadata"]);
+                array_push($results, $item);
+            }
         }
-    }
-    public function getTopSellingByCompanyId($CompanyId)
-    {
-        $query = "
-        SELECT
-        `ProductId`,
-        `ProductName`,
-        COUNT(`ProductId`) AS 'Times',
-        SUM(`Quantity`) AS 'Quantity',
-        SUM(`subTotal`) AS 'Total'
-        FROM
-            jobitem
-        WHERE
-            CompanyId = ?
-        GROUP BY
-            `ProductId`
-        ORDER BY
-        SUM(`Quantity`)
-        DESC
-            
-        ";
-
-        $stmt = $this->conn->prepare($query);
-        $stmt->execute(array($CompanyId));
-
-        if ($stmt->rowCount()) {
-            return $stmt->fetchAll(PDO::FETCH_ASSOC);
-        }
+        return $results;
     }
 }
