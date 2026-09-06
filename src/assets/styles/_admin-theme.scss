@@ -216,6 +216,12 @@
   // Brand icon background (near-black ink; accent reserved for actions)
   .bg-admin-primary { background: var(--admin-ink); }
 
+  // Dashboard stat-card icon on the project accent
+  .icon-accent {
+    background: var(--admin-accent);
+    color: var(--admin-accent-ink);
+  }
+
   // Compact font sizes for the admin shell
   .fs-95 { font-size: .95rem; }
   .fs-7 { font-size: .7rem; }
