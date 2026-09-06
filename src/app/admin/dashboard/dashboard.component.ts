@@ -11,7 +11,6 @@ import { UserService } from 'src/services/user.service';
   styleUrls: ['./dashboard.component.scss'],
 })
 export class DashboardComponent {
-  today = new Date();
   cards: {
     title: string;
     count: number;
