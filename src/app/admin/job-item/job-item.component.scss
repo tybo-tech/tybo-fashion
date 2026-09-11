@@ -2,7 +2,7 @@
 
 /* Sprint 5 §4 — plain row: separators only (no cards, no shadows).
    The bottom border doubles as between-row and bottom separator. */
-.garment-row {
+.item-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -21,7 +21,7 @@
   }
 }
 
-.garment-thumb {
+.item-thumb {
   width: 48px;
   height: 48px;
   display: block;

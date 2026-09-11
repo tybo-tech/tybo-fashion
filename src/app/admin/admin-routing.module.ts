@@ -28,7 +28,7 @@ import { JobItemPageComponent } from './job-item-page/job-item-page.component';
 import { JobsStatusRedirectComponent } from './jobs/jobs-status-redirect.component';
 import { JobEditorComponent } from './job-editor/job-editor.component';
 import { unsavedChangesGuard } from './job-editor/unsaved-changes.guard';
-import { garmentUnsavedChangesGuard } from './job-item-page/garment-unsaved-changes.guard';
+import { itemUnsavedChangesGuard } from './job-item-page/item-unsaved-changes.guard';
 import {
   jobIdRouteMatcher,
   jobStatusSlugMatcher,
@@ -68,14 +68,14 @@ const routes: Routes = [
         canDeactivate: [unsavedChangesGuard],
       },
       {
-        path: 'jobs/:jobId/garments/new',
+        path: 'jobs/:jobId/items/new',
         component: JobItemPageComponent,
-        canDeactivate: [garmentUnsavedChangesGuard],
+        canDeactivate: [itemUnsavedChangesGuard],
       },
       {
-        path: 'jobs/:jobId/garments/:garmentId',
+        path: 'jobs/:jobId/items/:itemId',
         component: JobItemPageComponent,
-        canDeactivate: [garmentUnsavedChangesGuard],
+        canDeactivate: [itemUnsavedChangesGuard],
       },
       {
         // Known status slugs only — everything else falls to jobs/**.
@@ -96,19 +96,19 @@ const routes: Routes = [
         pathMatch: 'full',
       },
       {
-        // :backTo carries no garment id — the overview is canonical.
+        // :backTo carries no item id — the overview is canonical.
         path: 'job/:id/:backTo',
         redirectTo: 'jobs/:id',
         pathMatch: 'full',
       },
       {
         path: 'job/:jobId/items/new',
-        redirectTo: 'jobs/:jobId/garments/new',
+        redirectTo: 'jobs/:jobId/items/new',
         pathMatch: 'full',
       },
       {
         path: 'job/:jobId/items/:jobItemId/edit',
-        redirectTo: 'jobs/:jobId/garments/:jobItemId',
+        redirectTo: 'jobs/:jobId/items/:jobItemId',
         pathMatch: 'full',
       },
       {

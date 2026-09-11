@@ -17,7 +17,7 @@ import { OtherInfo } from 'src/models/other-info.model';
 import { Discount, DiscountService } from './discounts.service';
 
 /**
- * Sprint 5 §6 — response contract for every transactional garment
+ * Sprint 5 §6 — response contract for every transactional item
  * mutation. `garment` is null on removal, `removedJobItemId` is null on
  * add/update. `totals` is the authoritative server-side recalculation.
  */
@@ -65,7 +65,7 @@ export function isCompleteTotals(totals: unknown): boolean {
  * Enforces the operation-specific invariants on top of complete totals:
  *  - add/edit: garment non-null with a valid (and, on edit, matching)
  *    JobItemId, removedJobItemId null;
- *  - remove: garment null, removedJobItemId equals the removed garment,
+ *  - remove: garment null, removedJobItemId equals the removed item,
  *    complete totals.
  */
 export function isValidGarmentMutationResponse(
@@ -228,6 +228,18 @@ export class JobService {
     return this.http.get<Job>(`${this.url}/job/get-job.php?JobId=${jobId}`);
   }
 
+  /**
+   * Cascade delete a job and its whole branch (garments, work, orders).
+   * POST — never a state-changing GET. The server removes everything in one
+   * transaction; the client navigates away on success.
+   */
+  deleteJob(companyId: string, jobId: string) {
+    return this.http.post<{ deleted: boolean; deletedJobId: string; counts: Record<string, number> }>(
+      `${this.url}/job/delete-job.php`,
+      { CompanyId: companyId, JobId: jobId }
+    );
+  }
+
   addJobItem(jobItem: JobItem) {
     return this.http.post<JobItem>(
       `${this.url}/job-item/add-job-item.php`,
@@ -259,7 +271,7 @@ export class JobService {
   // ── Sprint 5 §6 — scoped read + transactional mutations ────────────────
   // Additive: the legacy methods above remain untouched for rollback.
 
-  /** Scoped garment-detail read (CompanyId + JobId + JobItemId). */
+  /** Scoped item-detail read (CompanyId + JobId + JobItemId). */
   getJobItemScoped(companyId: string, jobId: string, jobItemId: string) {
     const params = new HttpParams()
       .set('CompanyId', companyId)
@@ -272,7 +284,7 @@ export class JobService {
   }
 
   /**
-   * Add a garment. One server-side transaction persists the item AND the
+   * Add an item. One server-side transaction persists the item AND the
    * parent job totals; the response carries both (never a false success).
    */
   addJobItemTransactional(
@@ -290,7 +302,7 @@ export class JobService {
     );
   }
 
-  /** Update a garment — same transactional contract as add. */
+  /** Update an item — same transactional contract as add. */
   updateJobItemTransactional(
     companyId: string,
     jobId: string,
@@ -309,8 +321,8 @@ export class JobService {
   }
 
   /**
-   * Remove a garment (POST — never a state-changing GET). The server
-   * recalculates totals atomically; last-garment removal preserves
+   * Remove an item (POST — never a state-changing GET). The server
+   * recalculates totals atomically; last-item removal preserves
    * invoice/payments/proof and keeps the remaining shipping as the total.
    */
   removeJobItemTransactional(

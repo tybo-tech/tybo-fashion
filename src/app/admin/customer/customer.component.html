@@ -61,6 +61,10 @@
         <button *ngIf="hasValidEmail" class="btn btn-outline-secondary btn-sm d-inline-flex align-items-center gap-1" (click)="emailCustomer()">
           <i class="bi bi-envelope"></i> Email
         </button>
+        <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1" [disabled]="deleting" (click)="deleteCustomer()">
+          <span *ngIf="deleting" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+          <i *ngIf="!deleting" class="bi bi-trash"></i> Delete Customer
+        </button>
       </div>
     </div>
 

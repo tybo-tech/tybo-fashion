@@ -1,1 +1,25 @@
 :host { display: block; }
+
+.job-page {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-bottom: 4rem;
+}
+
+.section-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color, #6c757d);
+}
+
+.job-section {
+  margin-top: 2.5rem;
+}
+
+.section-action {
+  font-size: 0.875rem;
+  text-decoration: none;
+  white-space: nowrap;
+}

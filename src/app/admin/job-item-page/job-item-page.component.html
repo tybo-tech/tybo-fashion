@@ -12,10 +12,10 @@
   <div class="d-flex align-items-center gap-2 mb-3">
     <a class="btn btn-sm btn-light border" [routerLink]="jobDetailsLink" aria-label="Back to job"><i class="bi bi-arrow-left"></i></a>
     <div class="min-w-0">
-      <!-- Sprint 5 §5: "Garment details" is the context label; the garment
+      <!-- Sprint 5 §5: "Item details" is the context label; the item
            name is the final page heading below. -->
       <span class="small text-muted d-block text-truncate">{{ contextLabel }}</span>
-      <h1 class="h6 fw-semibold mb-0 text-truncate" *ngIf="!loading && mode === 'edit'">{{ garmentName }}</h1>
+      <h1 class="h6 fw-semibold mb-0 text-truncate" *ngIf="!loading && mode === 'edit'">{{ itemName }}</h1>
     </div>
   </div>
 

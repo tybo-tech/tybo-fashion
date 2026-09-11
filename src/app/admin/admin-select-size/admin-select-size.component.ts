@@ -112,7 +112,7 @@ export class AdminSelectSizeComponent implements OnInit {
     }
     this.updating = true;
     // Audit fix §7.11: single shared add-size path (OtherInfoService).
-    // Audit fix §7.10: the new size is applied to the garment immediately —
+    // Audit fix §7.10: the new size is applied to the item immediately —
     // the user no longer has to find and click the new button afterwards.
     this.otherInfoService.addNewSize(this.user.CompanyId, label).subscribe(
       (saved) => {

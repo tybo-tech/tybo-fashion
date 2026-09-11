@@ -1,8 +1,8 @@
-<!-- Sprint 5 §4 — plain garment row. The whole row is one clickable,
+<!-- Sprint 5 §4 — plain item row. The whole row is one clickable,
      keyboard-focusable target (native anchor). No qty stepper, no inline
-     delete: editing and removal live on the garment details page. -->
-<a *ngIf="jobItem && job" class="garment-row text-decoration-none" [routerLink]="garmentLink">
-  <span class="garment-thumb flex-shrink-0">
+     delete: editing and removal live on the item details page. -->
+<a *ngIf="jobItem && job" class="item-row text-decoration-none" [routerLink]="itemLink">
+  <span class="item-thumb flex-shrink-0">
     <img *ngIf="featuredImageUrl" [src]="featuredImageUrl" [alt]="itemName" class="w-100 h-100 object-fit-cover rounded-2 border">
     <span *ngIf="!featuredImageUrl" class="w-100 h-100 d-flex align-items-center justify-content-center rounded-2 border bg-light"><i class="bi bi-image text-muted"></i></span>
   </span>

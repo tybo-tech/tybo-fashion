@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Constants } from 'src/constants/Constants';
 import { Job } from 'src/models/job.model';
 import { User } from 'src/models/user.model';
 import { JobService } from 'src/services/job.service';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
+import { skip, take } from 'rxjs/operators';
 
 @Component({
   selector: 'app-job',
@@ -27,13 +28,15 @@ export class JobComponent {
   job?: Job;
   showShipping = false;
   show_capture_payment = false;
+  deleting = false;
   user?: User;
   Math = Math; // Expose Math to template
   constructor(
     private jobService: JobService,
     private userService: UserService,
     private uxService: UxService,
-    private activatedRoute: ActivatedRoute
+    private activatedRoute: ActivatedRoute,
+    private router: Router
   ) {
     this.activatedRoute.params.subscribe((r) => {
       // Sprint 5 §1: canonical route is /jobs/:jobId (param `jobId`);
@@ -89,6 +92,42 @@ export class JobComponent {
       }
     });
   }
+  /**
+   * Delete this job and its whole branch (garments, work, orders).
+   * Requires explicit confirmation; the server cascades in one transaction.
+   */
+  deleteJob() {
+    if (!this.job || this.deleting) return;
+    const user = this.userService.getUser;
+    if (!user?.CompanyId) return;
+
+    this.uxService.show_confirm(
+      'Delete Job',
+      'This permanently deletes this job and all its garments, work and orders. This action cannot be undone.'
+    );
+    this.uxService.$confirm
+      .pipe(skip(1), take(1))
+      .subscribe((isConfirmed) => {
+        if (!isConfirmed || !this.job) return;
+        this.deleting = true;
+        this.jobService.deleteJob(user.CompanyId, this.job.JobId).subscribe({
+          next: () => {
+            this.deleting = false;
+            this.uxService.show_toast('Job deleted', 'Success');
+            this.router.navigate(['/store/admin/jobs']);
+          },
+          error: () => {
+            this.deleting = false;
+            this.uxService.show_toast(
+              'Failed to delete the job. Please try again.',
+              'Error',
+              ['bg-danger']
+            );
+          },
+        });
+      });
+  }
+
   updateJob() {
     // Explicit save — used by the status quick action and the
     // shipping/payments modals only. Nothing auto-saves on this page.

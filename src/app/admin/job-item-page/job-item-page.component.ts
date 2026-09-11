@@ -8,23 +8,23 @@ import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
 
 /**
- * Sprint 5 §5 — Garment details: the ONLY editing surface for a garment.
+ * Sprint 5 §5 — Item details: the ONLY editing surface for an item.
  *
- * Route: /store/admin/jobs/:jobId/garments/:garmentId
+ * Route: /store/admin/jobs/:jobId/items/:itemId
  * (legacy /job/:jobId/items/... links arrive via redirect).
  *
- * - Edit mode reads the garment through the scoped item endpoint
+ * - Edit mode reads the item through the scoped item endpoint
  *   (CompanyId + JobId + JobItemId) — no full-job load with client-side
  *   lookup. The response carries minimal parent context (JobId + JobNo)
  *   for the breadcrumb. New mode still needs the job record for context.
  * - Save/remove use the transactional endpoints (Sprint 5 §6): the server
  *   persists the item mutation and job totals in one transaction and
- *   returns both. Success requires a valid garment (matching ID on edit)
+ *   returns both. Success requires a valid item (matching ID on edit)
  *   AND complete totals — never a partial response.
  * - Unsaved-change protection: snapshot/dirty tracking, a route
  *   canDeactivate guard and a beforeunload handler (Sprint 5 §5).
  * - Remove from job is a quiet danger action at the bottom, with a
- *   confirmation naming the garment; duplicate submissions are blocked.
+ *   confirmation naming the item; duplicate submissions are blocked.
  */
 @Component({
   selector: 'app-job-item-page',
@@ -64,9 +64,9 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     const params = this.route.snapshot.paramMap;
     this.jobId = params.get('jobId') || '';
-    // Sprint 5 §1: canonical route param is `garmentId`; the legacy
+    // Sprint 5 §1: canonical route param is `itemId`; the legacy
     // `/job/:jobId/items/:jobItemId/edit` redirect also lands here.
-    this.jobItemId = params.get('garmentId') || params.get('jobItemId') || '';
+    this.jobItemId = params.get('itemId') || params.get('jobItemId') || '';
     this.mode = this.jobItemId ? 'edit' : 'new';
     this.load();
   }
@@ -80,7 +80,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     this.error = null;
 
     if (this.mode === 'new') {
-      // Context only: the job supplies CompanyId/JobId for the new garment.
+      // Context only: the job supplies CompanyId/JobId for the new item.
       this.jobService.getjob(this.jobId).subscribe({
         next: (job) => {
           if (!job || !job.JobId) {
@@ -104,7 +104,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       return;
     }
 
-    // Edit: scoped read — the server enforces that the garment belongs to
+    // Edit: scoped read — the server enforces that the item belongs to
     // this job and this company. (Identifier scoping per Sprint 5 §7;
     // authentication is a separate security sprint.)
     const companyId = this.user?.CompanyId || '';
@@ -114,21 +114,21 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
     }
     this.jobService.getJobItemScoped(companyId, this.jobId, this.jobItemId).subscribe({
       next: (res) => {
-        const garment = res?.garment;
-        if (!garment || !garment.JobItemId) {
-          this.fail('This garment was not found in this job.');
+        const item = res?.garment;
+        if (!item || !item.JobItemId) {
+          this.fail('This item was not found in this job.');
           return;
         }
-        this.jobItem = garment;
+        this.jobItem = item;
         this.parentJobNo = res.job?.JobNo || '';
         this.savedSnapshot = this.snapshot();
         this.loading = false;
       },
       error: (err) => {
         if (err?.status === 404) {
-          this.fail('This garment was not found in this job.');
+          this.fail('This item was not found in this job.');
         } else {
-          this.fail('Failed to load this garment. Please try again.');
+          this.fail('Failed to load this item. Please try again.');
         }
       },
     });
@@ -177,19 +177,19 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
   }
 
   get contextLabel(): string {
-    return this.mode === 'new' ? 'Add garment' : 'Garment details';
+    return this.mode === 'new' ? 'Add item' : 'Item details';
   }
 
-  get garmentName(): string {
-    return this.jobItem?.ItemName || 'Unnamed garment';
+  get itemName(): string {
+    return this.jobItem?.ItemName || 'Unnamed item';
   }
 
   get removeConfirmMessage(): string {
     const lastNote =
       this.mode === 'edit'
-        ? ' If this is the last garment, the invoice, payments and shipping are kept and the total becomes the remaining shipping charge.'
+        ? ' If this is the last item, the invoice, payments and shipping are kept and the total becomes the remaining shipping charge.'
         : '';
-    return `Remove "${this.garmentName}" from this job? The job totals will be recalculated.${lastNote}`;
+    return `Remove "${this.itemName}" from this job? The job totals will be recalculated.${lastNote}`;
   }
 
   cancel(): void {
@@ -236,7 +236,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
         this.savedSnapshot = this.snapshot();
         this.saving = false;
         this.uxService.show_toast(
-          this.mode === 'new' ? 'Garment added successfully' : 'Garment saved successfully',
+          this.mode === 'new' ? 'Item added successfully' : 'Item saved successfully',
           'success'
         );
         this.router.navigate([this.jobDetailsLink]);
@@ -244,7 +244,7 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       error: () => {
         this.saving = false;
         this.uxService.show_toast(
-          'Failed to save the garment. Please try again.',
+          'Failed to save the item. Please try again.',
           'error'
         );
       },
@@ -265,22 +265,22 @@ export class JobItemPageComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           // Success only for the complete remove contract: garment null,
-          // the removed ID matching the requested garment, complete totals.
+          // the removed ID matching the requested item, complete totals.
           if (!isValidGarmentMutationResponse(res, 'remove', this.jobItem?.JobItemId)) {
             this.removing = false;
-            this.fail('The garment was not removed as expected. Please try again.');
+            this.fail('The item was not removed as expected. Please try again.');
             return;
           }
           this.removing = false;
           // Removed: align the snapshot so the route guard lets us leave.
           this.savedSnapshot = this.snapshot();
-          this.uxService.show_toast('Garment removed from job', 'success');
+          this.uxService.show_toast('Item removed from job', 'success');
           this.router.navigate([this.jobDetailsLink]);
         },
         error: () => {
           this.removing = false;
           this.uxService.show_toast(
-            'Failed to remove the garment. Please try again.',
+            'Failed to remove the item. Please try again.',
             'error'
           );
         },

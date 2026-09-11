@@ -1,104 +1,101 @@
-<div *ngIf="job && user" class="container-fluid p-0">
+<div *ngIf="job && user" class="job-page container-fluid p-0">
   <app-list-bread [currentPage]="job.JobNo" prevPage="Jobs" [prevLink]="'/store/admin/' + backTo"></app-list-bread>
 
-  <!-- Summary -->
-  <div class="row g-3 mb-3">
-    <div class="col-6 col-lg-3">
-      <div class="card border shadow-sm h-100"><div class="card-body p-3 d-flex align-items-center gap-3">
-        <span class="d-inline-flex align-items-center justify-content-center rounded-2 text-white icon-36" [ngStyle]="{background: isCompleted() ? '#16a34a' : (isOverdue() ? '#dc2626' : 'var(--admin-primary)')}">
-          <i class="bi" [ngClass]="isCompleted() ? 'bi-check-circle-fill' : (isOverdue() ? 'bi-exclamation-triangle-fill' : 'bi-clock-fill')"></i>
-        </span>
-        <span><span class="small text-muted d-block">Status</span><span class="fw-semibold small">{{ job.Status }}</span></span>
-      </div></div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="card border shadow-sm h-100"><div class="card-body p-3">
-        <div class="small text-muted">Total</div><div class="fw-semibold">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</div>
-      </div></div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="card border shadow-sm h-100"><div class="card-body p-3">
-        <div class="small text-muted">Paid {{ getPaymentPercentage() }}%</div>
-        <div class="progress mt-2"><div class="progress-bar" [style.width.%]="getPaymentPercentage()"></div></div>
-      </div></div>
-    </div>
-    <div class="col-6 col-lg-3">
-      <div class="card border shadow-sm h-100"><div class="card-body p-3">
-        <div class="small text-muted">Due date</div>
-        <div class="fw-medium small" [class.text-danger]="isOverdue()">{{ job.DueDate | date:'mediumDate' }}</div>
-        <div *ngIf="getDaysUntilDue() !== null" class="small" [class.text-danger]="isOverdue()" [class.text-muted]="!isOverdue()">{{ getDaysUntilDue()! > 0 ? (getDaysUntilDue() + ' days left') : (Math.abs(getDaysUntilDue()!) + ' days overdue') }}</div>
-      </div></div>
+  <!-- Identity row: static job number + total -->
+  <div class="d-flex align-items-baseline justify-content-between flex-wrap gap-2 mb-4">
+    <h1 class="h4 fw-semibold mb-0">{{ job.JobNo }}</h1>
+    <div class="text-end">
+      <div class="section-label mb-0">Total</div>
+      <div class="fw-semibold">{{ job.TotalCost | currency:'ZAR':'symbol':'1.2-2' }}</div>
     </div>
   </div>
 
-  <!-- Job details — read-first (Sprint 5 §2). Status is the only quick
-       action; customer/due date/instructions are edited at
-       /jobs/:jobId/edit. -->
-  <div class="card border shadow-sm mb-3">
-    <div class="card-body p-3">
-      <div class="d-flex align-items-center justify-content-between mb-3">
-        <h2 class="h6 mb-0 d-flex align-items-center gap-2"><i class="bi bi-gear text-primary"></i> Job details</h2>
-        <a class="btn btn-outline-primary btn-sm" [routerLink]="['/store/admin/jobs', job.JobId, 'edit']">
-          <i class="bi bi-pencil me-1"></i> Edit job
-        </a>
+  <!-- Customer -->
+  <section class="job-section">
+    <h2 class="section-label">Customer</h2>
+    <div class="d-flex align-items-center justify-content-between">
+      <span class="fw-medium">{{ job.Customer?.Name || job.CustomerName || "No Customer" }}</span>
+      <a class="section-action" [routerLink]="['/store/admin/jobs', job.JobId, 'edit']">Edit <i class="bi bi-chevron-right small"></i></a>
+    </div>
+  </section>
+
+  <!-- Status & dates -->
+  <section class="job-section">
+    <h2 class="section-label">Status &amp; dates</h2>
+    <div class="row g-3">
+      <div class="col-6">
+        <label for="status" class="form-label small text-muted">Status</label>
+        <select id="status" [(ngModel)]="job.Status" (change)="updateJob()" class="form-select">
+          <option [value]="item" *ngFor="let item of statuses">{{ item }}</option>
+        </select>
       </div>
-      <div class="row g-3">
-        <div class="col-md-6">
-          <span class="form-label small text-muted d-block">Customer</span>
-          <span class="small fw-medium">{{ job.Customer?.Name || "No Customer" }}</span>
+      <div class="col-6">
+        <label for="due-date" class="form-label small text-muted">Due date</label>
+        <input id="due-date" type="date" class="form-select" [ngModel]="job.DueDate | date:'yyyy-MM-dd'" (ngModelChange)="job.DueDate = $event; updateJob()">
+        <div *ngIf="getDaysUntilDue() !== null" class="small mt-1" [class.text-danger]="isOverdue()" [class.text-muted]="!isOverdue()">
+          {{ getDaysUntilDue()! > 0 ? (getDaysUntilDue() + ' days left') : (Math.abs(getDaysUntilDue()!) + ' days overdue') }}
         </div>
-        <div class="col-md-6">
-          <span class="form-label small text-muted d-block">Due date</span>
-          <span class="small fw-medium" [class.text-danger]="isOverdue()">{{ job.DueDate | date:'mediumDate' }}</span>
-        </div>
-        <div class="col-md-6">
-          <label for="status" class="form-label small text-muted">Status</label>
-          <select id="status" [(ngModel)]="job.Status" (change)="updateJob()" class="form-select">
-            <option [value]="item" *ngFor="let item of statuses">{{ item }}</option>
-          </select>
-        </div>
-      </div>
-      <hr class="my-3">
-      <div class="row g-2">
-        <div class="col-md-4"><a [href]="invoice" target="_blank" class="btn btn-primary btn-sm w-100"><i class="bi bi-file-earmark-text me-1"></i> {{ getInvoiceNo() }}</a></div>
-        <div class="col-md-4"><button class="btn btn-outline-secondary btn-sm w-100" (click)="show_capture_payment = true"><i class="bi bi-credit-card me-1"></i> Manage payments</button></div>
-        <div class="col-md-4" *ngIf="hasPaymentProof()"><a [href]="getPaymentProof()" target="_blank" class="btn btn-outline-success btn-sm w-100"><i class="bi bi-file-earmark-check me-1"></i> View proof</a></div>
       </div>
     </div>
-  </div>
+  </section>
 
-  <!-- Garments — unboxed plain section (Sprint 5 §4): no card, no
-       shadow. The list itself carries the separators. -->
-  <div class="mb-3">
-    <h2 class="h6 mb-2 d-flex align-items-center gap-2"><i class="bi bi-bag-check text-primary"></i> Garments</h2>
+  <!-- Payments -->
+  <section class="job-section">
+    <h2 class="section-label">Payments</h2>
+    <div class="d-flex justify-content-between small">
+      <span class="text-muted">Amount paid</span>
+      <span class="fw-semibold text-success">{{ getPaidAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="d-flex justify-content-between small">
+      <span class="text-muted">Amount due</span>
+      <span class="fw-semibold" [class.text-danger]="hasUnpaidAmount()">{{ getDueAmount() | currency:'ZAR':'symbol':'1.2-2' }}</span>
+    </div>
+    <div class="d-flex flex-wrap gap-2 mt-3">
+      <button class="btn btn-outline-secondary btn-sm" (click)="show_capture_payment = true"><i class="bi bi-credit-card me-1"></i> Manage payments</button>
+      <a *ngIf="getInvoiceNo() !== 'No Invoice'" [href]="invoice" target="_blank" class="btn btn-outline-primary btn-sm"><i class="bi bi-download me-1"></i> {{ getInvoiceNo() }}</a>
+      <a *ngIf="hasPaymentProof()" [href]="getPaymentProof()" target="_blank" class="btn btn-outline-success btn-sm"><i class="bi bi-file-earmark-check me-1"></i> View proof</a>
+    </div>
+  </section>
+
+  <!-- Items -->
+  <section class="job-section">
+    <h2 class="section-label">Items</h2>
     <app-job-items [job]="job" [user]="user"></app-job-items>
-  </div>
+  </section>
+
+  <!-- Special instructions — read-only here, edited via Edit job -->
+  <section class="job-section" *ngIf="hasSpecialInstructions()">
+    <h2 class="section-label">Special instructions</h2>
+    <div *ngFor="let comment of getSpecialInstructions()" class="border rounded-2 mb-2">
+      <div class="p-2">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <img *ngIf="comment.userImage" [src]="comment.userImage" [alt]="comment.userDisplayName" class="rounded-circle icon-28 object-fit-cover">
+          <span class="small fw-semibold">{{ comment.userDisplayName }}</span>
+          <span class="small text-muted ms-auto">{{ comment.date }}</span>
+        </div>
+        <div class="small">{{ comment.comment }}</div>
+        <img *ngIf="comment.attachment" [src]="comment.attachment" alt="attachment" class="img-fluid rounded-2 border mt-2 attachment-preview">
+      </div>
+    </div>
+  </section>
 
   <!-- Totals -->
-  <div class="card border shadow-sm mb-3">
-    <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-calculator text-primary"></i> Totals</h2>
-      <app-admin-job-total [job]="job" (showShipping)="showShipping = true" (showPayments)="show_capture_payment = true"></app-admin-job-total>
-    </div>
-  </div>
+  <section class="job-section">
+    <h2 class="section-label">Totals</h2>
+    <app-admin-job-total [job]="job" (showShipping)="showShipping = true"></app-admin-job-total>
+  </section>
 
-  <!-- Instructions — read-only on the overview (edited via Edit job) -->
-  <div class="card border shadow-sm mb-3" *ngIf="hasSpecialInstructions()">
-    <div class="card-body p-3">
-      <h2 class="h6 mb-3 d-flex align-items-center gap-2"><i class="bi bi-chat-left-text text-primary"></i> Special instructions</h2>
-      <div *ngFor="let comment of getSpecialInstructions()" class="border rounded-2 mb-2">
-        <div class="p-2">
-          <div class="d-flex align-items-center gap-2 mb-1">
-            <img *ngIf="comment.userImage" [src]="comment.userImage" [alt]="comment.userDisplayName" class="rounded-circle icon-28 object-fit-cover">
-            <span class="small fw-semibold">{{ comment.userDisplayName }}</span>
-            <span class="small text-muted ms-auto">{{ comment.date }}</span>
-          </div>
-          <div class="small">{{ comment.comment }}</div>
-          <img *ngIf="comment.attachment" [src]="comment.attachment" alt="attachment" class="img-fluid rounded-2 border mt-2 attachment-preview">
-        </div>
-      </div>
+  <!-- Danger zone -->
+  <section class="job-section">
+    <h2 class="section-label">Danger zone</h2>
+    <div class="d-flex align-items-center justify-content-between gap-3 flex-wrap border border-danger-subtle rounded-2 p-3">
+      <div class="small text-muted">Deleting this job removes all its garments, work and orders.</div>
+      <button class="btn btn-outline-danger btn-sm d-inline-flex align-items-center gap-1" [disabled]="deleting" (click)="deleteJob()">
+        <span *ngIf="deleting" class="spinner-border spinner-border-sm" aria-hidden="true"></span>
+        <i *ngIf="!deleting" class="bi bi-trash"></i> Delete Job
+      </button>
     </div>
-  </div>
+  </section>
 
   <app-select-job-shipping *ngIf="showShipping" [job]="job" (jobUpdated)="job = $event; showShipping = false; updateJob()" (onClose)="showShipping = false"></app-select-job-shipping>
   <app-job-payments *ngIf="show_capture_payment" [job]="job" (jobUpdated)="job = $event; show_capture_payment = false; updateJob()" (onClose)="show_capture_payment = false"></app-job-payments>

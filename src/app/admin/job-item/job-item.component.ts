@@ -5,8 +5,8 @@ import { Job } from 'src/models/job.model';
 import { User } from 'src/models/user.model';
 
 /**
- * Sprint 5 §4 — plain garment row for the job overview list.
- * Read-only: the entire row navigates to the garment details page, the
+ * Sprint 5 §4 — plain item row for the job overview list.
+ * Read-only: the entire row navigates to the item details page, the
  * only editing surface (Sprint 5 §5). No quantity stepper and no inline
  * delete here.
  */
@@ -24,7 +24,7 @@ export class JobItemComponent {
 
   // Safe getters for better null handling
   get itemName(): string {
-    return this.jobItem?.ItemName || 'Unnamed garment';
+    return this.jobItem?.ItemName || 'Unnamed item';
   }
 
   get featuredImageUrl(): string | null {
@@ -52,9 +52,9 @@ export class JobItemComponent {
     return this.jobItem?.Quantity || 1;
   }
 
-  get garmentLink(): string | null {
+  get itemLink(): string | null {
     if (!this.job || !this.jobItem?.JobItemId) return null;
     // Sprint 5 §1 canonical route.
-    return `/store/admin/jobs/${this.job.JobId}/garments/${this.jobItem.JobItemId}`;
+    return `/store/admin/jobs/${this.job.JobId}/items/${this.jobItem.JobItemId}`;
   }
 }

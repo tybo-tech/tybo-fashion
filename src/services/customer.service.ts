@@ -82,4 +82,24 @@ export class CustomerService {
       `${this.url}/customer/get-by-email.php?Email=${email}&CompanyId=${companyId}`
     );
   }
+
+  /**
+   * Cascade delete a customer, their jobs and every branch under those jobs.
+   * POST — never a state-changing GET. The server removes everything in one
+   * transaction; the client navigates away on success.
+   */
+  deleteCustomer(companyId: string, customerId: string): Observable<{
+    deleted: boolean;
+    deletedCustomerId: string;
+    counts: Record<string, number>;
+  }> {
+    return this.http.post<{
+      deleted: boolean;
+      deletedCustomerId: string;
+      counts: Record<string, number>;
+    }>(`${this.url}/customer/delete-customer.php`, {
+      CompanyId: companyId,
+      CustomerId: customerId,
+    });
+  }
 }

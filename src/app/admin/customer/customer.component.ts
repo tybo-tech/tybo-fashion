@@ -1,7 +1,7 @@
 import { Component, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EMPTY, Subject, Subscription } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, skip, switchMap, take } from 'rxjs/operators';
 import { Customer, CustomerDetailAnalytics } from 'src/models/Customer';
 import { CustomerService } from 'src/services/customer.service';
 import { UserService } from 'src/services/user.service';
@@ -21,6 +21,7 @@ export class CustomerComponent implements OnDestroy {
   notFound = false;
   showEditForm = false;
   showAddJob = false;
+  deleting = false;
 
   // Last request parameters — Retry re-issues exactly these
   private lastRequest?: { companyId: string; customerId: string };
@@ -141,6 +142,42 @@ export class CustomerComponent implements OnDestroy {
     this.uxService.show_toast('Customer updated successfully', 'Success');
     // Refresh the detail read model after a successful update.
     this.get();
+  }
+
+  /**
+   * Delete this customer and their whole branch (jobs, garments, orders).
+   * Requires explicit confirmation; the server cascades in one transaction.
+   */
+  deleteCustomer() {
+    if (!this.customer || this.deleting) return;
+    const user = this.userService.getUser;
+    if (!user?.CompanyId) return;
+
+    this.uxService.show_confirm(
+      'Delete Customer',
+      'This permanently deletes this customer, all their jobs, garments and orders. This action cannot be undone.'
+    );
+    this.uxService.$confirm
+      .pipe(skip(1), take(1))
+      .subscribe((isConfirmed) => {
+        if (!isConfirmed || !this.customer) return;
+        this.deleting = true;
+        this.cus.deleteCustomer(user.CompanyId, this.customer.CustomerId).subscribe({
+          next: () => {
+            this.deleting = false;
+            this.uxService.show_toast('Customer deleted', 'Success');
+            this.router.navigate(['/store/admin/customers']);
+          },
+          error: () => {
+            this.deleting = false;
+            this.uxService.show_toast(
+              'Failed to delete the customer. Please try again.',
+              'Error',
+              ['bg-danger']
+            );
+          },
+        });
+      });
   }
 
   // Helper methods

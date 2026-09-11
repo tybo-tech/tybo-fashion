@@ -39,7 +39,7 @@ export class JobItemFormComponent implements OnInit, OnDestroy {
     )?.Name;
   }
   sizeChanged(event: string) {
-    // 'Measurements' seeds 3 common defaults so a garment can be measured
+    // 'Measurements' seeds 3 common defaults so an item can be measured
     // immediately; 'Later' opens the same editor empty. Never overwrite
     // measurements the user has already captured, and seed units so the
     // units select isn't stuck on "Select Units".
