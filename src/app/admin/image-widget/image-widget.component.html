@@ -1,20 +1,10 @@
-<!-- <input
-  type="file"
-  accept="image/png, image/jpeg"
-  #file
-  placeholder="Choose file"
-  multiple
-  (change)="uploadFile($event,0)"
-  style="display: none"
-/> -->
-
 <input
   type="file"
-  accept="image/png, image/jpeg"
+  accept="image/*"
   #file
   placeholder="Choose file"
   multiple
-  (change)="uploadFile(file.files, 0)"
+  (change)="uploadFile(file.files, 0); file.value = ''"
   style="display: none"
 />
 
@@ -37,4 +27,12 @@
 <div class="no-image" *ngIf="!image?.Url">
   <i class="_upload bi bi-upload" (click)="file.click()" alt=""></i>
   <span *ngIf="loading" class="loader"></span>
+</div>
+
+<div class="upload-error" *ngIf="error" role="alert">
+  <i class="bi bi-exclamation-triangle"></i>
+  <span>{{ error }}</span>
+  <button type="button" class="upload-error-dismiss" (click)="dismissError()" aria-label="Dismiss">
+    <i class="bi bi-x-lg"></i>
+  </button>
 </div>

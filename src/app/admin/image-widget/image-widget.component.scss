@@ -135,3 +135,34 @@
   left: unset;
   top: 20%;
 }
+
+.upload-error {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+  padding: 0.4rem 0.5rem;
+  max-width: 12rem;
+  font-size: 0.7rem;
+  line-height: 1.25;
+  color: #842029;
+  background: #f8d7da;
+  border: 1px solid #f5c2c7;
+  border-radius: 0.4rem;
+
+  i {
+    flex-shrink: 0;
+    margin-top: 0.05rem;
+  }
+
+  .upload-error-dismiss {
+    flex-shrink: 0;
+    margin-left: auto;
+    padding: 0;
+    background: none;
+    border: 0;
+    color: inherit;
+    cursor: pointer;
+    font-size: 0.65rem;
+  }
+}

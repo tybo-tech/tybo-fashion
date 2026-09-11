@@ -1,0 +1,54 @@
+[04-Sep-2026 15:17:25 UTC] PHP Fatal error:  Uncaught TypeError: array_map(): Argument #2 ($array) must be of type array, null given in /home/tybofash/public_html/api/config/Database.php:44
+Stack trace:
+#0 /home/tybofash/public_html/api/config/Database.php(44): array_map()
+#1 /home/tybofash/public_html/api/api/job/get-job.php(17): cleanUtf8Array()
+#2 {main}
+  thrown in /home/tybofash/public_html/api/config/Database.php on line 44
+[04-Sep-2026 15:17:47 UTC] PHP Fatal error:  Uncaught TypeError: array_map(): Argument #2 ($array) must be of type array, null given in /home/tybofash/public_html/api/config/Database.php:44
+Stack trace:
+#0 /home/tybofash/public_html/api/config/Database.php(44): array_map()
+#1 /home/tybofash/public_html/api/api/job/get-job.php(17): cleanUtf8Array()
+#2 {main}
+  thrown in /home/tybofash/public_html/api/config/Database.php on line 44
+[07-Sep-2026 17:35:37 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[07-Sep-2026 17:35:37 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-admin-jobs.php(10): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[07-Sep-2026 17:35:44 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[07-Sep-2026 17:35:44 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-admin-jobs.php(10): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[08-Sep-2026 21:02:40 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[08-Sep-2026 21:02:40 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-job.php(3): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[09-Sep-2026 03:17:20 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[09-Sep-2026 03:17:20 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-job.php(3): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[10-Sep-2026 17:42:23 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[10-Sep-2026 17:42:23 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-admin-jobs.php(10): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[10-Sep-2026 17:43:13 UTC] PHP Warning:  require_once(/home/tybofash/public_html/api/models/../common/Cast.php): Failed to open stream: No such file or directory in /home/tybofash/public_html/api/models/JobItem.php on line 3
+[10-Sep-2026 17:43:13 UTC] PHP Fatal error:  Uncaught Error: Failed opening required '/home/tybofash/public_html/api/models/../common/Cast.php' (include_path='.:/opt/alt/php81/usr/share/pear:/opt/alt/php81/usr/share/php:/usr/share/pear:/usr/share/php') in /home/tybofash/public_html/api/models/JobItem.php:3
+Stack trace:
+#0 /home/tybofash/public_html/api/models/Job.php(2): require_once()
+#1 /home/tybofash/public_html/api/api/job/get-admin-jobs.php(10): include_once('/home/tybofash/...')
+#2 {main}
+  thrown in /home/tybofash/public_html/api/models/JobItem.php on line 3
