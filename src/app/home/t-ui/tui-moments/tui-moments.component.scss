@@ -1,0 +1,144 @@
+:host {
+  display: block;
+
+  .moments {
+    padding: 3.5rem 0 4rem;
+    background: #fff;
+  }
+
+  .moments__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .moments__title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: #1a1a1a;
+  }
+
+  .moments__subtitle {
+    margin: 0.35rem 0 0;
+    max-width: 46ch;
+    color: #6c757d;
+    font-size: 0.95rem;
+  }
+
+  .moments__link {
+    flex-shrink: 0;
+    color: #1a1a1a;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+
+    i {
+      margin-left: 4px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover i {
+      transform: translateX(3px);
+    }
+  }
+
+  .moments__grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+
+  .moment {
+    position: relative;
+    display: block;
+    aspect-ratio: 3 / 4;
+    border-radius: 4px;
+    overflow: hidden;
+    background: var(--cloud, #ecf0f1);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to top,
+        rgba(10, 10, 10, 0.65) 0%,
+        rgba(10, 10, 10, 0) 45%
+      );
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    &:hover {
+      img {
+        transform: scale(1.05);
+      }
+
+      &::after {
+        opacity: 1;
+      }
+    }
+  }
+
+  .moment__label {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 12px;
+    z-index: 1;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+
+  .moment:hover .moment__label {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  @media (max-width: 991.98px) {
+    .moments__grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .moments {
+      padding: 2.5rem 0;
+    }
+
+    .moments__title {
+      font-size: 1.6rem;
+    }
+
+    .moments__header {
+      flex-direction: column;
+      align-items: flex-start;
+      margin-bottom: 1.25rem;
+    }
+
+    // Always show labels on touch devices (no hover).
+    .moment__label {
+      opacity: 1;
+      transform: none;
+    }
+
+    .moment::after {
+      opacity: 1;
+    }
+  }
+}

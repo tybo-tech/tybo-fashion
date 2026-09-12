@@ -1,0 +1,169 @@
+<app-tui-nav />
+
+<main class="main p-0">
+  <!-- Hero -->
+  <section class="sell-hero">
+    <div class="container">
+      <p class="sell-hero__eyebrow">For Fashion Designers</p>
+      <h1 class="sell-hero__title">Run your fashion brand.<br />We'll handle the rest.</h1>
+      <p class="sell-hero__subtitle">
+        Create your storefront, manage customers, track jobs and send invoices —
+        all from Tybo Fashion.
+      </p>
+      <div class="sell-hero__actions">
+        <a
+          [routerLink]="['/home/sign-up']"
+          [queryParams]="{ type: 'designer' }"
+          class="btn btn-warning btn-lg text-dark"
+        >
+          <i class="bi bi-person-plus-fill me-2"></i> Start selling on Tybo
+        </a>
+        <a href="/zalou" class="btn btn-outline-light btn-lg" target="_blank">
+          <i class="bi bi-eye me-2"></i> See a live shop
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Tybo Fashion -->
+  <section class="section-block">
+    <div class="container">
+      <div class="section-block__head">
+        <h2 class="section-block__title">Why Tybo Fashion?</h2>
+        <p class="section-block__subtitle">
+          Everything you need to run your fashion brand online — in one
+          beautiful platform.
+        </p>
+      </div>
+
+      <div class="feature-grid">
+        <div class="feature" *ngFor="let feature of features">
+          <i class="bi {{ feature.icon }}"></i>
+          <h5>{{ feature.title }}</h5>
+          <p>{{ feature.body }}</p>
+        </div>
+      </div>
+
+      <div class="section-block__image">
+        <img
+          src="https://tybofashion.co.za/files/dash-2.png"
+          alt="Tybo Fashion platform overview"
+          loading="lazy"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- Everything you need -->
+  <section class="section-block section-block--tint">
+    <div class="container">
+      <div class="row align-items-center">
+        <div class="col-lg-6 mb-4 mb-lg-0 text-center">
+          <img
+            src="https://tybofashion.co.za/files/dash-1.png"
+            alt="Tybo Fashion dashboard"
+            class="section-block__shot"
+            loading="lazy"
+          />
+        </div>
+
+        <div class="col-lg-6">
+          <h2 class="section-block__title mb-4">
+            Everything You Need to Run Your Fashion Brand
+          </h2>
+
+          <ul class="capability-list">
+            <li *ngFor="let item of capabilities">
+              <i class="bi {{ item.icon }}"></i>
+              <div>
+                <h6>{{ item.title }}</h6>
+                <p>{{ item.body }}</p>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- See it in action -->
+  <section class="section-block">
+    <div class="container">
+      <div class="section-block__head">
+        <h2 class="section-block__title">See Tybo Fashion in Action</h2>
+        <p class="section-block__subtitle">
+          Visit a real shop built on Tybo Fashion and discover what your brand
+          could look like online.
+        </p>
+      </div>
+
+      <div class="row justify-content-center g-4">
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 shadow-sm border-0">
+            <img
+              src="https://tybofashion.co.za/api/api/upload/uploads/-1738559831585.jpg"
+              class="card-img-top shop-logo"
+              alt="Zalou shop logo"
+              loading="lazy"
+            />
+            <div class="card-body text-center">
+              <p class="card-text text-muted">
+                Custom event wear and everyday fashion made to order.
+              </p>
+              <a href="/zalou" class="btn btn-dark btn-sm" target="_blank">
+                Visit Shop
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+          <div class="card h-100 border border-dashed text-center py-5">
+            <div
+              class="card-body d-flex flex-column justify-content-center align-items-center"
+            >
+              <i class="bi bi-person-plus display-3 text-muted mb-3"></i>
+              <h5 class="fw-semibold">Your Brand Here</h5>
+              <p class="text-muted">
+                Launch your own Tybo-powered store and start selling today.
+              </p>
+              <a
+                [routerLink]="['/home/sign-up']"
+                [queryParams]="{ type: 'designer' }"
+                class="btn btn-outline-warning"
+              >
+                Start Selling
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Final CTA -->
+  <section class="sell-cta">
+    <div class="container">
+      <h2 class="sell-cta__title">Ready to Take Your Fashion Brand Online?</h2>
+      <p class="sell-cta__subtitle">
+        Launch your digital shop today with Tybo Fashion — no technical skills
+        required. Start showcasing your work, taking orders, and growing your
+        brand.
+      </p>
+      <div class="sell-cta__actions">
+        <a
+          [routerLink]="['/home/sign-up']"
+          [queryParams]="{ type: 'designer' }"
+          class="btn btn-warning btn-lg text-dark"
+        >
+          <i class="bi bi-person-plus-fill me-2"></i> Join as a Designer
+        </a>
+        <a routerLink="/home/shops" class="btn btn-outline-light btn-lg">
+          <i class="bi bi-stars me-2"></i> Explore Designers
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <app-footer />
+</main>

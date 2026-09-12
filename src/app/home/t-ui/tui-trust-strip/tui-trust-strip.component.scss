@@ -1,0 +1,44 @@
+:host {
+  display: block;
+
+  .trust {
+    padding: 1.5rem 0;
+    background: #1a1a1a;
+    color: #fff;
+  }
+
+  .trust__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    gap: 1rem 2rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.02em;
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    i {
+      color: var(--accent, #e6b505);
+      font-size: 1.1rem;
+    }
+  }
+
+  @media (max-width: 575.98px) {
+    .trust__list {
+      justify-content: flex-start;
+
+      li {
+        flex: 1 1 calc(50% - 1rem);
+      }
+    }
+  }
+}

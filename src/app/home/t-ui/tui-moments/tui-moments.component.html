@@ -1,0 +1,33 @@
+<section class="moments" *ngIf="moments.length">
+  <div class="container">
+    <header class="moments__header">
+      <div>
+        <h2 class="moments__title">Made for real moments</h2>
+        <p class="moments__subtitle">
+          Matric dances, weddings, graduations and everything worth dressing up
+          for. See it, then make it yours.
+        </p>
+      </div>
+      <a routerLink="/home/shops" class="moments__link">
+        Find a designer
+        <i class="bi bi-arrow-right"></i>
+      </a>
+    </header>
+
+    <div class="moments__grid">
+      <a
+        *ngFor="let item of moments"
+        [routerLink]="linkFor(item)"
+        class="moment"
+      >
+        <img
+          [src]="item.ImageUrl || item.ItemValue?.coverImage"
+          [alt]="title(item)"
+          loading="lazy"
+          (error)="onImageError($event)"
+        />
+        <span class="moment__label">{{ title(item) }}</span>
+      </a>
+    </div>
+  </div>
+</section>

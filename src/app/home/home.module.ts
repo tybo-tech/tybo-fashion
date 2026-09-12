@@ -80,6 +80,10 @@ import { TuiNavComponent } from './t-ui/tui-nav/tui-nav.component';
 import { TuiNewInComponent } from './t-ui/tui-new-in/tui-new-in.component';
 import { TuiOccasionsComponent } from './t-ui/tui-occasions/tui-occasions.component';
 import { TuiFeaturedDesignerComponent } from './t-ui/tui-featured-designer/tui-featured-designer.component';
+import { TuiMomentsComponent } from './t-ui/tui-moments/tui-moments.component';
+import { TuiTrustStripComponent } from './t-ui/tui-trust-strip/tui-trust-strip.component';
+import { TuiSellCtaComponent } from './t-ui/tui-sell-cta/tui-sell-cta.component';
+import { TuiSellComponent } from './t-ui/tui-sell/tui-sell.component';
 import { TuiProductCardComponent } from './tui-product-card/tui-product-card.component';
 import { NewInComponent } from './new-in/new-in.component';
 import { IntroComponent } from './intro/intro.component';
@@ -214,6 +218,10 @@ import { NavigationComponent } from './v.2025/navigation/navigation.component';
     TuiNewInComponent,
     TuiOccasionsComponent,
     TuiFeaturedDesignerComponent,
+    TuiMomentsComponent,
+    TuiTrustStripComponent,
+    TuiSellCtaComponent,
+    TuiSellComponent,
     TuiProductCardComponent,
     NewInComponent,
     IntroComponent,

@@ -25,6 +25,12 @@
 
       <!-- Desktop Menu Items -->
       <div class="d-none d-md-flex align-items-center gap-4">
+        <ng-container *ngIf="!company">
+          <a routerLink="/home/products" class="text-dark text-decoration-none">New In</a>
+          <a routerLink="/home/shops" class="text-dark text-decoration-none">Designers</a>
+          <a routerLink="/home/shops" class="text-dark text-decoration-none">Occasion Wear</a>
+        </ng-container>
+
         <ng-container *ngIf="company && slug">
           <a [href]="'/' + slug" class="text-dark text-decoration-none">{{
             company.Name
@@ -47,12 +53,14 @@
         </a>
 
         <ng-container *ngIf="!user">
-          <a href="/home/sign-in" class="text-dark text-decoration-none"
-            >Login</a
+          <a
+            href="/home/sign-in"
+            class="text-dark text-decoration-none d-flex align-items-center gap-1"
+            title="Account"
           >
-          <a href="/home/sign-up" class="text-dark text-decoration-none"
-            >Sign up</a
-          >
+            <i class="bi bi-person"></i>
+            <span>Account</span>
+          </a>
         </ng-container>
 
         <div class="position-relative" *ngIf="user">
@@ -124,6 +132,27 @@
       ></button>
     </div>
     <div class="offcanvas-body d-flex flex-column gap-3">
+      <ng-container *ngIf="!company">
+        <a
+          routerLink="/home/products"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >New In</a
+        >
+        <a
+          routerLink="/home/shops"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >Designers</a
+        >
+        <a
+          routerLink="/home/shops"
+          class="text-dark text-decoration-none"
+          (click)="toggleMenu()"
+          >Occasion Wear</a
+        >
+      </ng-container>
+
       <ng-container *ngIf="company && slug">
         <a
           [href]="'/' + slug"
@@ -153,17 +182,20 @@
       <ng-container *ngIf="!user">
         <a
           href="/home/sign-in"
-          class="text-dark text-decoration-none"
+          class="text-dark text-decoration-none d-flex align-items-center gap-2"
           (click)="toggleMenu()"
-          >Login</a
         >
-        <a
-          href="/home/sign-up"
-          class="text-dark text-decoration-none"
-          (click)="toggleMenu()"
-          >Sign up</a
-        >
+          <i class="bi bi-person"></i> Account
+        </a>
       </ng-container>
+
+      <a
+        routerLink="/sell"
+        class="text-dark text-decoration-none border-top pt-3 mt-1 d-flex align-items-center gap-2"
+        (click)="toggleMenu()"
+      >
+        <i class="bi bi-shop"></i> Sell on Tybo
+      </a>
 
       <ng-container *ngIf="user">
         <div class="d-flex align-items-center gap-2">
