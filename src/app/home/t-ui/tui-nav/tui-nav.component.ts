@@ -1,4 +1,6 @@
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Location } from '@angular/common';
+import { Router } from '@angular/router';
 import { ICollection, initCategory } from 'src/models/Category';
 import { Company } from 'src/models/Company';
 import { User } from 'src/models/user.model';
@@ -20,6 +22,8 @@ export class TuiNavComponent {
 
   @Input() company?: Company;
   @Input() showShare = false;
+  @Input() showBack = false;
+  @Input() backText = '';
   @Output() onShare = new EventEmitter();
 
   user?: User;
@@ -35,7 +39,9 @@ export class TuiNavComponent {
   constructor(
     private jobService: JobService,
     public uxService: UxService,
-    private userServcice: UserService
+    private userServcice: UserService,
+    private location: Location,
+    private router: Router
   ) {
     userServcice.userObservable?.subscribe((user) => {
       this.user = user;
@@ -52,6 +58,18 @@ export class TuiNavComponent {
     } else {
       document.body.style.overflow = 'auto';
     }
+  }
+
+  /**
+   * Go back one step in history, falling back to the homepage when the page
+   * was opened directly (no in-app history to return to).
+   */
+  goBack() {
+    if (window.history.length > 1) {
+      this.location.back();
+      return;
+    }
+    this.router.navigate(['/']);
   }
 
   get companyLogo() {
