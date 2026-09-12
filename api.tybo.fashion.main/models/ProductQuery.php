@@ -6,6 +6,7 @@ require_once 'ProductCategory.php';
 require_once 'ProductVariationManager.php';
 require_once 'DiscountManager.php';
 require_once 'Discounts.php';
+require_once 'HomeFeed.php';
 
 class ProductQuery
 {
@@ -76,6 +77,76 @@ class ProductQuery
 
     $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
     return (new DiscountManager())->applyDiscountsToProducts($items);
+  }
+
+  /**
+   * Marketplace homepage feed.
+   *
+   * Oversamples the newest eligible products (join the shop so we can enforce
+   * "shop is active" and surface the designer name/slug on each card), then
+   * unions in curated/pinned products as a fallback before diversifying and
+   * normalising via the pure HomeFeed model.
+   *
+   * @param int $limit   how many products the homepage wants (6-8)
+   * @param int $perShopCap max products from any single shop in the result
+   */
+  public function getHomeFeed($limit = 8, $perShopCap = HomeFeed::DEFAULT_PER_SHOP_CAP)
+  {
+    $limit = (int) $limit;
+    if ($limit <= 0) {
+      $limit = 8;
+    }
+    $perShopCap = (int) $perShopCap;
+    $oversample = max($limit * 3, 24);
+
+    $select = "SELECT
+                  p.Id,
+                  p.ProductId,
+                  p.Slug,
+                  p.Name,
+                  p.RegularPrice,
+                  p.FeaturedImageUrl,
+                  p.Description,
+                  p.CompanyId,
+                  p.StockType,
+                  p.IsJustInTime,
+                  p.StatusId,
+                  p.ShowOnline,
+                  p.IsFeatured,
+                  p.Images,
+                  p.Metadata,
+                  p.CreateDate,
+                  c.Name AS ShopName,
+                  c.Slug AS ShopSlug,
+                  c.Dp AS ShopLogo,
+                  c.City AS ShopCity,
+                  c.StatusId AS ShopStatusId,
+                  c.IsDeleted AS ShopIsDeleted
+                FROM product p
+                INNER JOIN company c ON c.CompanyId = p.CompanyId
+                WHERE p.ShowOnline = 1
+                  AND p.StatusId = 1
+                  AND p.FeaturedImageUrl <> ''
+                  AND p.RegularPrice > 0
+                  AND p.Name <> ''
+                  AND c.StatusId = 1
+                  AND c.IsDeleted = 0";
+
+    $primary = $this->conn
+      ->prepare($select . " ORDER BY p.CreateDate DESC LIMIT $oversample");
+    $primary->execute();
+    $primaryRows = $primary->fetchAll(PDO::FETCH_ASSOC);
+
+    $fallbackRows = [];
+    if (count($primaryRows) < max($limit, HomeFeed::DEFAULT_MIN_RESULTS)) {
+      $fallback = $this->conn->prepare(
+        $select . " AND p.IsFeatured = 'Yes' ORDER BY p.CreateDate DESC LIMIT $oversample"
+      );
+      $fallback->execute();
+      $fallbackRows = $fallback->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    return HomeFeed::build($primaryRows, $fallbackRows, $limit, $perShopCap);
   }
 
   public function getFeatured()
