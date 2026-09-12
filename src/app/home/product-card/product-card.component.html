@@ -33,16 +33,15 @@
       <small [ngClass]="product.OldPrice ? 'text-danger' : 'text-muted'">
         {{ product.RegularPrice | currency : "R" }}
         <small *ngIf="product.RegularPrice && !isAdminUser" class="text-muted d-block deposit-amount">
-          Deposit: {{ product.RegularPrice * 0.5 | currency : "R" }}
+          Deposit: {{ deposit | currency : "R" }}
         </small>
       </small>
       <small *ngIf="product.OldPrice" class="text-muted">
         <del>{{ product.OldPrice | currency : "R" }}</del>
       </small>
     </h5>
-    <div *ngIf="product.IsJustInTime" class="type-stock">
-      <!-- {{ product.IsJustInTime }} -->
-        Made to Order
+    <div *ngIf="stockLabel" class="type-stock">
+      {{ stockLabel }}
     </div>
   </a>
 </ng-container>

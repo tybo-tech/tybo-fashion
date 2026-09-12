@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Product } from 'src/models/Product';
+import { toDeposit, toStockLabel } from 'src/models/HomeFeed';
 import { SmartModal } from '../SmartModal';
 import { UserService } from 'src/services/user.service';
 import { UxService } from 'src/services/ux.service';
@@ -73,6 +74,14 @@ export class ProductCardComponent extends SmartModal implements OnInit {
   }
   onImageError(event: Event): void {
     (event.target as HTMLImageElement).src = 'assets/images/placeholder.svg';
+  }
+
+  get stockLabel(): string {
+    return toStockLabel(this.product);
+  }
+
+  get deposit(): number {
+    return toDeposit(this.product);
   }
   // get url() {
   //   return `/${this.companySlug}/product/${this.product.ProductId}`;

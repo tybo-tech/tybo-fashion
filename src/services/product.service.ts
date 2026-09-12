@@ -1,8 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from 'src/environments/environment';
 import { Product } from 'src/models/Product';
+import { HomeProduct, normalizeHomeProduct } from 'src/models/HomeFeed';
 import { getId } from 'src/constants/Constants';
 import { Category } from './category.service';
 
@@ -82,6 +84,21 @@ export class ProductService {
     return this.http.get<Product[]>(
       `${this.url}/products/new-in.php?count=${count}&companyId=${companyId}`
     );
+  }
+
+  /**
+   * Marketplace homepage feed.
+   *
+   * Returns the newest eligible listings (active shop, positive price,
+   * visible) with designer details, a 50% deposit and a stock label.
+   * Unlike `newIn()`/`getProducts()`, this deliberately does NOT write to the
+   * shared `$products` subject: the homepage must not render whichever shop
+   * happened to load products last.
+   */
+  homeFeed(count = 8): Observable<HomeProduct[]> {
+    return this.http
+      .get<any[]>(`${this.url}/products/home-feed.php?count=${count}`)
+      .pipe(map((rows) => (rows || []).map((row) => normalizeHomeProduct(row))));
   }
   getProduct(productId: string, isAdmin: 'yes' | '' = ''): Observable<Product> {
     return this.http.get<Product>(
