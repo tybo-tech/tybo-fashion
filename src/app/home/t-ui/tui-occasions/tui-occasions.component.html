@@ -1,10 +1,16 @@
 <section class="occasions" *ngIf="occasions.length">
   <div class="container">
     <header class="occasions__header">
-      <h2 class="occasions__title">Shop by occasion</h2>
-      <p class="occasions__subtitle">
-        Real pieces made for life's biggest moments.
-      </p>
+      <div>
+        <h2 class="occasions__title">Shop by occasion</h2>
+        <p class="occasions__subtitle">
+          Real pieces made for life's biggest moments.
+        </p>
+      </div>
+      <a routerLink="/home/occasions" class="occasions__link">
+        View all occasions
+        <i class="bi bi-arrow-right"></i>
+      </a>
     </header>
 
     <div class="occasions__rail">

@@ -9,12 +9,33 @@ import { OtherInfo } from './other-info.model';
  */
 export interface Occasion {
   Name: string;
+  Slug: string;
   ImageUrl: string;
+  Count?: number;
   Link: string;
+}
+
+/** Shape returned by GET /other_info/occasions.php */
+export interface OccasionSummary {
+  Name: string;
+  Slug: string;
+  ImageUrl: string;
+  Count: number;
+}
+
+/** Shape returned by GET /other_info/occasion.php */
+export interface OccasionGallery {
+  Occasion: { Name: string; Slug: string };
+  Items: Array<OtherInfo<IWorkGallery> & { Company?: any }>;
+}
+
+export function occasionLink(slug: string): string {
+  return `/home/occasions/${slug}`;
 }
 
 interface OccasionMatcher {
   Name: string;
+  Slug: string;
   keywords: string[];
 }
 
@@ -22,13 +43,17 @@ interface OccasionMatcher {
  * Ordered, shopper-facing occasions. Order is intentional: the most
  * South-African-relevant intents come first. Matching is keyword based and
  * case-insensitive against both the item Name and ItemValue.title.
+ *
+ * Kept in sync with models/OccasionCatalog.php (the server is the source of
+ * truth for the occasion pages; this mirrors it for the homepage rail).
  */
 export const OCCASION_MATCHERS: OccasionMatcher[] = [
-  { Name: 'Matric Dance', keywords: ['matric'] },
-  { Name: 'Wedding Guest', keywords: ['wedding guest', 'guest'] },
-  { Name: 'Bridal', keywords: ['bridal', 'bride', 'wedding dress'] },
+  { Name: 'Matric Dance', Slug: 'matric-dance', keywords: ['matric'] },
+  { Name: 'Wedding Guest', Slug: 'wedding-guest', keywords: ['wedding guest', 'guest'] },
+  { Name: 'Bridal', Slug: 'bridal', keywords: ['bridal', 'bride', 'wedding dress'] },
   {
     Name: 'Traditional',
+    Slug: 'traditional',
     keywords: [
       'traditional',
       'zulu',
@@ -40,20 +65,22 @@ export const OCCASION_MATCHERS: OccasionMatcher[] = [
       'pedi',
     ],
   },
-  { Name: 'Graduation', keywords: ['graduation', 'grad'] },
-  { Name: 'Birthday', keywords: ['birthday'] },
-  { Name: 'Durban July', keywords: ['durban july', 'july'] },
-  { Name: 'High Tea', keywords: ['high tea', 'tea'] },
+  { Name: 'Graduation', Slug: 'graduation', keywords: ['graduation', 'grad'] },
+  { Name: 'Birthday', Slug: 'birthday', keywords: ['birthday'] },
+  { Name: 'Durban July', Slug: 'durban-july', keywords: ['durban july', 'july'] },
+  { Name: 'High Tea', Slug: 'high-tea', keywords: ['high tea', 'tea'] },
 ];
 
 /**
  * Build the occasion rail from work-gallery items. Only occasions that have a
  * matching, imaged item are returned, so the rail never shows an empty tile.
  * A gallery item is consumed at most once, keeping the images varied.
+ *
+ * Tiles link to the cross-designer occasion page (`/home/occasions/:slug`),
+ * not to an individual gallery piece.
  */
 export function buildOccasions(
-  items: Array<OtherInfo<IWorkGallery> | any> | null | undefined,
-  linkFor: (item: any) => string
+  items: Array<OtherInfo<IWorkGallery> | any> | null | undefined
 ): Occasion[] {
   if (!items || !items.length) {
     return [];
@@ -87,8 +114,9 @@ export function buildOccasions(
       used.add(match);
       occasions.push({
         Name: matcher.Name,
+        Slug: matcher.Slug,
         ImageUrl: match.ImageUrl || match.ItemValue?.coverImage,
-        Link: linkFor(match),
+        Link: occasionLink(matcher.Slug),
       });
     }
   }

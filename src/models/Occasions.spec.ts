@@ -1,4 +1,4 @@
-import { buildOccasions, OCCASION_MATCHERS } from './Occasions';
+import { buildOccasions, occasionLink, OCCASION_MATCHERS } from './Occasions';
 
 function galleryItem(overrides: any = {}) {
   const name = overrides.Name ?? 'Matric dance dress';
@@ -20,9 +20,9 @@ function galleryItem(overrides: any = {}) {
 
 describe('buildOccasions', () => {
   it('returns nothing for empty or missing input', () => {
-    expect(buildOccasions([], () => '/x')).toEqual([]);
-    expect(buildOccasions(null, () => '/x')).toEqual([]);
-    expect(buildOccasions(undefined, () => '/x')).toEqual([]);
+    expect(buildOccasions([])).toEqual([]);
+    expect(buildOccasions(null)).toEqual([]);
+    expect(buildOccasions(undefined)).toEqual([]);
   });
 
   it('matches real work-gallery titles to occasions in order', () => {
@@ -37,7 +37,7 @@ describe('buildOccasions', () => {
       galleryItem({ Id: 8, Name: 'High tea outfit' }),
     ];
 
-    const occasions = buildOccasions(items, (item) => `/home/work-show-details/${item.Id}`);
+    const occasions = buildOccasions(items);
     const names = occasions.map((o) => o.Name);
 
     expect(names).toEqual([
@@ -50,25 +50,26 @@ describe('buildOccasions', () => {
       'Durban July',
       'High Tea',
     ]);
-    expect(occasions[0].Link).toBe('/home/work-show-details/1');
+    expect(occasions[0].Slug).toBe('matric-dance');
+    expect(occasions[0].Link).toBe('/home/occasions/matric-dance');
     expect(occasions[0].ImageUrl).toBe('https://cdn/matric.jpg');
   });
 
   it('skips occasions with no matching item', () => {
     const items = [galleryItem({ Id: 9, Name: 'Durban July 2024' })];
-    const occasions = buildOccasions(items, (item) => `/x/${item.Id}`);
+    const occasions = buildOccasions(items);
     expect(occasions.map((o) => o.Name)).toEqual(['Durban July']);
   });
 
   it('skips items without an image', () => {
     const items = [galleryItem({ Id: 1, Name: 'Matric dance dress', ImageUrl: '', ItemValue: { title: 'Matric dance dress', coverImage: '' } })];
-    expect(buildOccasions(items, () => '/x')).toEqual([]);
+    expect(buildOccasions(items)).toEqual([]);
   });
 
   it('consumes each gallery item at most once', () => {
     // One "wedding guest" item should fill Wedding Guest only, not Bridal too.
     const items = [galleryItem({ Id: 1, Name: 'Wedding guest couple outfit' })];
-    const occasions = buildOccasions(items, () => '/x');
+    const occasions = buildOccasions(items);
     const weddingGuestCount = occasions.filter((o) => o.Name === 'Wedding Guest').length;
     expect(weddingGuestCount).toBe(1);
     expect(occasions.length).toBe(1);
@@ -83,7 +84,7 @@ describe('buildOccasions', () => {
         ItemValue: { title: 'Birthday shoot dress', coverImage: 'https://cdn/bday.jpg' },
       },
     ];
-    const occasions = buildOccasions(items, () => '/x');
+    const occasions = buildOccasions(items);
     expect(occasions[0].Name).toBe('Birthday');
     expect(occasions[0].ImageUrl).toBe('https://cdn/bday.jpg');
   });
@@ -92,5 +93,11 @@ describe('buildOccasions', () => {
     const names = OCCASION_MATCHERS.map((m) => m.Name);
     expect(names.length).toBeGreaterThan(0);
     expect(new Set(names).size).toBe(names.length);
+  });
+
+  it('exposes unique slugs and a link helper', () => {
+    const slugs = OCCASION_MATCHERS.map((m) => m.Slug);
+    expect(new Set(slugs).size).toBe(slugs.length);
+    expect(occasionLink('high-tea')).toBe('/home/occasions/high-tea');
   });
 });

@@ -1,4 +1,5 @@
 <?php
+require_once 'OccasionCatalog.php';
 
 class Other_info
 {
@@ -133,6 +134,112 @@ class Other_info
             return $items;
         }
         return [];
+    }
+
+    /**
+     * All active WorkGallery items across every active, non-deleted designer.
+     *
+     * Powers the cross-designer "shop by occasion" experience. Each item is
+     * joined with its designer (name/slug/logo/city) so the frontend can show
+     * who made a piece without a second request.
+     */
+    public function allWorkGallery($limit = 300)
+    {
+        $limit = (int) $limit;
+        if ($limit <= 0) {
+            $limit = 300;
+        }
+
+        $query = "SELECT
+                    o.Id,
+                    o.Name,
+                    o.ItemType,
+                    o.ImageUrl,
+                    o.ParentId,
+                    o.Decription,
+                    o.ItemValue,
+                    o.CreateDate,
+                    c.Name AS CompanyName,
+                    c.Slug AS CompanySlug,
+                    c.Dp AS CompanyLogo,
+                    c.City AS CompanyCity
+                  FROM other_info o
+                  INNER JOIN company c ON c.CompanyId = o.ParentId
+                  WHERE o.ItemType = 'WorkGallery'
+                    AND o.Status = 'Active'
+                    AND c.StatusId = 1
+                    AND c.IsDeleted = 0
+                  ORDER BY o.CreateDate DESC
+                  LIMIT $limit";
+
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute();
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($items as &$item) {
+            $item['ItemValue'] = json_decode($item['ItemValue'], true);
+            $item['Company'] = [
+                'Name' => $item['CompanyName'],
+                'Slug' => $item['CompanySlug'],
+                'Logo' => $item['CompanyLogo'],
+                'City' => $item['CompanyCity'],
+            ];
+            unset($item['CompanyName'], $item['CompanySlug'], $item['CompanyLogo'], $item['CompanyCity']);
+        }
+
+        return $items;
+    }
+
+    /**
+     * WorkGallery items for one occasion, across designers, plus the occasion
+     * meta. Returns null when the slug is not a known occasion.
+     */
+    public function occasionGallery(string $slug, int $limit = 60)
+    {
+        $occasion = OccasionCatalog::findBySlug($slug);
+        if (!$occasion) {
+            return null;
+        }
+
+        $items = $this->allWorkGallery(600);
+        $grouped = OccasionCatalog::groupByOccasion($items);
+        $matched = $grouped[$occasion['Slug']] ?? [];
+
+        return [
+            'Occasion' => [
+                'Name' => $occasion['Name'],
+                'Slug' => $occasion['Slug'],
+            ],
+            'Items' => array_slice($matched, 0, $limit),
+        ];
+    }
+
+    /**
+     * The occasion index: only occasions that actually have live pieces are
+     * returned, each with a cover image (and count) so the frontend never
+     * renders an empty tile.
+     */
+    public function occasionIndex()
+    {
+        $items = $this->allWorkGallery(600);
+        $grouped = OccasionCatalog::groupByOccasion($items);
+
+        $result = [];
+        foreach (OccasionCatalog::OCCASIONS as $occasion) {
+            $matches = $grouped[$occasion['Slug']] ?? [];
+            if (!$matches) {
+                continue;
+            }
+            $cover = $matches[0]['ImageUrl']
+                ?? ($matches[0]['ItemValue']['coverImage'] ?? '');
+            $result[] = [
+                'Name' => $occasion['Name'],
+                'Slug' => $occasion['Slug'],
+                'ImageUrl' => $cover,
+                'Count' => count($matches),
+            ];
+        }
+        return $result;
     }
 
     /**

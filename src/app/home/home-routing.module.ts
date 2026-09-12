@@ -17,6 +17,8 @@ import { ShopingCallbackComponent } from './shoping-callback/shoping-callback.co
 import { ShopsComponent } from './shops/shops.component';
 import { TuiHomeComponent } from './t-ui/tui-home/tui-home.component';
 import { TuiSellComponent } from './t-ui/tui-sell/tui-sell.component';
+import { OccasionsComponent } from './occasions/occasions.component';
+import { OccasionComponent } from './occasion/occasion.component';
 import { MyShopBettaComponent } from './my-shop-betta/my-shop-betta.component';
 import { ProductBettaComponent } from './product-betta/product-betta.component';
 import { CheckoutComponent } from './checkout/checkout.component';
@@ -57,6 +59,14 @@ const routes: Routes = [
       {
         path: 'sell',
         component: TuiSellComponent,
+      },
+      {
+        path: 'home/occasions',
+        component: OccasionsComponent,
+      },
+      {
+        path: 'home/occasions/:slug',
+        component: OccasionComponent,
       },
       {
         path: ':id',

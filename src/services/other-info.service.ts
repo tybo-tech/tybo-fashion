@@ -9,6 +9,7 @@ import {
   OtherInfoSearchModel,
 } from 'src/models/other-info.model';
 import { ICollection, initCategory } from 'src/models/Category';
+import { OccasionGallery, OccasionSummary } from 'src/models/Occasions';
 
 @Injectable({
   providedIn: 'root',
@@ -104,6 +105,25 @@ export class OtherInfoService<T> {
       ItemType: OTHER_TYPES.WorkGallery,
       ParentId: companyId,
     });
+  }
+
+  /**
+   * Cross-designer occasion index. Only occasions with live WorkGallery pieces
+   * are returned, each with a cover image and count.
+   */
+  occasionIndex(): Observable<OccasionSummary[]> {
+    return this.http.get<OccasionSummary[]>(
+      `${this.url}/other_info/occasions.php`
+    );
+  }
+
+  /** Cross-designer gallery pieces for a single occasion slug. */
+  occasion(slug: string, limit = 60): Observable<OccasionGallery> {
+    return this.http.get<OccasionGallery>(
+      `${this.url}/other_info/occasion.php?slug=${encodeURIComponent(
+        slug
+      )}&limit=${limit}`
+    );
   }
 
   /**

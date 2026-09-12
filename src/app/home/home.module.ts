@@ -84,6 +84,8 @@ import { TuiMomentsComponent } from './t-ui/tui-moments/tui-moments.component';
 import { TuiTrustStripComponent } from './t-ui/tui-trust-strip/tui-trust-strip.component';
 import { TuiSellCtaComponent } from './t-ui/tui-sell-cta/tui-sell-cta.component';
 import { TuiSellComponent } from './t-ui/tui-sell/tui-sell.component';
+import { OccasionsComponent } from './occasions/occasions.component';
+import { OccasionComponent } from './occasion/occasion.component';
 import { TuiProductCardComponent } from './tui-product-card/tui-product-card.component';
 import { NewInComponent } from './new-in/new-in.component';
 import { IntroComponent } from './intro/intro.component';
@@ -222,6 +224,8 @@ import { NavigationComponent } from './v.2025/navigation/navigation.component';
     TuiTrustStripComponent,
     TuiSellCtaComponent,
     TuiSellComponent,
+    OccasionsComponent,
+    OccasionComponent,
     TuiProductCardComponent,
     NewInComponent,
     IntroComponent,

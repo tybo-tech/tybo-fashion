@@ -1,0 +1,113 @@
+:host {
+  display: block;
+
+  .occ-header {
+    padding: 3rem 0 2rem;
+    text-align: center;
+
+    &__eyebrow {
+      margin: 0 0 0.5rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent, #e6b505);
+    }
+
+    &__title {
+      margin: 0;
+      font-size: 2.4rem;
+      line-height: 1.15;
+      color: #1a1a1a;
+    }
+
+    &__subtitle {
+      margin: 0.6rem auto 0;
+      max-width: 52ch;
+      color: #6c757d;
+    }
+  }
+
+  .occ-body {
+    padding-bottom: 4rem;
+  }
+
+  .occ-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem 1.5rem;
+  }
+
+  .occ-card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    align-items: center;
+    text-align: center;
+    color: #1a1a1a;
+    text-decoration: none;
+
+    &:hover .occ-card__name {
+      text-decoration: underline;
+    }
+
+    &:hover .occ-card__media img {
+      transform: scale(1.05);
+    }
+  }
+
+  .occ-card__media {
+    display: block;
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    background: var(--cloud, #ecf0f1);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+      transition: transform 0.4s ease;
+    }
+  }
+
+  .occ-card__name {
+    font-size: 1rem;
+    font-weight: 600;
+  }
+
+  .occ-card__count {
+    font-size: 0.78rem;
+    color: #6c757d;
+  }
+
+  .occ-empty {
+    padding: 3rem 0;
+    text-align: center;
+    color: #6c757d;
+  }
+
+  @media (max-width: 991.98px) {
+    .occ-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .occ-header {
+      padding-top: 5.5rem;
+
+      &__title {
+        font-size: 1.8rem;
+      }
+    }
+
+    .occ-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem 1rem;
+    }
+  }
+}

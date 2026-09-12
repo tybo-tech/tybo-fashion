@@ -1,0 +1,53 @@
+<section class="nav-section">
+  <div class="box">
+    <app-tui-nav [showBack]="true" />
+  </div>
+</section>
+
+<main class="main p-0">
+  <header class="occ-header">
+    <div class="container">
+      <p class="occ-header__eyebrow">Shop by occasion</p>
+      <h1 class="occ-header__title">{{ name || 'Occasion' }}</h1>
+      <p class="occ-header__subtitle" *ngIf="!loading && items.length">
+        {{ items.length }} {{ items.length === 1 ? 'piece' : 'pieces' }} from
+        independent South African designers.
+      </p>
+    </div>
+  </header>
+
+  <div class="container occ-body">
+    <div class="occ-grid" *ngIf="!loading && items.length">
+      <a
+        class="moment"
+        *ngFor="let item of items"
+        [routerLink]="linkFor(item)"
+      >
+        <img
+          [src]="item.ImageUrl || item.ItemValue?.coverImage"
+          [alt]="title(item)"
+          loading="lazy"
+          (error)="onImageError($event)"
+        />
+        <span class="moment__overlay">
+          <span class="moment__title">{{ title(item) }}</span>
+          <span class="moment__designer" *ngIf="designerName(item)">
+            {{ designerName(item) }}
+          </span>
+        </span>
+      </a>
+    </div>
+
+    <p class="occ-empty" *ngIf="loading">Loading pieces…</p>
+    <p class="occ-empty" *ngIf="!loading && notFound">
+      We couldn't find that occasion.
+      <a routerLink="/home/occasions">Browse all occasions</a>.
+    </p>
+    <p class="occ-empty" *ngIf="!loading && !notFound && !items.length">
+      No pieces for this occasion yet. Explore our
+      <a routerLink="/home/shops">designers</a> instead.
+    </p>
+  </div>
+</main>
+
+<app-footer />

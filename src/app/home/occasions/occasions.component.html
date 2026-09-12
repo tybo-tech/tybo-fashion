@@ -1,0 +1,48 @@
+<section class="nav-section">
+  <div class="box">
+    <app-tui-nav [showBack]="true" />
+  </div>
+</section>
+
+<main class="main p-0">
+  <header class="occ-header">
+    <div class="container">
+      <p class="occ-header__eyebrow">Occasions</p>
+      <h1 class="occ-header__title">Shop by occasion</h1>
+      <p class="occ-header__subtitle">
+        Real pieces made by independent South African designers for life's
+        biggest moments. See something you love, then make it yours.
+      </p>
+    </div>
+  </header>
+
+  <div class="container occ-body">
+    <div class="occ-grid" *ngIf="occasions.length">
+      <a
+        class="occ-card"
+        *ngFor="let occasion of occasions"
+        [routerLink]="['/home/occasions', occasion.Slug]"
+      >
+        <span class="occ-card__media">
+          <img
+            [src]="occasion.ImageUrl"
+            [alt]="occasion.Name"
+            loading="lazy"
+            (error)="onImageError($event)"
+          />
+        </span>
+        <span class="occ-card__name">{{ occasion.Name }}</span>
+        <span class="occ-card__count" *ngIf="occasion.Count">
+          {{ occasion.Count }} {{ occasion.Count === 1 ? 'piece' : 'pieces' }}
+        </span>
+      </a>
+    </div>
+
+    <p class="occ-empty" *ngIf="loading">Loading occasions…</p>
+    <p class="occ-empty" *ngIf="!loading && !occasions.length">
+      Occasions are coming soon. In the meantime, explore our designers.
+    </p>
+  </div>
+</main>
+
+<app-footer />

@@ -37,7 +37,7 @@
         <ng-container *ngIf="!company">
           <a routerLink="/home/products" class="text-dark text-decoration-none">New In</a>
           <a routerLink="/home/shops" class="text-dark text-decoration-none">Designers</a>
-          <a routerLink="/home/shops" class="text-dark text-decoration-none">Occasion Wear</a>
+          <a routerLink="/home/occasions" class="text-dark text-decoration-none">Occasion Wear</a>
         </ng-container>
 
         <ng-container *ngIf="company && slug">
@@ -155,7 +155,7 @@
           >Designers</a
         >
         <a
-          routerLink="/home/shops"
+          routerLink="/home/occasions"
           class="text-dark text-decoration-none"
           (click)="toggleMenu()"
           >Occasion Wear</a

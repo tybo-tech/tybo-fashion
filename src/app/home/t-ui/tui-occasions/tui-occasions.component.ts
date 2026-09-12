@@ -1,31 +1,37 @@
-import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
-import { IWorkGallery } from 'src/models/IWorkGallery';
-import { buildOccasions, Occasion } from 'src/models/Occasions';
-import { OtherInfo } from 'src/models/other-info.model';
+import { Component, OnInit } from '@angular/core';
+import { Occasion, occasionLink } from 'src/models/Occasions';
+import { OtherInfoService } from 'src/services/other-info.service';
 
 /**
  * "Shop by occasion" rail.
  *
- * Occasions are derived from the designer's real WorkGallery so the tiles are
- * genuine, image-backed pieces rather than a fabricated category system. Each
- * tile deep-links to the matching gallery item.
+ * Reads the cross-designer occasion index from the backend so the tiles reflect
+ * every designer on Tybo (not just the featured one), and links to the
+ * occasion page where all matching portfolio pieces are shown.
  */
 @Component({
   selector: 'app-tui-occasions',
   templateUrl: './tui-occasions.component.html',
   styleUrls: ['./tui-occasions.component.scss'],
 })
-export class TuiOccasionsComponent implements OnChanges {
-  @Input() items: OtherInfo<IWorkGallery>[] = [];
-
+export class TuiOccasionsComponent implements OnInit {
   occasions: Occasion[] = [];
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes['items']) {
-      this.occasions = buildOccasions(this.items, (item) =>
-        item?.Id ? `/home/work-show-details/${item.Id}` : '/home/shops'
-      );
-    }
+  constructor(private otherInfoService: OtherInfoService<any>) {}
+
+  ngOnInit(): void {
+    this.otherInfoService.occasionIndex().subscribe({
+      next: (summaries) => {
+        this.occasions = (summaries || []).map((summary) => ({
+          Name: summary.Name,
+          Slug: summary.Slug,
+          ImageUrl: summary.ImageUrl,
+          Count: summary.Count,
+          Link: occasionLink(summary.Slug),
+        }));
+      },
+      error: () => (this.occasions = []),
+    });
   }
 
   onImageError(event: Event) {
