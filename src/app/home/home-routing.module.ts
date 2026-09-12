@@ -1,10 +1,7 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './home/home.component';
-import { IndexComponent } from './index/index.component';
-import { AboutComponent } from './about/about.component';
 import { SignInComponent } from './sign-in/sign-in.component';
-import { RegisterComponent } from './register/register.component';
 import { ProductDetailsComponent } from './product-details/product-details.component';
 import { MyShopComponent } from './my-shop/my-shop.component';
 import { CollectionsComponent } from './collections/collections.component';
@@ -48,12 +45,10 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        // component: IndexComponent,
         component: TuiHomeComponent,
       },
       {
         path: 'home',
-        // component: IndexComponent,
         component: TuiHomeComponent,
       },
       {
@@ -243,23 +238,6 @@ const routes: Routes = [
           },
         ],
       },
-
-      // {
-      //   path: 'home/sign-up',
-      //   component: RegisterComponent,
-      // },
-      // {
-      //   path: 'shop/product/:shop/:product',
-      //   component: ProductDetailsComponent,
-      // },
-      // {
-      //   path: 'shop/collections/:id',
-      //   component: CollectionsComponent,
-      // },
-      // {
-      //   path: 'shop/collections/:id/:category',
-      //   component: CollectionItemsComponent,
-      // },
     ],
   },
 ];

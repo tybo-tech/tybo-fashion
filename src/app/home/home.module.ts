@@ -3,12 +3,8 @@ import { CommonModule } from '@angular/common';
 import { NavComponent } from './home-shared/nav/nav.component';
 import { LogoComponent } from './home-shared/nav/logo/logo.component';
 import { HomeComponent } from './home/home.component';
-import { IndexComponent } from './index/index.component';
 import { HomeRoutingModule } from './home-routing.module';
-import { LandingComponent } from './landing/landing.component';
-import { AboutComponent } from './about/about.component';
 import { SignInComponent } from './sign-in/sign-in.component';
-import { RegisterComponent } from './register/register.component';
 import { FooterComponent } from './footer/footer.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ProductDetailsComponent } from './product-details/product-details.component';
@@ -147,10 +143,6 @@ import { NavigationComponent } from './v.2025/navigation/navigation.component';
     NavComponent,
     LogoComponent,
     HomeComponent,
-    IndexComponent,
-    LandingComponent,
-    AboutComponent,
-    RegisterComponent,
     FooterComponent,
     ProductDetailsComponent,
     ProductDescriptionComponent,
