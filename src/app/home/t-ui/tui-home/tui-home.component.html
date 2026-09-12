@@ -38,7 +38,16 @@
   </section>
 
   <!-- New in Tybo -->
-  <app-tui-new-in [count]="8" />
+  <app-tui-new-in [products]="products" [count]="8" />
+
+  <!-- Shop by occasion (real work-gallery pieces) -->
+  <app-tui-occasions [items]="galleryItems" />
+
+  <!-- Featured designer -->
+  <app-tui-featured-designer
+    [company]="featuredDesigner"
+    [products]="products"
+  />
 
   <!-- Why Tybo Fashion -->
 

@@ -78,6 +78,8 @@ import { ProductCardComponent } from './product-card/product-card.component';
 import { TuiHomeComponent } from './t-ui/tui-home/tui-home.component';
 import { TuiNavComponent } from './t-ui/tui-nav/tui-nav.component';
 import { TuiNewInComponent } from './t-ui/tui-new-in/tui-new-in.component';
+import { TuiOccasionsComponent } from './t-ui/tui-occasions/tui-occasions.component';
+import { TuiFeaturedDesignerComponent } from './t-ui/tui-featured-designer/tui-featured-designer.component';
 import { TuiProductCardComponent } from './tui-product-card/tui-product-card.component';
 import { NewInComponent } from './new-in/new-in.component';
 import { IntroComponent } from './intro/intro.component';
@@ -210,6 +212,8 @@ import { NavigationComponent } from './v.2025/navigation/navigation.component';
     TuiHomeComponent,
     TuiNavComponent,
     TuiNewInComponent,
+    TuiOccasionsComponent,
+    TuiFeaturedDesignerComponent,
     TuiProductCardComponent,
     NewInComponent,
     IntroComponent,

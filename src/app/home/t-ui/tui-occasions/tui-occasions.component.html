@@ -1,0 +1,28 @@
+<section class="occasions" *ngIf="occasions.length">
+  <div class="container">
+    <header class="occasions__header">
+      <h2 class="occasions__title">Shop by occasion</h2>
+      <p class="occasions__subtitle">
+        Real pieces made for life's biggest moments.
+      </p>
+    </header>
+
+    <div class="occasions__rail">
+      <a
+        *ngFor="let occasion of occasions"
+        [routerLink]="occasion.Link"
+        class="occasion"
+      >
+        <span class="occasion__media">
+          <img
+            [src]="occasion.ImageUrl"
+            [alt]="occasion.Name"
+            loading="lazy"
+            (error)="onImageError($event)"
+          />
+        </span>
+        <span class="occasion__name">{{ occasion.Name }}</span>
+      </a>
+    </div>
+  </div>
+</section>

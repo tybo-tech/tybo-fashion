@@ -1,0 +1,57 @@
+<section class="designer" *ngIf="company && name">
+  <div class="container">
+    <div class="designer__grid">
+      <!-- Brand / editorial image -->
+      <div class="designer__media">
+        <img
+          *ngIf="heroImage; else initialBlock"
+          [src]="heroImage"
+          [alt]="name"
+          loading="lazy"
+          (error)="onImageError($event)"
+        />
+        <ng-template #initialBlock>
+          <div class="designer__initial">{{ initial }}</div>
+        </ng-template>
+
+        <img
+          *ngIf="logo"
+          class="designer__badge"
+          [src]="logo"
+          [alt]="name + ' logo'"
+          loading="lazy"
+          (error)="onImageError($event)"
+        />
+      </div>
+
+      <!-- Story -->
+      <div class="designer__body">
+        <p class="designer__eyebrow">Meet the designer</p>
+        <h2 class="designer__name">{{ name }}</h2>
+        <p class="designer__about" *ngIf="about">{{ about }}</p>
+
+        <ul class="designer__meta">
+          <li *ngIf="city">
+            <i class="bi bi-geo-alt"></i> {{ city }}
+          </li>
+          <li *ngFor="let label of stockLabels">
+            <i class="bi bi-check2-circle"></i> {{ label }}
+          </li>
+        </ul>
+
+        <a [routerLink]="shopUrl" class="designer__cta">
+          Shop {{ name }}
+          <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Selected pieces -->
+    <div class="designer__products" *ngIf="selected.length">
+      <app-tui-product-card
+        *ngFor="let product of selected"
+        [product]="product"
+      ></app-tui-product-card>
+    </div>
+  </div>
+</section>
