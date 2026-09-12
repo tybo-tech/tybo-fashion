@@ -41,7 +41,7 @@
   min-height: 100vh;
   font-family: "Poppins", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 
-  // Enforce sans-serif for headings inside workspace (override Young Serif)
+  // Enforce sans-serif for headings inside workspace
   h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
     font-family: "Poppins", system-ui, -apple-system, sans-serif !important;
     font-weight: 600 !important;
