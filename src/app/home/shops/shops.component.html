@@ -16,7 +16,7 @@
   </header>
 
   <div class="container shops-body">
-    <div class="shops-grid" *ngIf="shops?.length; else loading">
+    <div class="shops-grid" *ngIf="shops?.length">
       <a class="shop" [routerLink]="['/', shop.Slug]" *ngFor="let shop of shops">
         <img
           [src]="shop.Dp || 'assets/images/placeholder.svg'"
@@ -29,9 +29,10 @@
       </a>
     </div>
 
-    <ng-template #loading>
-      <p class="shops-empty">Loading designers…</p>
-    </ng-template>
+    <p class="shops-empty" *ngIf="!loaded">Loading designers…</p>
+    <p class="shops-empty" *ngIf="loaded && !shops?.length">
+      No designers are live just yet. Check back soon.
+    </p>
   </div>
 </main>
 
