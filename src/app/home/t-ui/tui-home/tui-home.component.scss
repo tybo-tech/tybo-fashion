@@ -18,6 +18,106 @@
       }
     }
   }
+
+  // Editorial hero overrides the generic section treatment above.
+  section.hero {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    min-height: 78vh;
+    padding: 0 !important;
+    overflow: hidden;
+    background: #1a1a1a;
+
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+
+      picture,
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+
+      img {
+        object-fit: cover;
+        object-position: center 30%;
+      }
+    }
+
+    .hero__scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background: linear-gradient(
+        to top,
+        rgba(12, 12, 12, 0.78) 0%,
+        rgba(12, 12, 12, 0.35) 45%,
+        rgba(12, 12, 12, 0.1) 100%
+      );
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      padding-bottom: 4rem;
+      color: #fff;
+    }
+
+    .hero__eyebrow {
+      margin: 0 0 0.75rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--accent, #e6b505);
+    }
+
+    .hero__title {
+      margin: 0;
+      max-width: 16ch;
+      font-size: 3.5rem;
+      line-height: 1.05;
+      color: #fff;
+    }
+
+    .hero__subtitle {
+      margin: 1.25rem 0 0;
+      max-width: 46ch;
+      font-size: 1.05rem;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-top: 1.75rem;
+    }
+
+    @media (max-width: 767.98px) {
+      min-height: 82vh;
+
+      .hero__content {
+        padding-bottom: 2.5rem;
+      }
+
+      .hero__title {
+        font-size: 2.25rem;
+      }
+
+      .hero__subtitle {
+        font-size: 0.95rem;
+      }
+
+      .hero__actions .btn {
+        flex: 1 1 auto;
+      }
+    }
+  }
+
   .border-dashed {
     border-style: dashed !important;
   }

@@ -1,1 +1,43 @@
-<p>tui-new-in works!</p>
+<section class="new-in">
+  <div class="container">
+    <header class="new-in__header">
+      <div>
+        <h2 class="new-in__title">{{ title }}</h2>
+        <p class="new-in__subtitle">{{ subtitle }}</p>
+      </div>
+      <a
+        *ngIf="showMore"
+        routerLink="/home/products"
+        class="new-in__link"
+        aria-label="View all new arrivals"
+      >
+        View all new arrivals
+        <i class="bi bi-arrow-right"></i>
+      </a>
+    </header>
+
+    <div class="new-in__grid" *ngIf="!loading && products.length; else states">
+      <app-tui-product-card
+        *ngFor="let product of products"
+        [product]="product"
+      ></app-tui-product-card>
+    </div>
+
+    <ng-template #states>
+      <div class="new-in__grid" *ngIf="loading" aria-hidden="true">
+        <div class="new-in__skeleton" *ngFor="let s of [1, 2, 3, 4, 5, 6, 7, 8]">
+          <div class="new-in__skeleton-media"></div>
+          <span class="new-in__skeleton-line"></span>
+          <span class="new-in__skeleton-line short"></span>
+        </div>
+      </div>
+
+      <p class="new-in__empty" *ngIf="!loading && !error">
+        New pieces are on the way. Check back soon.
+      </p>
+      <p class="new-in__empty" *ngIf="error">
+        Sorry, we couldn't load new arrivals right now.
+      </p>
+    </ng-template>
+  </div>
+</section>

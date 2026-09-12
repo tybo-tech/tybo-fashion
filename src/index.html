@@ -40,6 +40,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
 
+    <!-- Above-the-fold hero: load early, do not lazy-load -->
+    <link
+      rel="preload"
+      as="image"
+      href="assets/images/tui/hero-tybo-fashion.webp"
+      type="image/webp"
+      fetchpriority="high"
+    />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
     <link

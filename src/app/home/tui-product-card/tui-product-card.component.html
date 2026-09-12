@@ -1,1 +1,36 @@
-<p>tui-product-card works!</p>
+<a *ngIf="product" [href]="url" class="feed-card">
+  <div class="feed-card__media">
+    <img
+      [src]="image"
+      [alt]="name"
+      loading="lazy"
+      (error)="onImageError($event)"
+    />
+    <button
+      type="button"
+      class="feed-card__like"
+      [ngClass]="{ 'is-liked': liked }"
+      [attr.aria-label]="liked ? 'Remove from favourites' : 'Add to favourites'"
+      (click)="onLike($event)"
+    >
+      <i [ngClass]="liked ? 'bi bi-heart-fill' : 'bi bi-heart'"></i>
+    </button>
+    <span class="feed-card__stock" *ngIf="stockLabel">{{ stockLabel }}</span>
+  </div>
+
+  <div class="feed-card__body">
+    <h3 class="feed-card__name">{{ name }}</h3>
+    <p class="feed-card__designer" *ngIf="designerName">{{ designerName }}</p>
+    <p class="feed-card__price">
+      <span [ngClass]="oldPrice ? 'is-sale' : ''">{{
+        price | currency : "R" : "symbol" : "1.0-0"
+      }}</span>
+      <del *ngIf="oldPrice">{{
+        oldPrice | currency : "R" : "symbol" : "1.0-0"
+      }}</del>
+    </p>
+    <p class="feed-card__deposit" *ngIf="deposit > 0">
+      Deposit {{ deposit | currency : "R" : "symbol" : "1.0-0" }}
+    </p>
+  </div>
+</a>

@@ -1,0 +1,125 @@
+:host {
+  display: block;
+
+  .new-in {
+    padding: 3.5rem 0 3rem;
+    background: #fff;
+  }
+
+  .new-in__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .new-in__title {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+    color: #1a1a1a;
+  }
+
+  .new-in__subtitle {
+    margin: 0.35rem 0 0;
+    color: #6c757d;
+    font-size: 0.95rem;
+  }
+
+  .new-in__link {
+    flex-shrink: 0;
+    color: #1a1a1a;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-decoration: none;
+    white-space: nowrap;
+
+    i {
+      margin-left: 4px;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover {
+      text-decoration: underline;
+
+      i {
+        transform: translateX(3px);
+      }
+    }
+  }
+
+  .new-in__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1.5rem 1.25rem;
+  }
+
+  .new-in__empty {
+    margin: 0;
+    padding: 2.5rem 0;
+    text-align: center;
+    color: #6c757d;
+  }
+
+  .new-in__skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .new-in__skeleton-media {
+    aspect-ratio: 4 / 5;
+    border-radius: 4px;
+    background: linear-gradient(100deg, #ececec 30%, #f6f6f6 50%, #ececec 70%);
+    background-size: 200% 100%;
+    animation: new-in-shimmer 1.4s ease-in-out infinite;
+  }
+
+  .new-in__skeleton-line {
+    height: 12px;
+    border-radius: 3px;
+    background: #ececec;
+
+    &.short {
+      width: 60%;
+    }
+  }
+
+  @keyframes new-in-shimmer {
+    from {
+      background-position: 200% 0;
+    }
+    to {
+      background-position: -200% 0;
+    }
+  }
+
+  @media (max-width: 991.98px) {
+    .new-in__grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .new-in {
+      padding: 2.5rem 0 2rem;
+    }
+
+    .new-in__title {
+      font-size: 1.6rem;
+    }
+
+    .new-in__header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .new-in__grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.25rem 0.75rem;
+    }
+  }
+}
