@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { initUser, User } from 'src/models/user.model';
 import { UX_MODALS } from 'src/models/ux.model';
@@ -19,6 +18,7 @@ export class SignupComponent {
     email: '',
     password: '',
     name: '',
+    shop_name: '',
   };
   user?: User;
   constructor(
@@ -31,31 +31,88 @@ export class SignupComponent {
       this.returnTo = params['returnTo'] ?? '';
     });
     this.new_user = initUser(this.typeOfUser);
+    this.route.queryParams.subscribe((params) => {
+      const type = params['type'] === 'designer' ? 'Admin' : 'Customer';
+      if (type !== this.typeOfUser) {
+        this.typeOfUser = type;
+        this.new_user = initUser(this.typeOfUser);
+      }
+    });
     this.user = this.userServcice.getUser;
+  }
+
+  get isDesigner() {
+    return this.typeOfUser === 'Admin';
   }
 
   sign_up() {
     if (!this.validate()) return;
+    if (this.isDesigner) {
+      this.registerDesigner();
+      return;
+    }
+    this.registerCustomer();
+  }
+  private registerCustomer() {
     this.userServcice.save(this.new_user).subscribe((user) => {
       if (user && user.CreateDate) {
         this.uxService.show_toast('Sign up successful', 'success');
         this.userServcice.updateUserState(user);
-        if (this.isCheckoutReturn) {
-          this.router.navigate([`/home/checkout`]);
-          return;
-        }
-        this.router.navigate([`/`]);
-        this.uxService.show_modal(UX_MODALS.profile);
+        this.afterSignup();
       } else {
-        const response: any = user;
-        if (response.includes('exist')) {
-          this.uxService.show_toast(
-            `User with email : ${this.new_user.Email} already exist.`,
-            'User already exist'
-          );
-        } else this.uxService.show_toast(response, 'error');
+        this.handleError(user as any);
       }
     });
+  }
+  private registerDesigner() {
+    const shopName = this.new_user.CompanyName || this.new_user.Name;
+    this.new_user = {
+      ...this.new_user,
+      UserType: 'Admin',
+      ParentCompanyId: 'tybofashion.co.za',
+      CompanyName: shopName,
+      CreateUserId: this.new_user.Email,
+      ModifyUserId: this.new_user.Email,
+    };
+    this.userServcice.registerDesigner(this.new_user).subscribe((user) => {
+      if (user && user.CreateDate) {
+        this.userServcice.updateUserState(user);
+        this.uxService.show_toast(
+          'Designer account created, welcome to Tybo Fashion',
+          'Sign up successful',
+          ['bg-success', 'text-light']
+        );
+        this.router.navigate(['/store/admin']);
+      } else {
+        this.handleError(user as any);
+      }
+    });
+  }
+  private afterSignup() {
+    if (this.isCheckoutReturn) {
+      this.router.navigate([`/home/checkout`]);
+      return;
+    }
+    this.router.navigate([`/`]);
+    this.uxService.show_modal(UX_MODALS.profile);
+  }
+  private handleError(response: any) {
+    const message = Array.isArray(response)
+      ? response.filter((x) => typeof x === 'string').join(' ')
+      : `${response ?? ''}`;
+    if (message.includes('exist')) {
+      this.uxService.show_toast(
+        `User with email : ${this.new_user.Email} already exist.`,
+        'User already exist',
+        ['bg-warning', 'text-dark']
+      );
+    } else {
+      this.uxService.show_toast(
+        message || 'Something went wrong, please try again.',
+        'Error',
+        ['bg-danger', 'text-white']
+      );
+    }
   }
   get isCheckoutReturn() {
     return this.returnTo === 'checkout';
@@ -66,6 +123,7 @@ export class SignupComponent {
       email: '',
       password: '',
       name: '',
+      shop_name: '',
     };
     if (!this.new_user.Email) {
       this.errors.email = 'Email is required';
@@ -77,6 +135,10 @@ export class SignupComponent {
     }
     if (!this.new_user.Name) {
       this.errors.name = 'Name is required';
+      valid = false;
+    }
+    if (this.isDesigner && !this.new_user.CompanyName) {
+      this.errors.shop_name = 'Shop name is required';
       valid = false;
     }
 

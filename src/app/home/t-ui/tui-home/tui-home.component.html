@@ -22,10 +22,10 @@
           <div
             class="d-grid d-md-flex gap-3 justify-content-center justify-content-lg-start"
           >
-            <a routerLink="/shops" class="btn btn-dark btn-lg">
+            <a routerLink="/home/shops" class="btn btn-dark btn-lg">
               <i class="bi bi-shop me-2"></i> Explore Shops
             </a>
-            <a routerLink="/register" class="btn btn-warning btn-lg text-dark">
+            <a [routerLink]="['/home/sign-up']" [queryParams]="{ type: 'designer' }" class="btn btn-warning btn-lg text-dark">
               <i class="bi bi-person-plus-fill me-2"></i> Join as a Designer
             </a>
           </div>
@@ -189,7 +189,7 @@
               <p class="text-muted">
                 Launch your own Tybo-powered store and start selling today.
               </p>
-              <a routerLink="/register" class="btn btn-outline-warning">
+              <a [routerLink]="['/home/sign-up']" [queryParams]="{ type: 'designer' }" class="btn btn-outline-warning">
                 Start Selling
               </a>
             </div>
@@ -380,10 +380,10 @@
       </p>
 
       <div class="d-flex flex-column flex-sm-row justify-content-center gap-3">
-        <a routerLink="/register" class="btn btn-warning btn-lg text-dark">
+        <a [routerLink]="['/home/sign-up']" [queryParams]="{ type: 'designer' }" class="btn btn-warning btn-lg text-dark">
           <i class="bi bi-person-plus-fill me-2"></i> Join as a Designer
         </a>
-        <a routerLink="/shops" class="btn btn-outline-light btn-lg">
+        <a routerLink="/home/shops" class="btn btn-outline-light btn-lg">
           <i class="bi bi-eye me-2"></i> Explore Shops
         </a>
       </div>

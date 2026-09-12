@@ -5,11 +5,34 @@
 </section>
 <main class="form-signin w-100 m-auto">
   <form>
-    <h1 class="h4">Register for an account</h1>
-    <p>
+    <h1 class="h4">
+      {{ isDesigner ? 'Register your fashion brand' : 'Register for an account' }}
+    </h1>
+    <p *ngIf="isDesigner">
+      Create your designer account to get your own Tybo Fashion shop. You will
+      manage products, customers, jobs and invoices from your dashboard.
+    </p>
+    <p *ngIf="!isDesigner">
       Enter your full name, email address, and password to register for an
       account.
     </p>
+
+    <div class="form-floating mb-4" *ngIf="isDesigner">
+      <input
+        type="text"
+        class="form-control"
+        id="shopName"
+        placeholder="Your shop name"
+        [(ngModel)]="new_user.CompanyName"
+        [ngModelOptions]="{ standalone: true }"
+        required
+      />
+      <label for="shopName">Your shop name</label>
+      <p class="text-danger fade-in" *ngIf="errors.shop_name">
+        {{ errors.shop_name }}
+      </p>
+    </div>
+
     <div class="form-floating mb-4">
       <input
         type="text"
@@ -21,19 +44,23 @@
         required
       />
       <label for="name">Your full name</label>
+      <p class="text-danger fade-in" *ngIf="errors.name">{{ errors.name }}</p>
     </div>
 
     <div class="form-floating mb-4">
       <input
         type="text"
         class="form-control"
-        id="name"
+        id="email"
         placeholder="Email address"
         [(ngModel)]="new_user.Email"
         [ngModelOptions]="{ standalone: true }"
         required
       />
-      <label for="name">Email address</label>
+      <label for="email">Email address</label>
+      <p class="text-danger fade-in" *ngIf="errors.email">
+        {{ errors.email }}
+      </p>
     </div>
 
     <div class="form-floating mb-4">
@@ -47,6 +74,9 @@
         required
       />
       <label for="password">Password</label>
+      <p class="text-danger fade-in" *ngIf="errors.password">
+        {{ errors.password }}
+      </p>
     </div>
 
     <button
@@ -54,10 +84,28 @@
       class="w-100 btn btn-primary mb-2"
       (click)="sign_up()"
     >
-      Register
+      {{ isDesigner ? 'Create my shop' : 'Register' }}
     </button>
-    <a class="link-info d-block mt-4" [routerLink]="['/home/sign-in', returnTo]">
+    <a
+      class="link-info d-block mt-4"
+      [routerLink]="['/home/sign-in', returnTo]"
+    >
       Already have an account? Login
+    </a>
+    <a
+      *ngIf="isDesigner"
+      class="link-secondary d-block mt-2"
+      routerLink="/home/sign-up"
+    >
+      Want to shop instead? Create a customer account
+    </a>
+    <a
+      *ngIf="!isDesigner"
+      class="link-secondary d-block mt-2"
+      [routerLink]="['/home/sign-up']"
+      [queryParams]="{ type: 'designer' }"
+    >
+      Are you a fashion designer? Start selling on Tybo Fashion
     </a>
   </form>
 </main>

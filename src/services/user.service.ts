@@ -63,6 +63,12 @@ export class UserService {
   save(data: User): Observable<User> {
     return this.http.post<User>(`${this.url}/user/save.php`, data);
   }
+  registerDesigner(data: User): Observable<User> {
+    return this.http.post<User>(
+      `${this.url}/user/register-designer.php`,
+      data
+    );
+  }
   updateUserDraftOrder(user: User, job: Job) {
     user.Metadata.DraftOrder = job;
     user.Metadata.DraftOrderId = getId('order');

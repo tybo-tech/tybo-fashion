@@ -91,6 +91,144 @@ class User
         }
     }
 
+    /**
+     * Atomically creates a designer (Admin) account together with its shop.
+     * Either both the company and the user are created, or neither is.
+     *
+     * @param object $model Designer details (Name, Email, Password, CompanyName, ...)
+     * @return array|string The created user (with Company attached) or an error message.
+     */
+    public function registerDesigner($model)
+    {
+        if ($this->getByEmail($model->Email) > 0) {
+            return "user already exists";
+        }
+
+        $shopName = !empty($model->CompanyName) ? $model->CompanyName : $model->Name;
+        $baseSlug = slugify($shopName);
+        if (empty($baseSlug)) {
+            $baseSlug = slugify($model->Email);
+        }
+        if (empty($baseSlug)) {
+            $baseSlug = 'shop';
+        }
+
+        $this->conn->beginTransaction();
+        try {
+            // Ensure the shop slug / id is unique before creating the company.
+            $slug = $baseSlug;
+            $suffix = 2;
+            while ($this->companyExists($slug)) {
+                $slug = $baseSlug . '-' . $suffix;
+                $suffix++;
+            }
+            $CompanyId = $slug;
+
+            $companyQuery = "INSERT INTO company
+            (
+            CompanyId,
+            Name,
+            Slug,
+            Dp,
+            CompanyType,
+            IsDeleted,
+            CreateUserId,
+            ModifyUserId,
+            StatusId)
+            VALUES (?,?,?,?,?,?,?,?,?)";
+            $companyStmt = $this->conn->prepare($companyQuery);
+            $companyStmt->execute(array(
+                $CompanyId,
+                $shopName,
+                $slug,
+                $model->Dp ?? '',
+                $model->CompanyType ?? 'Fashion',
+                0,
+                $model->Email,
+                $model->Email,
+                $model->StatusId ?? 1
+            ));
+
+            $UserId = getUuid($this->conn);
+            $userQuery = "INSERT INTO user(
+            UserId,
+            CompanyId,
+            UserType,
+            Name,
+            Surname,
+            Email,
+            PhoneNumber,
+            Password,
+            Dp,
+            AddressLineHome,
+            Measurements,
+            AddressUrlHome,
+            AddressLineWork,
+            AddressUrlWork,
+            CreateUserId,
+            ModifyUserId,
+            StatusId,
+            UserToken,
+            ReferralCode,
+            ParentReferralCode,
+            AddressLine2,
+            BuildingType,
+            City,
+            CompanyName,
+            PostalCode,
+            Suburb,
+            Metadata
+            )
+            VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+            $userStmt = $this->conn->prepare($userQuery);
+            $userStmt->execute(array(
+                $UserId,
+                $CompanyId,
+                'Admin',
+                $model->Name,
+                $model->Surname ?? '',
+                $model->Email,
+                $model->PhoneNumber ?? '',
+                $model->Password,
+                $model->Dp ?? '',
+                $model->AddressLineHome ?? '',
+                json_encode($model->Measurements ?? []),
+                $model->AddressUrlHome ?? '',
+                $model->AddressLineWork ?? '',
+                $model->AddressUrlWork ?? '',
+                $model->Email,
+                $model->Email,
+                $model->StatusId ?? 1,
+                '',
+                $model->ReferralCode ?? '',
+                $model->ParentReferralCode ?? '',
+                $model->AddressLine2 ?? '',
+                $model->BuildingType ?? '',
+                $model->City ?? '',
+                $shopName,
+                $model->PostalCode ?? '',
+                $model->Suburb ?? '',
+                json_encode($model->Metadata ?? new stdClass())
+            ));
+
+            $this->conn->commit();
+
+            // getUserById already attaches the freshly created Company.
+            return $this->getUserById($UserId);
+        } catch (Exception $e) {
+            $this->conn->rollBack();
+            return array("ERROR", $e->getMessage());
+        }
+    }
+
+    private function companyExists($slug)
+    {
+        $query = "SELECT CompanyId FROM company WHERE CompanyId = ? OR Slug = ? LIMIT 1";
+        $stmt = $this->conn->prepare($query);
+        $stmt->execute(array($slug, $slug));
+        return $stmt->rowCount() > 0;
+    }
+
     public function Update(
         $model
     ) {
@@ -253,6 +391,10 @@ class User
             $result["Measurements"] = json_decode($result["Measurements"]);
             $result["Metadata"] = json_decode($result["Metadata"]);
             $result["Favorites"] = $this->my_favs($result);
+            if (!empty($result['CompanyId'])) {
+                $company = new Company($this->conn);
+                $result['Company'] = $company->GetById($result['CompanyId']);
+            }
             return $result;
         }
     }

@@ -9,3 +9,10 @@
         return  $uuid['Id'];
     }
     }
+
+ function  slugify($value){
+    $value = strtolower(trim((string) $value));
+    $value = preg_replace('/[^a-z0-9\s-]/', '', $value);
+    $value = preg_replace('/[\s-]+/', '-', $value);
+    return trim($value, '-');
+    }
